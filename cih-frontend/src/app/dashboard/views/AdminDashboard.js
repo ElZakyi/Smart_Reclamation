@@ -25,6 +25,7 @@ export default function AdminDashboard({ user }) {
     try {
       const res = await api.get("/users");
       setUsers(res.data);
+      console.log(res.data);
     } catch(error) {
       setMessage(error.response?.data?.error ||"Error /GET get users");
     }
