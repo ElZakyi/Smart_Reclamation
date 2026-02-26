@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class CustomUserDetails implements UserDetails {
-
+    private Integer idUser;
     private String email;
     private String password;
 
@@ -17,12 +17,14 @@ public class CustomUserDetails implements UserDetails {
     private Collection<? extends GrantedAuthority> authorities;
 
     public CustomUserDetails(
+            Integer idUser,
             String email,
             String password,
             List<String> roles,
             List<String> permissions,
             Collection<? extends GrantedAuthority> authorities
     ) {
+        this.idUser = idUser;
         this.email = email;
         this.password = password;
         this.roles = roles;
@@ -36,7 +38,9 @@ public class CustomUserDetails implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
     }
-
+    public Integer getIdUser() {
+        return idUser;
+    }
     @Override
     public String getPassword() {
         return password;

@@ -40,6 +40,7 @@ public class AuthController {
 
         assert user != null;
         return new AuthMeResponse(
+                user.getIdUser(),
                 user.getUsername(),
                 user.getRoles(),
                 user.getPermissions()

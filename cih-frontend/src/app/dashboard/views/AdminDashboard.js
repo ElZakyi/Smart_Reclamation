@@ -1,4 +1,5 @@
 import api from "@/services/api";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function AdminDashboard({ user }) {
@@ -13,6 +14,7 @@ export default function AdminDashboard({ user }) {
   const [selectedPermissionId,setSelectedPermissionId] = useState("");
   const [permissionsByRole,setPermissionsByRole] = useState({});
   const [editingUser,setEditingUser] = useState(null);
+  const router = useRouter();
 
   const [userForm, setUserForm] = useState({
     fullName: "",
@@ -25,9 +27,8 @@ export default function AdminDashboard({ user }) {
     try {
       const res = await api.get("/users");
       setUsers(res.data);
-      console.log(res.data);
     } catch(error) {
-      setMessage(error.response?.data?.error ||"Error /GET get users");
+      setMessage(error.response?.data?.error ||"Error /GET get users : " + error);
     }
   };
 
@@ -39,13 +40,13 @@ export default function AdminDashboard({ user }) {
             const res = await api.get("/roles");
             setRoles(res.data);
         }catch(error){
-            setMessage(error.response.data.error || "Error /GET get roles ! ");
+            setMessage(error.response.data.error || "Error /GET get roles :  " + error);
         }
         try {
             const res = await api.get("/permissions");
             setPermissions(res.data);
         }catch(error){
-            setMessage(error.reponse?.data?.error || "Error  /GET get permissions ! ");
+            setMessage(error.reponse?.data?.error || "Error  /GET get permissions : " + error);
         }
     };
     loadData();
@@ -72,7 +73,7 @@ export default function AdminDashboard({ user }) {
                 [roleId]: res.data
             }));
             } catch (error) {
-            console.error("Erreur permissions role", roleId);
+              setMessage(error.reponse?.data?.error || "Error /GET role-permission : " + error);
             }
         }
         }
@@ -96,7 +97,7 @@ export default function AdminDashboard({ user }) {
       await refreshUsers();
     } catch (error) {
       if (error.response) {
-        setMessage(error.response.data.error || "ERROR /POST assign role to user");
+        setMessage(error.response.data.error || "ERROR /POST assign role to user : " + error);
       } else {
         setMessage("Erreur serveur");
       }
@@ -129,7 +130,7 @@ export default function AdminDashboard({ user }) {
       await refreshUsers();
 
     } catch (error) {
-      setMessage(error.response?.data?.error || "Error /POST create user");
+      setMessage(error.response?.data?.error || "Error /POST create user : " + error);
     }
   };
 
@@ -139,7 +140,7 @@ export default function AdminDashboard({ user }) {
         setMessage(res.data);
         await refreshUsers();
     }catch(error){
-        setMessage(error.response?.data?.error || "Error /PATCH desactivate user");
+        setMessage(error.response?.data?.error || "Error /PATCH desactivate user : " + error);
     }
   }
 
@@ -149,7 +150,7 @@ export default function AdminDashboard({ user }) {
         setMessage(res.data);
         refreshUsers();
     }catch(error){
-        setMessage(error.response?.data?.error || "Error /PATCH activate user");
+        setMessage(error.response?.data?.error || "Error /PATCH activate user : " + error);
     }
   }
 
@@ -173,7 +174,7 @@ export default function AdminDashboard({ user }) {
         setSelectedRoleIdForPerm(null);
 
     } catch(error){
-        setMessage(error.response?.data?.error || "Error /POST assign permission to role !");
+        setMessage(error.response?.data?.error || "Error /POST assign permission to role : " + error);
     }
     };
     const updateRoleUser = async(userId,roleId) => {
@@ -183,7 +184,7 @@ export default function AdminDashboard({ user }) {
             setSelectedUser(null);
             await refreshUsers();
         }catch(error){
-            setMessage(error.response?.data?.error || "Error api /PUT change role for user !")
+            setMessage(error.response?.data?.error || "Error api /PUT change role for user : " + error);
         }
     }
     const deletePermissionFromRole = async(idRole,idPermission) => {
@@ -196,7 +197,7 @@ export default function AdminDashboard({ user }) {
                 [idRole] : updated.data
             }))
         }catch(error){
-            setMessage(error.response?.data?.error || "Error /DELETE remove permission from role");
+            setMessage(error.response?.data?.error || "Error /DELETE remove permission from role : " + error);
         }
     }
     const updateUser = async () => {
@@ -214,31 +215,56 @@ export default function AdminDashboard({ user }) {
             setEditingUser(null);
             await refreshUsers();
         } catch (error) {
-            setMessage(error.response?.data?.error || "Error /PUT modify user !");
+            setMessage(error.response?.data?.error || "Error /PUT modify user : " + error);
         }
         };
-
+    const handleLogout = () => {
+      localStorage.removeItem("token");
+      router.push("/login");
+    }
   return (
+    
     <div className="min-h-screen bg-gray-100 p-6 md:p-10">
+      <button
+            onClick={handleLogout}
+            className="flex ml-auto px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 
+                      text-white font-semibold shadow-md transition 
+                      active:scale-95"
+          >
+            Déconnexion
+          </button>
       <div className="max-w-7xl mx-auto space-y-8">
 
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold text-gray-800">
             Dashboard administrateur :
           </h1>
-
-          <button
-            onClick={() => setShowCreateUser(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition active:scale-[0.99]"
-          >
-            Créer utilisateur
-          </button>
+          <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white/70 backdrop-blur px-4 py-2 shadow-sm">
+              <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white grid place-items-center font-bold">
+                {(user?.fullName || user?.email || "U").toString().trim().charAt(0).toUpperCase()}
+              </div>
+              <div className="leading-tight">
+                <div className="text-sm font-semibold text-slate-900">
+                  {user?.fullName ? user.fullName : "Utilisateur"}
+                </div>
+                <div className="text-xs text-slate-500">
+                  {user?.email ? user.email : "—"}
+                </div>
+              </div>
+            </div>
+          
         </div>
 
         {/* TABLE USERS */}
         <div className="bg-white rounded-xl shadow overflow-hidden border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
             <h2 className="font-semibold text-center text-gray-700">Utilisateurs</h2>
+            <button
+            onClick={() => setShowCreateUser(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition active:scale-[0.99]"
+          >
+            Créer utilisateur
+          </button>
           </div>
 
           <div className="overflow-x-auto">
@@ -257,7 +283,7 @@ export default function AdminDashboard({ user }) {
                   <tr key={u.idUser} className="hover:bg-gray-50">
                     <td className="px-6 py-4 text-sm text-gray-800">{u.fullName}</td>
                     <td className="px-6 py-4 text-sm text-gray-700">{u.email}</td>
-                    <td className="px-6 py-4 text-sm text-gray-700">{u.phone}</td>
+                    <td className="px-6 py-4 text-sm text-gray-700">{u.phone ? u.phone : <span className="text-gray-400 italic text-sm">Aucun nombre de téléphone trouvé</span> }</td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
                         u.isActive
@@ -480,13 +506,15 @@ export default function AdminDashboard({ user }) {
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
                 >
                   <option value="">Choisir une permission</option>
-                  {permissions.map((permission)=> (
-                    <option
-                      key={permission.idPermission}
-                      value={permission.idPermission}
-                    >
-                      {permission.name}
-                    </option>
+                  {[...permissions]
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .map((permission) => (
+                      <option
+                        key={permission.idPermission}
+                        value={permission.idPermission}
+                      >
+                        {permission.name}
+                      </option>
                   ))}
                 </select>
 
@@ -643,10 +671,18 @@ export default function AdminDashboard({ user }) {
 
         {/* MESSAGE */}
         {message && (
-          <div className="rounded-xl border border-blue-200 bg-blue-50 text-blue-800 px-4 py-3 shadow-sm">
-            {message}
-          </div>
-        )}
+            <div className="rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 px-5 py-4 shadow-sm">
+              <div className="flex items-start gap-3">
+                <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white grid place-items-center font-bold">
+                  i
+                </div>
+                <div className="text-sm text-slate-800">
+                  <div className="font-bold text-slate-900">Info</div>
+                  <div className="mt-0.5">{message}</div>
+                </div>
+              </div>
+            </div>
+          )}
 
       </div>
     </div>

@@ -7,6 +7,7 @@ import AdminDashboard from "./views/AdminDashboard";
 import ClientDashboard from "./views/ClientDashboard";
 import AgentDashboard from "./views/AgentDashboard";
 import ResponsableDashboard from "./views/ResponsableDashboard";
+import AuditeurDashboard from "./views/AuditeurDashboard";
 
 export default function DashboardPage(){
     const [user,setUser] = useState(null);
@@ -31,6 +32,8 @@ export default function DashboardPage(){
             return <AgentDashboard user={user}/>;
         case "RESPONSABLE":
             return <ResponsableDashboard user={user}/>;
+        case "AUDITEUR":
+            return <AuditeurDashboard user={user}/>
         default : 
             return <div>Role inconnue</div>
     }

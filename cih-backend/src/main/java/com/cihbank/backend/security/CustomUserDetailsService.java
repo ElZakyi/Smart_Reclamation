@@ -62,6 +62,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         permissions.forEach(p -> authorities.add(new SimpleGrantedAuthority(p)));
 
         return new CustomUserDetails(
+                user.getIdUser(),
                 user.getEmail(),
                 user.getPasswordHash(), // ⚠️ important: hash stocké en DB
                 roles,

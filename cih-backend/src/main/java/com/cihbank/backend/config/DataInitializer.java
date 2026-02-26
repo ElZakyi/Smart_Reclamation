@@ -39,6 +39,7 @@ public class DataInitializer {
                     "AGENT",
                     "RESPONSABLE",
                     "AUDITEUR",
+                    "CLIENT"
             };
 
             for (String roleName : roles) {
@@ -57,7 +58,7 @@ public class DataInitializer {
                     "ASSIGN_ROLE", "MANAGE_ROLE_PERMISSION", "ASSIGN_TEAM",
 
                     // RECLAMATION
-                    "CREATE_RECLAMATION", "VIEW_RECLAMATION",
+                    "CREATE_RECLAMATION", "VIEW_RECLAMATION", "DELETE_RECLAMATION",
                     "UPDATE_RECLAMATION", "REOPEN_RECLAMATION",
 
                     // MESSAGE
