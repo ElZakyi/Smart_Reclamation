@@ -46,4 +46,5 @@ public class ReclamationController {
         reclamationService.updateReclamation(idReclamation,idUser,reclamation);
         return "Reclamation updated successfully";
     }
+
 }

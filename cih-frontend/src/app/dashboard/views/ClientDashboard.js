@@ -446,6 +446,14 @@ export default function ClientDashboard({ user }) {
                         >
                         Modifier
                         </button>
+                        <button
+                        onClick={() => {
+                          router.push(`/dashboard/reclamation/${reclamation.idReclamation}`);
+                        }}
+                        className="text-indigo-600 hover:underline"
+                      >
+                        Voir détails
+                      </button>
 
                     </div>
                     </td>

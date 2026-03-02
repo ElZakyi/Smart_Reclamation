@@ -81,6 +81,9 @@ public class DataInitializer {
                     "VALIDATE_OTP", "SIMULATE_PLAFOND",
                     "VALIDATE_PLAFOND_CHANGE", "APPLY_PLAFOND",
 
+                    // ATTACHMENT
+                    "VIEW_ATTACHMENT" , "UPLOAD_ATTACHMENT", "DELETE_ATTACHMENT",
+
                     // AUDIT
                     "VIEW_AUDIT_LOGS"
             };
