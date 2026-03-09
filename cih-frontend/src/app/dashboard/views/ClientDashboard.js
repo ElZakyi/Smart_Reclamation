@@ -6,12 +6,15 @@ export default function ClientDashboard({ user }) {
   const [message, setMessage] = useState("");
   const [reclamations, setReclamations] = useState([]);
   const [editIdReclamation,setEditIdReclamation] = useState(null);
+  const [loadingAI, setLoadingAI] = useState(false);
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [form, setForm] = useState({
     title: "",
     type: "AUTRE",
     canal: "AUTRE",
     priority: "LOW",
     description: "",
+    isAiAssisted : false,
   });
   const router = useRouter();
 
@@ -30,39 +33,35 @@ export default function ClientDashboard({ user }) {
 
   const createOrModifyReclamation = async (e) => {
     e.preventDefault();
-    if(editIdReclamation){
-        try {
-            const res = await api.put(`/reclamations/${editIdReclamation}/user/${user.idUser}`,form);
-            setMessage(res.data);
-            setForm({
-            title : "",
-            type : "AUTRE",
-            canal : "AUTRE",
-            priority : "LOW",
-            description : ""
-            });
-            setEditIdReclamation(null);
-            loadUserReclamation();
-        }catch(error){
-            setMessage(error.response?.data?.error || "Error /PUT modify reclamation");
-        }
-    }
-    
-    else {
-        try {
-      const res = await api.post(`/reclamations/user/${user.idUser}`, form);
-      setMessage(res.data);
+    try {
+      setLoadingSubmit(true);
+      if(editIdReclamation){
+        const res = await api.put(
+          `/reclamations/${editIdReclamation}/user/${user.idUser}`,
+          form
+        );
+        setMessage(res.data);
+      } else {
+        const res = await api.post(
+          `/reclamations/user/${user.idUser}`,
+          form
+        );
+        setMessage(res.data);
+      }
       setForm({
-        title: "",
-        type: "AUTRE",
-        canal: "AUTRE",
-        priority: "LOW",
-        description: "",
+        title:"",
+        type:"AUTRE",
+        canal:"AUTRE",
+        priority:"LOW",
+        description:"",
+        isAiAssisted:false
       });
+      setEditIdReclamation(null);
       loadUserReclamation();
-    } catch (error) {
-      setMessage(error.response?.data?.error || "Error /POST create réclamation :" + error);
-    }
+    } catch(error){
+      setMessage(error.response?.data?.error || "Erreur création");
+    } finally {
+      setLoadingSubmit(false);
     }
   };
 
@@ -90,6 +89,35 @@ export default function ClientDashboard({ user }) {
         loadUserReclamation();
     }catch(error){
         setMessage(error.response?.data?.error || "Error /DELETE delete reclamation : " + error);
+    }
+  }
+  const aiAssist = async () => {
+
+    try {
+
+      setLoadingAI(true);
+
+      const res = await api.post("/classification/preview",{
+        description:form.description
+      });
+
+      setForm(prev => ({
+        ...prev,
+        title : res.data.suggestedTitle,
+        type : res.data.predictedType,
+        canal : res.data.predictedCanal,
+        priority : res.data.predictedPriority,
+        isAiAssisted : true
+      }));
+
+    } catch(error){
+
+      setMessage(error.response?.data?.error || "Erreur IA");
+
+    } finally {
+
+      setLoadingAI(false);
+
     }
   }
   // ✅ Helpers UI (pas logique métier)
@@ -192,6 +220,13 @@ export default function ClientDashboard({ user }) {
               <p className="text-sm text-slate-600">
                 Remplis les infos, puis clique sur “Créer”.
               </p>
+              <button
+              disabled={!form.description.trim() || loadingAI}
+              onClick={aiAssist}
+              className="flex ml-auto px-4 py-2 bg-indigo-600 text-white rounded-lg disabled:bg-gray-400"
+              >
+              {loadingAI ? "Analyse IA..." : "Assisté par IA"}
+              </button>
             </div>
             <div className="p-6">
               <form onSubmit={createOrModifyReclamation} className="space-y-5">
@@ -285,15 +320,29 @@ export default function ClientDashboard({ user }) {
                     className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-slate-900 shadow-sm
                                focus:outline-none focus:ring-4 focus:ring-blue-200 focus:border-blue-500"
                   />
+                  {loadingAI && (
+                    <div className="text-sm text-indigo-600 mt-2 flex items-center gap-2">
+                      <div className="animate-spin h-4 w-4 border-2 border-indigo-600 border-t-transparent rounded-full"></div>
+                      L'IA analyse la description...
+                    </div>
+                  )}
+                  {loadingSubmit && (
+                    <div className="flex items-center gap-2 text-blue-600 text-sm mt-2">
+                      <div className="animate-spin h-4 w-4 border-2 border-blue-600 border-t-transparent rounded-full"></div>
+                      Création de la réclamation...
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex flex-wrap gap-3">
                   <button
                     type="submit"
+                    disabled={loadingSubmit}
                     className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600
-                               px-5 py-2.5 text-white font-semibold shadow-md hover:brightness-110 active:scale-[0.99] transition"
+                              px-5 py-2.5 text-white font-semibold shadow-md hover:brightness-110
+                              disabled:bg-gray-400 transition"
                   >
-                    {editIdReclamation ? "Modifier" : "Créer" }
+                    {loadingSubmit ? "Création en cours..." : (editIdReclamation ? "Modifier" : "Créer")}
                   </button>
 
                   <button
@@ -305,6 +354,7 @@ export default function ClientDashboard({ user }) {
                         canal: "AUTRE",
                         priority: "LOW",
                         description: "",
+                        isAiAssisted: false,
                       })
                     }
                     className="inline-flex items-center justify-center rounded-xl bg-slate-100 px-5 py-2.5
@@ -435,7 +485,8 @@ export default function ClientDashboard({ user }) {
                             type: reclamation.type,
                             canal: reclamation.canal,
                             priority: reclamation.priority,
-                            description: reclamation.description
+                            description: reclamation.description,
+                            isAiAssisted:false
                             });
                             setEditIdReclamation(reclamation.idReclamation);
                         }}

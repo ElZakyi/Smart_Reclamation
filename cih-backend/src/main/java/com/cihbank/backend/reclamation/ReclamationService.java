@@ -1,5 +1,9 @@
 package com.cihbank.backend.reclamation;
 
+import com.cihbank.backend.ai.AIClientService;
+import com.cihbank.backend.ai.ClassificationResult;
+import com.cihbank.backend.ai.ClassificationResultRepository;
+import com.cihbank.backend.ai.ClassificationResultService;
 import com.cihbank.backend.reclamation.enums.ReclamationStatus;
 import com.cihbank.backend.user.User;
 import com.cihbank.backend.user.UserRepository;
@@ -11,24 +15,46 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
 public class ReclamationService {
     private final ReclamationRepository reclamationRepository;
     private final UserRepository userRepository;
-    public ReclamationService(ReclamationRepository reclamationRepository, UserRepository userRepository){
+    private final AIClientService aiClientService;
+    private final ClassificationResultService classificationResultService;
+    private final ClassificationResultRepository classificationResultRepository;
+    public ReclamationService(ReclamationRepository reclamationRepository, UserRepository userRepository, AIClientService aiClientService, ClassificationResultService classificationResultService, ClassificationResultRepository classificationResultRepository){
         this.reclamationRepository = reclamationRepository;
         this.userRepository = userRepository;
+        this.aiClientService = aiClientService;
+        this.classificationResultService = classificationResultService;
+        this.classificationResultRepository = classificationResultRepository;
     }
     @Transactional
     public Reclamation createReclamation(Integer userId, Reclamation reclamation){
         User user = userRepository.findById(userId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found !"));
-        reclamation.setUser(user);
-        reclamation.setReference("REC-" + UUID.randomUUID().toString().substring(0,8));
-        reclamation.setStatus(ReclamationStatus.CREEE);
-        reclamation.setCreatedAt(LocalDateTime.now());
-        return reclamationRepository.save(reclamation);
+        Reclamation newReclamation = new Reclamation();
+        newReclamation.setUser(user);
+        newReclamation.setTitle(reclamation.getTitle());
+        newReclamation.setDescription(reclamation.getDescription());
+        newReclamation.setType(reclamation.getType());
+        newReclamation.setCanal(reclamation.getCanal());
+        newReclamation.setPriority(reclamation.getPriority());
+        String reference = "REC-" + System.currentTimeMillis();
+        newReclamation.setReference(reference);
+        newReclamation.setStatus(ReclamationStatus.CREEE);
+        newReclamation.setCreatedAt(LocalDateTime.now());
+        Reclamation saved = reclamationRepository.save(newReclamation);
+        if(Boolean.TRUE.equals(reclamation.getIsAiAssisted())){
+            Map<String,Object> aiResult = classificationResultService.previewClassification(saved.getDescription());
+            classificationResultService.saveForReclamation(
+                    saved.getIdReclamation(),
+                    aiResult
+            );
+        }
+        return reclamationRepository.save(newReclamation);
     }
     public List<Reclamation> getAllReclamations(){
         return reclamationRepository.findAll();
@@ -48,6 +74,7 @@ public class ReclamationService {
         if(reclamation.getStatus() == null || !reclamation.getStatus().toString().equals("CREEE")){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Only created reclamation can be delete !");
         }
+        classificationResultRepository.deleteByReclamationIdReclamation(idReclamation);
         reclamationRepository.delete(reclamation);
     }
     @Transactional

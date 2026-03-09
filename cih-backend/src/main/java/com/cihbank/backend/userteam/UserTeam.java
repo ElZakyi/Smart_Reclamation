@@ -4,7 +4,6 @@ import com.cihbank.backend.team.Team;
 import com.cihbank.backend.user.User;
 import jakarta.persistence.*;
 import org.springframework.cglib.core.Local;
-import lombok.*;
 
 import java.time.LocalDateTime;
 

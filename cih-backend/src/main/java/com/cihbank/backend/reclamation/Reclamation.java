@@ -43,6 +43,7 @@ public class Reclamation {
     private LocalDateTime updatedAt;
 
     private LocalDateTime closedAt;
+    private Boolean isAiAssisted;
 
     public Integer getIdReclamation() {
         return idReclamation;
@@ -138,5 +139,12 @@ public class Reclamation {
 
     public void setClosedAt(LocalDateTime closedAt) {
         this.closedAt = closedAt;
+    }
+    public Boolean getIsAiAssisted() {
+        return isAiAssisted;
+    }
+
+    public void setIsAiAssisted(Boolean aiAssisted) {
+        isAiAssisted = aiAssisted;
     }
 }
