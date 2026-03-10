@@ -11,11 +11,13 @@ export default function ReclamationDetail({id}) {
     const [file,setFile] = useState(null);
     const fileInputRef = useRef(null);
     const [currentUser,setCurrentUser] = useState(null);
+    const [routingSuggestion, setRoutingSuggestion] = useState(null)
     const router = useRouter();
 
     useEffect(()=> {
         loadReclamation(id);
         loadAttachments(id);
+        loadRoutingSuggestion(id);
         const user = JSON.parse(localStorage.getItem("user"));
         setCurrentUser(user);
     },[]);
@@ -37,7 +39,14 @@ export default function ReclamationDetail({id}) {
             setMessage(error.response?.data?.error || "Error /GET get attachments : " + error) ;
         }
     }
-
+    const loadRoutingSuggestion = async(id) => {
+        try {
+            const res = await api.get(`routing/reclamation/${id}`);
+            setRoutingSuggestion(res.data);
+        }catch(error){
+            setMessage(error.response?.data?.error || "Error /GET get attachments : " + error)
+        }
+    }
     const handleUpload = async (e) => {
         e.preventDefault();
         if(!file) return;
@@ -117,6 +126,22 @@ export default function ReclamationDetail({id}) {
                         {reclamation.description}
                     </div>
                 </div>
+                {routingSuggestion && (
+                    <div className="mt-6 p-4 bg-blue-50 rounded-lg border">
+                        <h3 className="font-semibold text-blue-700 mb-2">
+                            Suggestion IA
+                        </h3>
+                        <p>
+                            <strong>Team suggérée :</strong> {routingSuggestion.suggestedTeam?.name}
+                        </p>
+                        <p>
+                            <strong>Agent suggéré :</strong> {routingSuggestion.suggestedUser?.fullName || "Aucun"}
+                        </p>
+                        <p>
+                            <strong>Score :</strong> {routingSuggestion.score?.toFixed(2)}
+                        </p>
+                    </div>
+                )}
             </div>
 
             {/* Card Attachments */}
@@ -196,18 +221,25 @@ export default function ReclamationDetail({id}) {
                     </button>
                 </form>
             </div>
-
-            {/* Message */}
-            {message && (
-                <div className="p-4 bg-green-50 text-green-700 rounded-lg border border-green-200">
-                    {message}
-                </div>
-            )}
             {currentUser && (
                 <ReclamationChat
                     reclamationId={id}
                     currentUser={currentUser}
                 />
+            )}
+            {/* Message */}
+            {message && (
+                <div className="rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 px-5 py-4 shadow-sm">
+                <div className="flex items-start gap-3">
+                    <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white grid place-items-center font-bold">
+                    i
+                    </div>
+                    <div className="text-sm text-slate-800">
+                    <div className="font-bold text-slate-900">Info</div>
+                    <div className="mt-0.5">{message}</div>
+                    </div>
+                </div>
+                </div>
             )}
 
         </div>

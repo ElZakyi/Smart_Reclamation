@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface MessageRepository extends JpaRepository<Message,Integer> {
     List<Message> findByReclamation_IdReclamationOrderByCreatedAtAsc(Integer idReclamation);
+    void deleteByReclamationIdReclamation(Integer idReclamation);
 }

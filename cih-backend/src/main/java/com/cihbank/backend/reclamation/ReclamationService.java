@@ -1,14 +1,16 @@
 package com.cihbank.backend.reclamation;
 
 import com.cihbank.backend.ai.AIClientService;
-import com.cihbank.backend.ai.ClassificationResult;
 import com.cihbank.backend.ai.ClassificationResultRepository;
 import com.cihbank.backend.ai.ClassificationResultService;
+import com.cihbank.backend.attachment.AttachmentRepository;
+import com.cihbank.backend.message.MessageRepository;
 import com.cihbank.backend.reclamation.enums.ReclamationStatus;
+import com.cihbank.backend.routingSuggestion.RoutingSuggestionRepository;
+import com.cihbank.backend.routingSuggestion.RoutingSuggestionService;
 import com.cihbank.backend.user.User;
 import com.cihbank.backend.user.UserRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -16,7 +18,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 public class ReclamationService {
@@ -25,12 +26,25 @@ public class ReclamationService {
     private final AIClientService aiClientService;
     private final ClassificationResultService classificationResultService;
     private final ClassificationResultRepository classificationResultRepository;
-    public ReclamationService(ReclamationRepository reclamationRepository, UserRepository userRepository, AIClientService aiClientService, ClassificationResultService classificationResultService, ClassificationResultRepository classificationResultRepository){
+    private final RoutingSuggestionService routingSuggestionService;
+    private final AttachmentRepository attachmentRepository;
+    private final RoutingSuggestionRepository routingSuggestionRepository;
+    private final MessageRepository messageRepository;
+    public ReclamationService(ReclamationRepository reclamationRepository, UserRepository userRepository, AIClientService aiClientService,
+                              ClassificationResultService classificationResultService, ClassificationResultRepository classificationResultRepository,
+                              RoutingSuggestionService routingSuggestionService, AttachmentRepository attachmentRepository,
+                              RoutingSuggestionRepository routingSuggestionRepository, MessageRepository messageRepository
+                              )
+    {
         this.reclamationRepository = reclamationRepository;
         this.userRepository = userRepository;
         this.aiClientService = aiClientService;
         this.classificationResultService = classificationResultService;
         this.classificationResultRepository = classificationResultRepository;
+        this.routingSuggestionService = routingSuggestionService;
+        this.attachmentRepository = attachmentRepository;
+        this.routingSuggestionRepository = routingSuggestionRepository;
+        this.messageRepository = messageRepository;
     }
     @Transactional
     public Reclamation createReclamation(Integer userId, Reclamation reclamation){
@@ -54,7 +68,8 @@ public class ReclamationService {
                     aiResult
             );
         }
-        return reclamationRepository.save(newReclamation);
+        routingSuggestionService.generateSuggestion(saved.getIdReclamation());
+        return saved;
     }
     public List<Reclamation> getAllReclamations(){
         return reclamationRepository.findAll();
@@ -74,6 +89,9 @@ public class ReclamationService {
         if(reclamation.getStatus() == null || !reclamation.getStatus().toString().equals("CREEE")){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Seules les réclamations avec le statut CRÉÉES peuvent être supprimées !");
         }
+        messageRepository.deleteByReclamationIdReclamation(idReclamation);
+        attachmentRepository.deleteByReclamationIdReclamation(idReclamation);
+        routingSuggestionRepository.deleteByReclamationIdReclamation(idReclamation);
         classificationResultRepository.deleteByReclamationIdReclamation(idReclamation);
         reclamationRepository.delete(reclamation);
     }

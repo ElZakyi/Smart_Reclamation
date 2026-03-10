@@ -32,8 +32,16 @@ export default function ReclamationChat({ reclamationId, currentUser }) {
 
     }, [reclamationId]);
 
+    const prevMessageCount = useRef(0);
+
     useEffect(() => {
-        scrollToBottom();
+
+        if(messages.length > prevMessageCount.current){
+            scrollToBottom();
+        }
+
+        prevMessageCount.current = messages.length;
+
     }, [messages]);
 
     const addMessage = async () => {
@@ -100,7 +108,7 @@ export default function ReclamationChat({ reclamationId, currentUser }) {
 
                         <div
                             className={`max-w-[70%] px-3 py-2 rounded-lg text-sm shadow
-                            ${getMessageColor(msg.messageType, isMe)}`}
+                            ${getMessageColor(msg.messageType)}`}
                         >
 
                             <div className="text-xs font-semibold mb-1">
