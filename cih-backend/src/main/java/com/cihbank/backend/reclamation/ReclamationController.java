@@ -17,7 +17,7 @@ public class ReclamationController {
     @PreAuthorize("hasAuthority('CREATE_RECLAMATION')")
     public String createReclamation(@PathVariable Integer userId, @RequestBody Reclamation reclamation){
         reclamationService.createReclamation(userId,reclamation);
-        return "Reclamation created successfully !";
+        return "Reclamation crée avec succés !";
     }
     @GetMapping
     @PreAuthorize("hasAuthority('VIEW_RECLAMATION')")
@@ -38,13 +38,13 @@ public class ReclamationController {
     @PreAuthorize("hasAuthority('DELETE_RECLAMATION')")
     public String deleteReclamation(@PathVariable Integer idReclamation,@PathVariable Integer idUser){
         reclamationService.deleteReclamation(idReclamation,idUser);
-        return "Reclamation deleted successfully";
+        return "Reclamation supprimée avec succés !";
     }
     @PutMapping("/{idReclamation}/user/{idUser}")
     @PreAuthorize("hasAuthority('UPDATE_RECLAMATION')")
     public String updateReclamation(@PathVariable Integer idReclamation, @PathVariable Integer idUser,@RequestBody Reclamation reclamation){
         reclamationService.updateReclamation(idReclamation,idUser,reclamation);
-        return "Reclamation updated successfully";
+        return "Reclamation a été mise à jour avec succés !";
     }
 
 }

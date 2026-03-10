@@ -36,12 +36,12 @@ public class AttachmentService {
 
         Reclamation reclamation = reclamationRepository.findById(reclamationId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Reclamation not found !"));
         if(!reclamation.getUser().getIdUser().equals(userId)){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can't user another person reclamation to upload ur attachment !");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Vous pouvez pas utiliser une reclamation d'une autre personne pour enregistrer votre pièce jointe !");
         }
         if(reclamation.getStatus().equals(ReclamationStatus.CLOTUREE)){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Reclamation is already closed !");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Reclamation est déja close !");
         }
-        User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found !"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Utilisateur introuvable !"));
         String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
         Path path = Paths.get(uploadDir, fileName);
         Files.createDirectories(path.getParent());

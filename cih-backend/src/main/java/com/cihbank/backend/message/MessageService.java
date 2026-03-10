@@ -25,8 +25,8 @@ public class MessageService {
         return messageRepository.findByReclamation_IdReclamationOrderByCreatedAtAsc(idReclamation);
     }
     public Message addMessage(Integer idUser, Integer idReclamation, String content, MessageType messageType){
-        User foundUser = userRepository.findById(idUser).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found !"));
-        Reclamation foundReclamation = reclamationRepository.findById(idReclamation).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Reclamation not found !"));
+        User foundUser = userRepository.findById(idUser).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Utilisateur introuvable !"));
+        Reclamation foundReclamation = reclamationRepository.findById(idReclamation).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Reclamation introuvable !"));
         Message message = new Message();
         message.setUser(foundUser);
         message.setReclamation(foundReclamation);

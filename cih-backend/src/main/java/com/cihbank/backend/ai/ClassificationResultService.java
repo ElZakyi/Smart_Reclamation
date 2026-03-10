@@ -33,7 +33,7 @@ public class ClassificationResultService {
         ClassificationResult cr;
         if (classificationResultRepository.existsByReclamation_IdReclamation(idReclamation)) {
             cr = classificationResultRepository.findByReclamation_IdReclamation(idReclamation)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Classification not found"));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Classification non trouvée !"));
         } else {
             cr = new ClassificationResult();
             cr.setReclamation(reclamation);
@@ -50,7 +50,7 @@ public class ClassificationResultService {
     }
     public ClassificationResult getByReclamation(Integer idReclamation) {
         return classificationResultRepository.findByReclamation_IdReclamation(idReclamation)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ClassificationResult not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ClassificationResult non trouvée !"));
     }
 
 }

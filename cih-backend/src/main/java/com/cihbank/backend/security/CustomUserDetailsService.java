@@ -35,7 +35,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur introuvable: " + email));
 
         // ✅ On évite user.getUserRoles() (Lazy) → on charge via repository
         List<UserRole> userRoles = userRoleRepository.findByUserIdUser(user.getIdUser());

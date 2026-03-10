@@ -26,13 +26,13 @@ public class TeamController {
     @PatchMapping("{teamId}/activate")
     public String activateTeam(@PathVariable Integer teamId){
         teamService.activateTeam(teamId);
-        return "Team activated successfully !";
+        return "Équipe activée avec succès !";
     }
     @PreAuthorize("hasAuthority('DEACTIVATE_TEAM')")
     @PatchMapping("{teamId}/deactivate")
     public String deactivateTeam(@PathVariable Integer teamId){
         teamService.deactivateTeam(teamId);
-        return "Team deactivated successfully !";
+        return "Équipe désactivée avec succès !";
     }
     @PreAuthorize("hasAuthority('VIEW_TEAM')")
     @GetMapping("/{idTeam}")

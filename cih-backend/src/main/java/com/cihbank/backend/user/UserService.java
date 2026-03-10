@@ -29,19 +29,19 @@ public class UserService {
     }
     @Transactional
     public void desactivate(Integer userId){
-        User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found !"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable !"));
         user.setIsActive(false);
         userRepository.save(user);
     }
     @Transactional
     public void activate(Integer userId){
-        User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found ! "));
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Utilisateur introuvable ! "));
         user.setIsActive(true);
         userRepository.save(user);
     }
     @Transactional
     public void updateUser(Integer id, User updatedUser){
-        User user = userRepository.findById(id).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found !"));
+        User user = userRepository.findById(id).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Utilisateur introuvable !"));
         user.setFullName(updatedUser.getFullName());
         user.setPassword(updatedUser.getPassword());
         user.setEmail(updatedUser.getEmail());
@@ -54,6 +54,6 @@ public class UserService {
         String email = authentication.getName();
 
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Utilisateur introuvable !"));
     }
 }

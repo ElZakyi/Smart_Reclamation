@@ -16,7 +16,7 @@ public class RolePermissionController {
     @PostMapping("/assign/roles/{idRole}/permissions/{idPermission}")
     public String assignPermissionToRole(@PathVariable Integer idRole, @PathVariable Integer idPermission){
         rolePermissionService.assignPermissionToRole(idRole, idPermission);
-        return "Permission assigned to role successfully";
+        return "Permission assignée au rôle avec succés !";
     }
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/role/{idRole}")
@@ -27,6 +27,6 @@ public class RolePermissionController {
     @DeleteMapping("/remove/roles/{idRole}/permissions/{idPermission}")
     public String removePermissionFromRole(@PathVariable Integer idRole, @PathVariable Integer idPermission){
         rolePermissionService.removePermissionFromRole(idRole,idPermission);
-        return "Permission removed from role successfully";
+        return "Permission retirée du rôle avec succés !";
     }
 }

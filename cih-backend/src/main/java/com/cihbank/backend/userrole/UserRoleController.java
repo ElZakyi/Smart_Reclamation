@@ -20,7 +20,7 @@ public class UserRoleController {
     @GetMapping("/whoami")
     public Object whoami(Authentication authentication) {
         if(authentication == null) {
-            return "Authentication is NULL";
+            return "Authentification est NULL";
         }
         return authentication;
     }
@@ -28,7 +28,7 @@ public class UserRoleController {
     @PostMapping("/assign/users/{userId}/roles/{roleId}")
     public String assignRole(@PathVariable Integer userId, @PathVariable Integer roleId,Authentication authentication){
         userRoleService.assignRoleToUser(userId,roleId);
-        return "Role assigned succesfully";
+        return "Rôle attribué avec succès !";
     }
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("user/{idUser}")
@@ -39,12 +39,12 @@ public class UserRoleController {
     @DeleteMapping("/remove/users/{userId}/roles/{roleId}")
     public String removeRoleFromUser(@PathVariable Integer userId,@PathVariable  Integer roleId){
         userRoleService.removeRoleFromUser(userId, roleId);
-        return "Role removed from user successfully";
+        return "Rôle retiré de l'utilisateur avec succès !";
     }
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update/users/{userId}/roles/{roleId}")
     public String updateUserRole(@PathVariable Integer userId,@PathVariable Integer roleId){
         userRoleService.updateUserRole(userId,roleId);
-        return "Role updated successfully !" ;
+        return "Rôle mis à jour avec succès !" ;
     }
 }

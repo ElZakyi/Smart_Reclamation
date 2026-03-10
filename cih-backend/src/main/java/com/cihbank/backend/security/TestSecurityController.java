@@ -13,6 +13,6 @@ public class TestSecurityController {
     @PreAuthorize("hasAuthority('CREATE_RECLAMATION')")
     @GetMapping("/secure/test")
     public String secureEndPoint(Authentication authentication){
-        return "Acces granted !";
+        return "Accès accordé !";
     }
 }

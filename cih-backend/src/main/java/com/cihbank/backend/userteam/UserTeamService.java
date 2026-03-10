@@ -24,14 +24,14 @@ public class UserTeamService {
     }
     @Transactional
     public void assignUserToTeam(Integer teamId, Integer userId){
-        User userFound = userRepository.findById(userId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found !"));
-        Team teamFound = teamRepository.findById(teamId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Team not found !"));
-        if(!teamFound.getIsActive()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Team is inactive ! ");
-        if(!userFound.getIsActive()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"User is inactive !");
+        User userFound = userRepository.findById(userId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Utilisateur introuvable !"));
+        Team teamFound = teamRepository.findById(teamId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Équipe introuvable !"));
+        if(!teamFound.getIsActive()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'équipe est inactive ! ");
+        if(!userFound.getIsActive()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"L'utilisateur est inactif !");
         boolean isClient = userFound.getUserRoles().stream().anyMatch(ur->ur.getRole().getName().equals("CLIENT"));
-        if(isClient) throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"A client can't be assigned to a team !");
+        if(isClient) throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Un client ne peut pas être affecté à une équipe !");
         if (userTeamRepository.existsByUser_IdUserAndTeam_IdTeam(userId, teamId))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Already member");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Déjà membre !");
         UserTeam userTeam = new UserTeam();
 
         UserTeamId id = new UserTeamId(userId, teamId);
@@ -45,7 +45,7 @@ public class UserTeamService {
     @Transactional
     public void removeUserFromTeam(Integer teamId, Integer userId){
         UserTeamId userTeamId = new UserTeamId(teamId,userId);
-        if(!userTeamRepository.existsById(userTeamId)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Membership not found !");
+        if(!userTeamRepository.existsById(userTeamId)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Adhésion introuvable !");
         userTeamRepository.deleteById(userTeamId);
     }
     public List<UserTeam> getMembersOfTeam(Integer teamId) {

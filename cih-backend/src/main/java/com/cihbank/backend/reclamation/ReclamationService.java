@@ -69,10 +69,10 @@ public class ReclamationService {
     public void deleteReclamation(Integer idReclamation,Integer idUser){
         Reclamation reclamation = reclamationRepository.findById(idReclamation).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Reclamation not found !"));
         if(reclamation.getUser().getIdUser() == null || !reclamation.getUser().getIdUser().equals(idUser)){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Not allowed to delete this reclamation !");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Vous n'avez pas le droit de supprimer cette réclamation !");
         }
         if(reclamation.getStatus() == null || !reclamation.getStatus().toString().equals("CREEE")){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Only created reclamation can be delete !");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Seules les réclamations avec le statut CRÉÉES peuvent être supprimées !");
         }
         classificationResultRepository.deleteByReclamationIdReclamation(idReclamation);
         reclamationRepository.delete(reclamation);
@@ -81,10 +81,10 @@ public class ReclamationService {
     public void updateReclamation(Integer idReclamation , Integer idUser, Reclamation reclamation){
         Reclamation reclamationToUpdate = reclamationRepository.findById(idReclamation).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Reclamation not found !"));
         if(reclamationToUpdate.getUser().getIdUser() == null || !reclamationToUpdate.getUser().getIdUser().equals(idUser)){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Not allowed to delete this reclamation !");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Vous n'avez pas le droit de supprimer cette réclamation !");
         }
         if(reclamationToUpdate.getStatus() == null || reclamationToUpdate.getStatus() != ReclamationStatus.CREEE){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Only created reclamation can be delete !");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Seules les réclamations avec le statut CRÉÉES peuvent être supprimées ! !");
         }
         reclamationToUpdate.setTitle(reclamation.getTitle());
         reclamationToUpdate.setDescription(reclamation.getDescription());

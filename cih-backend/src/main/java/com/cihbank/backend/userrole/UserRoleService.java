@@ -31,19 +31,19 @@ public class UserRoleService {
         // Vérifier que l'utilisateur existe
         User user = userRepository.findById(userId).orElseThrow(()-> new ResponseStatusException(
                 HttpStatus.NOT_FOUND,
-                "User not found"
+                "Utilisateur introuvable !"
         ));
         // Vérifier que le rôle existe
         Role role = roleRepository.findById(roleId).orElseThrow(() -> new ResponseStatusException(
                 HttpStatus.NOT_FOUND,
-                "Role not found"
+                "Rôle introuvable !"
         ));
         // Vérifier si la relation existe déjà
         UserRoleId userRoleId = new UserRoleId(user.getIdUser(),role.getIdRole());
         if(userRoleRepository.existsById(userRoleId)) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "User already has this role"
+                    "L'utilisateur possède déjà ce rôle !"
             );
         }
         UserRole userRole = new UserRole(user,role,LocalDateTime.now());
@@ -59,13 +59,13 @@ public class UserRoleService {
     @Transactional
     public void removeRoleFromUser(Integer idUser, Integer idRole){
         UserRoleId id = new UserRoleId(idUser, idRole);
-        if(!userRoleRepository.existsById(id)) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"UserRole not found !");
+        if(!userRoleRepository.existsById(id)) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"UserRole introuvable !");
         userRoleRepository.deleteById(id);
     }
     @Transactional
     public void updateUserRole(Integer userId, Integer newRoleId){
-        User user = userRepository.findById(userId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found !"));
-        Role role = roleRepository.findById(newRoleId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Role not found !"));
+        User user = userRepository.findById(userId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Utilisateur introuvable !"));
+        Role role = roleRepository.findById(newRoleId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Rôle introuvable  !"));
         userRoleRepository.deleteByUser_IdUser(userId);
         UserRole userRole = new UserRole(user,role,LocalDateTime.now());
         userRoleRepository.save(userRole);

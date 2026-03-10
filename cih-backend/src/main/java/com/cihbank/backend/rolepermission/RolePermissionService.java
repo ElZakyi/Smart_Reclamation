@@ -26,10 +26,10 @@ public class RolePermissionService {
     // assign permission to a role
     @Transactional
     public void assignPermissionToRole(Integer roleId, Integer permissionId){
-        Role role = roleRepository.findById(roleId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Role not found !"));
-        Permission permission = permissionRepository.findById(permissionId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Permission not found !"));
+        Role role = roleRepository.findById(roleId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Rôle non trouvé !"));
+        Permission permission = permissionRepository.findById(permissionId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Permission non trouvée !"));
         RolePermissionId rolePermissionId = new RolePermissionId(roleId,permissionId);
-        if(rolePermissionRepository.existsById(rolePermissionId)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Permission already assigned to role !");
+        if(rolePermissionRepository.existsById(rolePermissionId)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Permission est déja assignée à ce rôle !");
         RolePermission rolePermission = new RolePermission(role,permission);
         rolePermissionRepository.save(rolePermission);
     }
@@ -43,7 +43,7 @@ public class RolePermissionService {
     public void removePermissionFromRole(Integer idRole, Integer idPermission){
         RolePermissionId rolePermissionId = new RolePermissionId(idRole,idPermission);
         if(! rolePermissionRepository.existsById(rolePermissionId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Permission not assigned to role !");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Permission non assignée à ce rôle !");
         }
         rolePermissionRepository.deleteById(rolePermissionId);
     }

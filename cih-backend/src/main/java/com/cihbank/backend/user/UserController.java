@@ -29,19 +29,19 @@ public class UserController {
     @PatchMapping("{id}/desactivate")
     public String desactivate(@PathVariable Integer id){
         userService.desactivate(id);
-        return "User désactivé !";
+        return "Utilisateur désactivé avec succès !";
     }
     @PreAuthorize("hasAuthority('ACTIVATE_USER')")
     @PatchMapping("{id}/activate")
     public String activate(@PathVariable Integer id){
         userService.activate(id);
-        return "User activé !";
+        return "Utilisateur activé avec succès !";
     }
     @PreAuthorize("hasAuthority('UPDATE_USER')")
     @PutMapping("/{id}")
     public String updateUser(@PathVariable Integer id, @RequestBody User userUpdate){
         userService.updateUser(id,userUpdate);
-        return "User has been updated successfully";
+        return "L'utilisateur a été mis à jour avec succès !";
     }
     @GetMapping("/me")
     public User getCurrentUser(Authentication authentication) {

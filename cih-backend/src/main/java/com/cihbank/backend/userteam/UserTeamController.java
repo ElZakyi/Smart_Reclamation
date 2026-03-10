@@ -15,13 +15,13 @@ public class UserTeamController {
     @PostMapping("/{idTeam}/user/{idUser}")
     public String assignUserToTeam(@PathVariable Integer idTeam, @PathVariable Integer idUser){
         userTeamService.assignUserToTeam(idTeam,idUser);
-        return "User assigned to team successfully !";
+        return "Utilisateur affecté à l'équipe avec succès !";
     }
     @PreAuthorize("hasAuthority('REMOVE_TEAM_MEMBER')")
     @DeleteMapping("/{idTeam}/user/{idUser}")
     public String removeUserFromTeam(@PathVariable Integer idTeam, @PathVariable Integer idUser){
         userTeamService.removeUserFromTeam(idTeam,idUser);
-        return "Member removed successfully !";
+        return "Membre retiré avec succès !";
     }
     @PreAuthorize("hasAuthority('VIEW_TEAM')")
     @GetMapping("/{idTeam}")

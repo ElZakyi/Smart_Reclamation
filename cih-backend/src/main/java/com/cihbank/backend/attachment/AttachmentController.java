@@ -23,12 +23,12 @@ public class AttachmentController {
     @PostMapping("/reclamation/{idReclamation}/user/{idUser}")
     public String uploadAttachment(@PathVariable Integer idReclamation, @PathVariable Integer idUser, @RequestParam("file")MultipartFile file) throws IOException {
         attachmentService.uploadattachment(idUser,idReclamation,file);
-        return "Attachment uploaded successfully";
+        return "Attachment ajouté avec succés !";
     }
     @DeleteMapping("/{idAttachment}")
     @PreAuthorize("hasAuthority('DELETE_ATTACHMENT')")
     public String deleteAttachment(@PathVariable Integer idAttachment){
         attachmentService.deleteAttachment(idAttachment);
-        return "Attachment deleted successfully";
+        return "Attachment supprimé avec succés";
     }
 }

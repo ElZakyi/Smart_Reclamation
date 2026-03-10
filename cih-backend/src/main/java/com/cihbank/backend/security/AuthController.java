@@ -33,7 +33,7 @@ public class AuthController {
     public AuthMeResponse me(Authentication authentication){
 
         if(authentication == null){
-            throw new RuntimeException("User not authenticated");
+            throw new RuntimeException("Utilisateur non authentifié !");
         }
 
         CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();

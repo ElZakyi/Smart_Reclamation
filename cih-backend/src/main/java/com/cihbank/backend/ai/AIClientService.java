@@ -26,7 +26,7 @@ public class AIClientService {
             return response.getBody();
         }catch (Exception ex) {
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
-                    "AI service unavailable: " + ex.getMessage());
+                    "IA service indisponible: " + ex.getMessage());
         }
     }
 }
