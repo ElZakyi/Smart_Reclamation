@@ -1,5 +1,6 @@
 package com.cihbank.backend.reclamation;
 
+import com.cihbank.backend.reclamation.enums.ReclamationStatus;
 import com.cihbank.backend.user.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +34,10 @@ public class ReclamationController {
     @PreAuthorize("hasAuthority('VIEW_RECLAMATION')")
     public List<Reclamation> getReclamationsByUserId(@PathVariable Integer userId){
         return reclamationService.getReclamationsByUser(userId);
+    }
+    @GetMapping("/pending")
+    public List<Reclamation> getPendingReclamations(){
+        return reclamationService.getPendingReclamations();
     }
     @DeleteMapping("/{idReclamation}/user/{idUser}")
     @PreAuthorize("hasAuthority('DELETE_RECLAMATION')")

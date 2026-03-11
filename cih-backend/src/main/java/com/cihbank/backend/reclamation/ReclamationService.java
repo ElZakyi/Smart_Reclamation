@@ -80,6 +80,9 @@ public class ReclamationService {
     public Reclamation getReclamationById(Integer idReclamation){
         return reclamationRepository.findById(idReclamation).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Reclamation not found !"));
     }
+    public List<Reclamation> getPendingReclamations(){
+        return reclamationRepository.findByStatus(ReclamationStatus.CREEE);
+    }
     @Transactional
     public void deleteReclamation(Integer idReclamation,Integer idUser){
         Reclamation reclamation = reclamationRepository.findById(idReclamation).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Reclamation not found !"));

@@ -136,7 +136,7 @@ export default function ReclamationDetail({id}) {
                         </p>
                         <p>
                             <strong>Agent suggéré :</strong> {routingSuggestion.suggestedUser?.fullName || "Aucun"}
-                        </p>
+                        </p>    
                         <p>
                             <strong>Score :</strong> {routingSuggestion.score?.toFixed(2)}
                         </p>

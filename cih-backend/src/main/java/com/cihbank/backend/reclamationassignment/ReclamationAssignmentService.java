@@ -1,5 +1,6 @@
 package com.cihbank.backend.reclamationassignment;
 
+import com.cihbank.backend.notification.NotificationService;
 import com.cihbank.backend.reclamation.Reclamation;
 import com.cihbank.backend.reclamation.ReclamationRepository;
 import com.cihbank.backend.reclamation.enums.ReclamationStatus;
@@ -19,15 +20,17 @@ import java.util.Optional;
 public class ReclamationAssignmentService {
     private final RoutingSuggestionRepository routingSuggestionRepository;
     private final ReclamationAssignmentRepository reclamationAssignmentRepository;
+    private final NotificationService notificationService;
     private final UserRepository userRepository;
     private final ReclamationRepository reclamationRepository;
-    public ReclamationAssignmentService(RoutingSuggestionRepository routingSuggestionRepository, ReclamationAssignmentRepository reclamationAssignmentRepository, UserRepository userRepository, ReclamationRepository reclamationRepository){
+    public ReclamationAssignmentService(RoutingSuggestionRepository routingSuggestionRepository, ReclamationAssignmentRepository reclamationAssignmentRepository, UserRepository userRepository, ReclamationRepository reclamationRepository, NotificationService notificationService){
         this.routingSuggestionRepository = routingSuggestionRepository;
         this.reclamationAssignmentRepository = reclamationAssignmentRepository;
         this.userRepository = userRepository;
         this.reclamationRepository = reclamationRepository;
+        this.notificationService = notificationService;
     }
-    public ReclamationAssignment acceptSuggestion(Integer idSuggestion, Integer idAgent){
+    public ReclamationAssignment acceptSuggestion(Integer idSuggestion, Integer idResponsable){
         RoutingSuggestion routingSuggestion = routingSuggestionRepository.findById(idSuggestion).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Suggéstion IA introuvable !"));
         Reclamation rec = routingSuggestion.getReclamation();
         Optional<ReclamationAssignment> current = reclamationAssignmentRepository.findByReclamationIdReclamationAndIsCurrentTrue(rec.getIdReclamation());
@@ -35,16 +38,18 @@ public class ReclamationAssignmentService {
             a.setCurrent(false);
             reclamationAssignmentRepository.save(a);
         });
+        User responsable = userRepository.findById(idResponsable).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Utilisateur non trouvée !"));
         ReclamationAssignment reclamationAssignment = new ReclamationAssignment();
         reclamationAssignment.setReclamation(rec);
         reclamationAssignment.setAssignedAt(LocalDateTime.now());
         reclamationAssignment.setCurrent(true);
         reclamationAssignment.setUser(routingSuggestion.getSuggestedUser());
         reclamationAssignment.setTeam(routingSuggestion.getSuggestedTeam());
+        reclamationAssignment.setAssignedBy(responsable);
         reclamationAssignment.setReason("AI_ROUTING_ACCEPTED");
         reclamationAssignmentRepository.save(reclamationAssignment);
         routingSuggestion.setAccepted(true);
-        User agent = userRepository.findById(idAgent).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Utilisateur introuvable !"));
+        User agent = userRepository.findById(idResponsable).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Utilisateur introuvable !"));
         routingSuggestion.setAcceptedBy(agent);
         routingSuggestion.setDecidedAt(LocalDateTime.now());
         routingSuggestionRepository.save(routingSuggestion);
@@ -52,6 +57,7 @@ public class ReclamationAssignmentService {
         rec.setStatus(ReclamationStatus.AFFECTEE);
         reclamationRepository.save(rec);
 
+        notificationService.notifyTeam(routingSuggestion.getSuggestedTeam(),rec);
         return reclamationAssignment;
     }
     public void rejectSuggestion(Integer idSuggestion, Integer idAgent){

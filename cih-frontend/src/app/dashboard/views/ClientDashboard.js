@@ -72,7 +72,7 @@ export default function ClientDashboard({ user }) {
     } catch (error) {
       setMessage(
         error.response?.data?.error ||
-          "Error /GET get reclamation by userId : " + error
+          "Erreur /GET récupérer reclamation par userId : " + error
       );
     }
   };
@@ -88,7 +88,7 @@ export default function ClientDashboard({ user }) {
         setMessage(res.data);
         loadUserReclamation();
     }catch(error){
-        setMessage(error.response?.data?.error || "Error /DELETE delete reclamation : " + error);
+        setMessage(error.response?.data?.error || "Erreur /DELETE supprimer réclamation : " + error);
     }
   }
   const aiAssist = async () => {

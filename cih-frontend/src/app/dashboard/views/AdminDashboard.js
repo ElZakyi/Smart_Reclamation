@@ -38,7 +38,7 @@ export default function AdminDashboard({ user }) {
       const res = await api.get("/users");
       setUsers(res.data);
     } catch(error) {
-      setMessage(error.response?.data?.error ||"Error /GET get users : " + error);
+      setMessage(error.response?.data?.error ||"Erreur /GET récupération utilisateurs : " + error);
     }
   };
   const refreshTeams = async () => {
@@ -46,7 +46,7 @@ export default function AdminDashboard({ user }) {
           const res = await api.get("/team");
           setTeams(res.data);
         }catch(error){
-          setMessage(error.reponse?.data?.error || "Error  /GET get teams : " + error);
+          setMessage(error.reponse?.data?.error || "Erreur /GET récupération des équipes : " + error);
         }
   }
 
@@ -58,13 +58,13 @@ export default function AdminDashboard({ user }) {
             const res = await api.get("/roles");
             setRoles(res.data);
         }catch(error){
-            setMessage(error.response.data.error || "Error /GET get roles :  " + error);
+            setMessage(error.response.data.error || "Erreur /GET récupération des rôles :  " + error);
         }
         try {
             const res = await api.get("/permissions");
             setPermissions(res.data);
         }catch(error){
-            setMessage(error.reponse?.data?.error || "Error  /GET get permissions : " + error);
+            setMessage(error.reponse?.data?.error || "Error /GET récupération des permissions : " + error);
         }
         await refreshTeams();
         
@@ -99,7 +99,7 @@ export default function AdminDashboard({ user }) {
                 [roleId]: res.data
             }));
             } catch (error) {
-              setMessage(error.reponse?.data?.error || "Error /GET role-permission : " + error);
+              setMessage(error.reponse?.data?.error || "Erreur /GET récupération role-permission : " + error);
             }
         }
         }
@@ -123,7 +123,7 @@ export default function AdminDashboard({ user }) {
       await refreshUsers();
     } catch (error) {
       if (error.response) {
-        setMessage(error.response.data.error || "ERROR /POST assign role to user : " + error);
+        setMessage(error.response.data.error || "Erreur /POST assigner un rôle à l'utilisateur : " + error);
       } else {
         setMessage("Erreur serveur");
       }
@@ -143,7 +143,7 @@ export default function AdminDashboard({ user }) {
 
     try {
       await api.post("/users", userForm);
-      setMessage("User créé avec succès !");
+      setMessage("Utilisateur créé avec succès !");
       setShowCreateUser(false);
 
       setUserForm({
@@ -156,7 +156,7 @@ export default function AdminDashboard({ user }) {
       await refreshUsers();
 
     } catch (error) {
-      setMessage(error.response?.data?.error || "Error /POST create user : " + error);
+      setMessage(error.response?.data?.error || "Erreur /POST créer un utilisateur : " + error);
     }
   };
 
@@ -166,7 +166,7 @@ export default function AdminDashboard({ user }) {
         setMessage(res.data);
         await refreshUsers();
     }catch(error){
-        setMessage(error.response?.data?.error || "Error /PATCH desactivate user : " + error);
+        setMessage(error.response?.data?.error || "Erreur /PATCH desactiver un utilisateur : " + error);
     }
   }
 
@@ -176,7 +176,7 @@ export default function AdminDashboard({ user }) {
         setMessage(res.data);
         refreshUsers();
     }catch(error){
-        setMessage(error.response?.data?.error || "Error /PATCH activate user : " + error);
+        setMessage(error.response?.data?.error || "Erreur /PATCH activater un utilisateur : " + error);
     }
   }
 
@@ -200,7 +200,7 @@ export default function AdminDashboard({ user }) {
         setSelectedRoleIdForPerm(null);
 
     } catch(error){
-        setMessage(error.response?.data?.error || "Error /POST assign permission to role : " + error);
+        setMessage(error.response?.data?.error || "Erreur /POST assigner permission au rôle : " + error);
     }
     };
     const updateRoleUser = async(userId,roleId) => {
@@ -210,7 +210,7 @@ export default function AdminDashboard({ user }) {
             setSelectedUser(null);
             await refreshUsers();
         }catch(error){
-            setMessage(error.response?.data?.error || "Error api /PUT change role for user : " + error);
+            setMessage(error.response?.data?.error || "Erreur /PUT changer role d'un utilisateur : " + error);
         }
     }
     const deletePermissionFromRole = async(idRole,idPermission) => {
@@ -223,7 +223,7 @@ export default function AdminDashboard({ user }) {
                 [idRole] : updated.data
             }))
         }catch(error){
-            setMessage(error.response?.data?.error || "Error /DELETE remove permission from role : " + error);
+            setMessage(error.response?.data?.error || "Erreur /DELETE retirer permission au rôle : " + error);
         }
     }
     const updateUser = async () => {
@@ -241,7 +241,7 @@ export default function AdminDashboard({ user }) {
             setEditingUser(null);
             await refreshUsers();
         } catch (error) {
-            setMessage(error.response?.data?.error || "Error /PUT modify user : " + error);
+            setMessage(error.response?.data?.error || "Erreur /PUT modifier un utilisateur : " + error);
         }
         };
     const handleLogout = () => {
@@ -257,7 +257,7 @@ export default function AdminDashboard({ user }) {
         setShowTeamForm(false);
         refreshTeams();
       }catch(error){
-        setMessage(error.response?.data?.error || "Error /POST create team : " + error);
+        setMessage(error.response?.data?.error || "Erreur /POST créer une équipe : " + error);
       }
     }
     const activateTeam = async(idTeam) => {
@@ -266,7 +266,7 @@ export default function AdminDashboard({ user }) {
         setMessage(res.data);
         refreshTeams();
       }catch(error){
-        setMessage(error.response?.data?.error || "Error /POST activate team : " + error);
+        setMessage(error.response?.data?.error || "Erreur /POST activer une équipe : " + error);
       }
     }
     const deactivateTeam = async(idTeam) => {
@@ -275,7 +275,7 @@ export default function AdminDashboard({ user }) {
         setMessage(res.data);
         refreshTeams();
       }catch(error){
-        setMessage(error.response?.data?.error || "Error /POST desactivate team : " + error);
+        setMessage(error.response?.data?.error || "Erreur /POST desactivater une équipe : " + error);
       }
     }
     const updateTeam = async() => {
@@ -289,7 +289,7 @@ export default function AdminDashboard({ user }) {
         setTeamEditing(null);
         refreshTeams();
       }catch(error){
-        setMessage(error.response?.data?.error || "Error /PUT update team : " + error);
+        setMessage(error.response?.data?.error || "Erreur /PUT modfier une équipe : " + error);
       }
     }
     const assignMemberToTeam = async(idTeam ,idUser) => {
@@ -302,7 +302,7 @@ export default function AdminDashboard({ user }) {
           [idTeam]: ""
         }));
       }catch(error){
-        setMessage(error.response?.data?.error || "Error /POST assign member : " + error);
+        setMessage(error.response?.data?.error || "Erreur /POST assigner un membre à l'équipe : " + error);
       }
     }
     const getMembersOfTeam = async (teamList) => {
@@ -312,7 +312,7 @@ export default function AdminDashboard({ user }) {
           const res = await api.get(`/user-team/${team.idTeam}`);
           teamMembers[team.idTeam] = res.data;
       }catch(error){
-        setMessage(error.response?.data?.error || "Error /GET get members of a team : " + error);
+        setMessage(error.response?.data?.error || "Erreur /GET récupérer membres de l'équipe : " + error);
         teamMembers[team.idTeam] = [];
       }
       }
@@ -324,7 +324,7 @@ export default function AdminDashboard({ user }) {
         setMessage(res.data);
         await getMembersOfTeam(teams);
       }catch(error){
-        setMessage(error.response?.data?.error || "Error /DELETE remove member of a team : " + error);
+        setMessage(error.response?.data?.error || "Erreur /DELETE retirer membre de l'équipe : " + error);
       }
     }
   return (
@@ -376,9 +376,9 @@ export default function AdminDashboard({ user }) {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Fullname</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Nom complet</th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Email</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">phone</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Téléphone</th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Actif</th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Actions</th>
                 </tr>
@@ -448,8 +448,8 @@ export default function AdminDashboard({ user }) {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">User</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Role</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Utilisateur</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Rôle</th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Permissions</th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Action</th>
                 </tr>
@@ -702,7 +702,7 @@ export default function AdminDashboard({ user }) {
                 <input
                   type="text"
                   placeholder="Numero de téléphone"
-                  value={editingUser.phone}
+                  value={editingUser?.phone || ""}
                   onChange={(e)=>setEditingUser({...editingUser,phone :e.target.value})}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
