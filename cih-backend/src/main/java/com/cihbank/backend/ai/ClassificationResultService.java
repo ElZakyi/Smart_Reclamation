@@ -30,6 +30,8 @@ public class ClassificationResultService {
     public ClassificationResult saveForReclamation(Integer idReclamation, Map<String, Object> aiResult){
         Reclamation reclamation = reclamationRepository.findById(idReclamation).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Reclamation not found !"));
         // si déjà exist -> on peut soit update, soit refuser.
+        reclamation.setIsAiAssisted(true);
+        reclamationRepository.save(reclamation);
         ClassificationResult cr;
         if (classificationResultRepository.existsByReclamation_IdReclamation(idReclamation)) {
             cr = classificationResultRepository.findByReclamation_IdReclamation(idReclamation)

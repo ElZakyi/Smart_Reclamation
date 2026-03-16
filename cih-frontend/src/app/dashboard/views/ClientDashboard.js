@@ -298,10 +298,10 @@ export default function ClientDashboard({ user }) {
                         className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-slate-900 shadow-sm
                                    focus:outline-none focus:ring-4 focus:ring-blue-200 focus:border-blue-500"
                       >
-                        <option value="LOW">LOW</option>
-                        <option value="AVERAGE">AVERAGE</option>
-                        <option value="HIGH">HIGH</option>
-                        <option value="CRITICAL">CRITICAL</option>
+                        <option value="LOW">FAIBLE</option>
+                        <option value="AVERAGE">MOYENNE</option>
+                        <option value="HIGH">ELEVÉE</option>
+                        <option value="CRITICAL">CRITIQUE</option>
                       </select>
                     </div>
                   </div>
@@ -344,6 +344,22 @@ export default function ClientDashboard({ user }) {
                   >
                     {loadingSubmit ? "Création en cours..." : (editIdReclamation ? "Modifier" : "Créer")}
                   </button>
+                  {editIdReclamation && <button 
+                   className="inline-flex items-center justify-center rounded-xl bg-slate-100 px-5 py-2.5
+                               text-slate-800 font-semibold shadow-sm hover:bg-slate-200 active:scale-[0.99] transition"
+                  onClick={()=>{
+                    setForm({
+                        title: "",
+                        type: "AUTRE",
+                        canal: "AUTRE",
+                        priority: "LOW",
+                        description: "",
+                        isAiAssisted: false,
+                      });
+                    setEditIdReclamation(null);}}
+                  >
+                    Annuler
+                    </button>}
 
                   <button
                     type="button"

@@ -35,7 +35,7 @@ public class NotificationService {
             notification.setUser(user);
             notification.setSubject("Nouvelle réclamation assignée ");
             notification.setBody(
-                    "Réclamation " + rec.getReference() + " assignée à votre équipe.\n\nTitre : " + rec.getTitle()
+                    "Réclamation " + rec.getReference() + " assignée à votre équipe.\n\nTitre : " + rec.getTitle() + "\n\nDescription : " + rec.getDescription()
             );
             notification.setSentAt(LocalDateTime.now());
             try{

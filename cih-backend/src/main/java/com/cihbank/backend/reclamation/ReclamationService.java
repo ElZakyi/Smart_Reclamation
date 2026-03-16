@@ -60,6 +60,7 @@ public class ReclamationService {
         newReclamation.setReference(reference);
         newReclamation.setStatus(ReclamationStatus.CREEE);
         newReclamation.setCreatedAt(LocalDateTime.now());
+        newReclamation.setIsAiAssisted(false);
         Reclamation saved = reclamationRepository.save(newReclamation);
         if(Boolean.TRUE.equals(reclamation.getIsAiAssisted())){
             Map<String,Object> aiResult = classificationResultService.previewClassification(saved.getDescription());

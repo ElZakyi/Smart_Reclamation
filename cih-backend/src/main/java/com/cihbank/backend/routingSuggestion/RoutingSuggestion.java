@@ -21,11 +21,13 @@ public class RoutingSuggestion {
     private String keywords;
     @Enumerated(EnumType.STRING)
     private RoutingContext routingContext;
+    @Enumerated(EnumType.STRING)
+    private RoutingStatus routingStatus;
     private Boolean accepted;
     private LocalDateTime decidedAt;
     @ManyToOne
     @JoinColumn(name="accepted_by")
-    private User acceptedBy;
+    private User decidedBy;
     @ManyToOne
     @JoinColumn(name="suggested_team")
     private Team suggestedTeam;
@@ -90,12 +92,12 @@ public class RoutingSuggestion {
         this.decidedAt = decidedAt;
     }
 
-    public User getAcceptedBy() {
-        return acceptedBy;
+    public User getDecidedBy() {
+        return decidedBy;
     }
 
-    public void setAcceptedBy(User acceptedBy) {
-        this.acceptedBy = acceptedBy;
+    public void setDecidedBy(User decidedBy) {
+        this.decidedBy = decidedBy;
     }
 
     public Team getSuggestedTeam() {
@@ -112,5 +114,13 @@ public class RoutingSuggestion {
 
     public void setSuggestedUser(User suggestedUser) {
         this.suggestedUser = suggestedUser;
+    }
+
+    public RoutingStatus getRoutingStatus() {
+        return routingStatus;
+    }
+
+    public void setRoutingStatus(RoutingStatus routingStatus) {
+        this.routingStatus = routingStatus;
     }
 }

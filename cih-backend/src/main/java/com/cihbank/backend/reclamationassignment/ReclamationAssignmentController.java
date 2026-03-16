@@ -1,9 +1,8 @@
 package com.cihbank.backend.reclamationassignment;
 
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/assignment")
@@ -28,5 +27,14 @@ public class ReclamationAssignmentController {
         assignmentService.rejectSuggestion(idSuggestion, idResponsable);
 
         return "Suggestion rejetée";
+    }
+    @PostMapping("/manual/{idSuggestion}/responsable/{idResponsable}")
+    public ReclamationAssignment manualAssignment(@PathVariable Integer idSuggestion, @PathVariable Integer idResponsable, @RequestParam Integer idTeam, @RequestParam Integer idAgent){
+        return assignmentService.manualAssignment(idSuggestion,idResponsable,idTeam,idAgent);
+    }
+    @GetMapping("/agent/{idAgent}")
+    public List<ReclamationAssignment> getAgentAssignments(
+            @PathVariable Integer idAgent){
+        return assignmentService.getAssignmentsForAgent(idAgent);
     }
 }

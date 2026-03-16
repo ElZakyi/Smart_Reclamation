@@ -49,12 +49,13 @@ public class RoutingSuggestionService {
         suggestion.setKeywords(String.join(",", keywords));
         suggestion.setScore(score.floatValue());
         suggestion.setRoutingContext(RoutingContext.INITIAL_ROUTING);
+        suggestion.setRoutingStatus(RoutingStatus.PENDING);
         suggestion.setAccepted(false);
         suggestion.setDecidedAt(LocalDateTime.now());
 
         return routingSuggestionRepository.save(suggestion);
     }
     public RoutingSuggestion getSuggestion(Integer idReclamation){
-        return routingSuggestionRepository.findByReclamationIdReclamation(idReclamation).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Suggestion IA introuvable !"));
+        return routingSuggestionRepository.findByReclamationIdReclamationAndRoutingStatus(idReclamation,RoutingStatus.PENDING).orElse(null);
     }
 }
