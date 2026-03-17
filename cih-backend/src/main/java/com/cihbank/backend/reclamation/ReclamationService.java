@@ -115,4 +115,7 @@ public class ReclamationService {
         reclamationToUpdate.setPriority(reclamation.getPriority());
         reclamationRepository.save(reclamationToUpdate);
     }
+    public List<Reclamation> getReclamationForDecision(){
+        return reclamationRepository.findByStatus(ReclamationStatus.EN_VALIDATION);
+    }
 }

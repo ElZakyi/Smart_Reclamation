@@ -12,10 +12,15 @@ export default function ResponsableDashboard({ user }) {
     const [members,setMembers] = useState([]);
     const [selectedTeam,setSelectedTeam] = useState(null);
     const [selectedAgent,setSelectedAgent] = useState(null);
+    const [reclamationsForDecision, setReclamationsForDecision] = useState([]);
+    const [selectedDecision,setSelectedDecision] = useState(null);
+    const [motif,setMotif]=useState("");
     const router = useRouter();
 
     useEffect(() => {
         getSuggestions();
+        getReclamationForDecision();
+        console.log("reclamation for decision : " , reclamationsForDecision);
     }, []);
 
     const getSuggestions = async () => {
@@ -85,7 +90,34 @@ export default function ResponsableDashboard({ user }) {
         localStorage.removeItem("token");
         router.push("/login");
     };
-
+    const getReclamationForDecision = async () => {
+        try {
+            const res = await api.get("/decision-proposal/decision");
+            setReclamationsForDecision(res.data);
+        }catch(error){
+            setMessage(error.response?.data?.error || "Erreur /GET récupération des réclamation en attente de décision : " + error);
+        }
+    }
+    const acceptDecisionProposal = async(idReclamation,idProposal) => {
+        try{
+            await api.post(`/decision/accept/reclamation/${idReclamation}/user/${user.idUser}/proposal/${idProposal}`,motif);
+            setMessage("Proposition de décision à été accéptée par le responsable !");
+            getReclamationForDecision();
+            setMotif("");
+        }catch(error){
+            setMessage(error.response?.data?.error || "Erreur /POST accéptation de proposition : " + error);
+        }
+    }
+    const rejectDecisionProposal = async(idReclamation, idProposal) => {
+        try{
+            await api.post(`/decision/reject/reclamation/${idReclamation}/user/${user.idUser}/proposal/${idProposal}`,motif);
+            setMessage("Proposition de décision à été refusée par le responsable !");
+            getReclamationForDecision();
+            setMotif("");
+        }catch(error){
+            setMessage(error.response?.data?.error || "Erreur /POST refus de proposition : " + error);
+        }
+    }
     return (
 
         <div className="min-h-screen bg-gray-100 p-8">
@@ -291,13 +323,141 @@ export default function ResponsableDashboard({ user }) {
                                 </div>
 
                             )}
-
                             </div>
 
                         );
+                        
 
                     })}
+                    <h2 className="text-2xl font-bold mt-10 text-gray-800">
+                    Décisions en attente
+                    </h2>
 
+                    {reclamationsForDecision.length === 0 && (
+                        <div className="bg-white p-6 rounded shadow text-center mt-4">
+                            <p className="text-gray-500">Aucune décision en attente</p>
+                        </div>
+                    )}
+
+                    {reclamationsForDecision.map((proposal) => {
+
+                        const rec = proposal.reclamation;
+
+                        return (
+
+                            <div
+                                key={proposal.idDecisionProposal}
+                                className="bg-white rounded-xl shadow-md p-6 mt-4 border border-gray-200 hover:shadow-lg transition"
+                            >
+
+                                {/* HEADER */}
+                                <div className="flex justify-between items-center mb-3">
+
+                                    <span className="font-semibold text-gray-700">
+                                        {rec.reference}
+                                    </span>
+
+                                    <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">
+                                        {rec.status}
+                                    </span>
+
+                                </div>
+
+                                {/* RECLAMATION */}
+                                <h3 className="text-lg font-bold text-gray-800">
+                                    {rec.title}
+                                </h3>
+
+                                <p className="text-gray-600 mt-1">
+                                    {rec.description}
+                                </p>
+
+                                {/* PROPOSAL */}
+                                <div className="mt-4 bg-indigo-50 border border-indigo-200 p-4 rounded-lg">
+
+                                    <h4 className="font-semibold text-indigo-700 mb-2">
+                                        Proposition de l’agent
+                                    </h4>
+
+                                    <div className="flex flex-wrap gap-3 text-sm mb-3">
+
+                                        <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded">
+                                            Type : {proposal.type}
+                                        </span>
+
+                                        <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded">
+                                            Agent : {proposal.user?.fullName}
+                                        </span>
+
+                                    </div>
+
+                                    <p className="text-gray-700 text-sm italic">
+                                        "{proposal.justification}"
+                                    </p>
+
+                                </div>
+
+                                {/* ACTION */}
+                                <div className="mt-4">
+
+                                    <button
+                                        onClick={() => setSelectedDecision(proposal.idDecisionProposal)}
+                                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition"
+                                    >
+                                        Prendre décision
+                                    </button>
+
+                                </div>
+
+                                {/* FORM */}
+                                {selectedDecision === proposal.idDecisionProposal && (
+
+                                    <div className="mt-4 border-t pt-4">
+
+                                        <textarea
+                                            placeholder="Motif de votre décision"
+                                            value={motif}
+                                            onChange={(e) => setMotif(e.target.value)}
+                                            className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 outline-none"
+                                        />
+
+                                        <div className="flex gap-3 mt-3">
+
+                                            <button
+                                                onClick={() =>
+                                                    acceptDecisionProposal(
+                                                        rec.idReclamation,
+                                                        proposal.idDecisionProposal
+                                                    )
+                                                }
+                                                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
+                                            >
+                                                ✔ Accepter
+                                            </button>
+
+                                            <button
+                                                onClick={() =>
+                                                    rejectDecisionProposal(
+                                                        rec.idReclamation,
+                                                        proposal.idDecisionProposal
+                                                    )
+                                                }
+                                                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
+                                            >
+                                                ✖ Refuser
+                                            </button>
+
+                                            </div>
+
+                                        </div>
+
+                                    )}
+
+                                </div>
+
+                            );
+
+                        })}
                 </div>
 
                 {message && (

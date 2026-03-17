@@ -4,12 +4,17 @@ import api from "@/services/api";
 import { useEffect, useState } from "react";
 import ReclamationChat from "../components/ReclamationChat";
 import { useRouter } from "next/navigation";
+
 export default function AgentDashboard({ user }) {
 
     const [assignments, setAssignments] = useState([]);
     const [contents, setContents] = useState({});
     const [message, setMessage] = useState("");
     const [openChatId, setOpenChatId] = useState(null);
+    const [proposalFormId, setProposalFormId] = useState(null);
+    const [proposalJustification, setProposalJustification] = useState("");
+    const [proposalDecisionType, setProposalDecisionType] = useState("CLOTURE");
+
     const router = useRouter();
 
     useEffect(() => {
@@ -21,7 +26,7 @@ export default function AgentDashboard({ user }) {
             const res = await api.get(`/assignment/agent/${user.idUser}`);
             setAssignments(res.data);
         } catch (error) {
-            setMessage("Erreur récupération réclamations");
+            setMessage("Erreur récupération réclamations : " + error);
         }
     };
 
@@ -33,7 +38,6 @@ export default function AgentDashboard({ user }) {
     };
 
     const createResolution = async (idReclamation) => {
-
         try {
 
             await api.post(
@@ -47,28 +51,69 @@ export default function AgentDashboard({ user }) {
                 ...prev,
                 [idReclamation]: ""
             }));
+
+            setProposalFormId(idReclamation);
+
             getReclamationForAgent();
 
         } catch (error) {
-
-            setMessage(
-                error.response?.data?.error ||
-                "Erreur création résolution"
-            );
+            setMessage(error.response?.data?.error || "Erreur création résolution : " + error);
         }
     };
+
+    const createDecisionProposal = async (idUser, idReclamation) => {
+        try {
+
+            await api.post(
+                `/decision-proposal/reclamation/${idReclamation}/user/${idUser}?decisionType=${proposalDecisionType}`,
+                { justification: proposalJustification }
+            );
+
+            setMessage("Proposition envoyée au responsable");
+
+            setProposalFormId(null);
+            setProposalJustification("");
+
+            getReclamationForAgent();
+
+        } catch (error) {
+            setMessage(error.response?.data?.error || "Erreur création proposition : " + error);
+        }
+    };
+
     const handleLogout = () => {
-      localStorage.removeItem("token");
-      router.push("/login");
-    }
+        localStorage.removeItem("token");
+        router.push("/login");
+    };
+
+    const getStatusColor = (status) => {
+
+        switch (status) {
+
+            case "AFFECTEE":
+                return "bg-blue-100 text-blue-700";
+
+            case "RESOLUE":
+                return "bg-green-100 text-green-700";
+
+            case "EN_VALIDATION":
+                return "bg-yellow-100 text-yellow-700";
+
+            case "REJETEE":
+                return "bg-red-100 text-red-700";
+
+            default:
+                return "bg-gray-200 text-gray-700";
+        }
+    };
+
     return (
 
         <div className="min-h-screen bg-gray-100 p-8">
+
             <button
                 onClick={handleLogout}
-                className="flex ml-auto px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 
-                        text-white font-semibold shadow-md transition 
-                        active:scale-95"
+                className="ml-auto flex px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold shadow-md transition active:scale-95"
             >
                 Déconnexion
             </button>
@@ -80,7 +125,7 @@ export default function AgentDashboard({ user }) {
                 </h1>
 
                 {assignments.length === 0 && (
-                    <div className="bg-white p-6 rounded shadow text-center">
+                    <div className="bg-white p-6 rounded-xl shadow text-center">
                         Aucune réclamation assignée
                     </div>
                 )}
@@ -95,17 +140,18 @@ export default function AgentDashboard({ user }) {
 
                             <div
                                 key={assignment.idAssignment}
-                                className="bg-white rounded-lg shadow p-6 border"
+                                className="bg-white rounded-xl shadow p-6 border border-gray-200"
                             >
 
-                                <div className="flex justify-between mb-2">
+                                {/* Header */}
+                                <div className="flex justify-between items-center mb-2">
 
                                     <span className="font-semibold text-gray-700">
                                         {r.reference}
                                     </span>
 
-                                    <span className="text-xs px-3 py-1 bg-blue-100 text-blue-700 rounded">
-                                        {r.priority}
+                                    <span className={`text-xs px-3 py-1 rounded ${getStatusColor(r.status)}`}>
+                                        {r.status}
                                     </span>
 
                                 </div>
@@ -118,6 +164,7 @@ export default function AgentDashboard({ user }) {
                                     {r.description}
                                 </p>
 
+                                {/* Info badges */}
                                 <div className="flex gap-3 mt-3 text-sm">
 
                                     <span className="bg-gray-200 px-3 py-1 rounded">
@@ -128,53 +175,96 @@ export default function AgentDashboard({ user }) {
                                         Type : {r.type}
                                     </span>
 
-                                    <span className="bg-yellow-200 px-3 py-1 rounded">
-                                        Status : {r.status}
+                                    <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded">
+                                        Priorité : {r.priority}
                                     </span>
 
                                 </div>
 
-                                <div className="mt-5">
+                                {/* Résolution */}
+                                {r.status !== "RESOLUE" && (
 
-                                    <textarea
-                                        className="w-full border rounded p-3 focus:outline-none focus:ring"
-                                        rows="4"
-                                        placeholder="Rédiger la résolution..."
-                                        value={contents[r.idReclamation] || ""}
-                                        onChange={(e) =>
-                                            handleContentChange(
-                                                r.idReclamation,
-                                                e.target.value
-                                            )
-                                        }
-                                    />
+                                    <div className="mt-5">
 
-                                    <button
-                                        onClick={() => createResolution(r.idReclamation)}
-                                        className="mt-3 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition"
-                                    >
-                                        Valider la résolution
-                                    </button>
-                                    <button
-                                        onClick={() => 
-                                            setOpenChatId(
-                                                openChatId === r.idReclamation ? null : r.idReclamation
-                                            )
-                                        }
-                                        className="mt-3 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded"
-                                    >
-                                        {openChatId ? "Fermer conversation" : "Ouvrir conversation"}
-                                    </button>
+                                        <textarea
+                                            className="w-full border rounded-lg p-3 focus:outline-none focus:ring focus:ring-blue-300"
+                                            rows="4"
+                                            placeholder="Rédiger la résolution..."
+                                            value={contents[r.idReclamation] || ""}
+                                            onChange={(e) =>
+                                                handleContentChange(
+                                                    r.idReclamation,
+                                                    e.target.value
+                                                )
+                                            }
+                                        />
 
-                                </div>
+                                        <button
+                                            onClick={() => createResolution(r.idReclamation)}
+                                            className="mt-3 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition"
+                                        >
+                                            Valider la résolution
+                                        </button>
+
+                                    </div>
+
+                                )}
+
+                                {/* Proposition décision */}
+                                {(r.status === "RESOLUE" || proposalFormId === r.idReclamation) && (
+
+                                    <div className="mt-6 bg-gray-50 p-4 rounded-lg border">
+
+                                        <h3 className="font-semibold mb-2 text-gray-700">
+                                            Proposer une décision
+                                        </h3>
+
+                                        <select
+                                            onChange={(e) => setProposalDecisionType(e.target.value)}
+                                            className="border rounded px-3 py-2 mb-3 w-full"
+                                        >
+                                            <option>Choisir une décision</option>
+                                            <option value="CLOTURE">Clôture</option>
+                                            <option value="REJET">Rejet</option>
+                                        </select>
+
+                                        <textarea
+                                            onChange={(e) => setProposalJustification(e.target.value)}
+                                            placeholder="Écrivez votre justification"
+                                            className="w-full border rounded-lg p-3 mb-3"
+                                        />
+
+                                        <button
+                                            onClick={() => createDecisionProposal(user.idUser, r.idReclamation)}
+                                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
+                                        >
+                                            Envoyer la proposition
+                                        </button>
+
+                                    </div>
+
+                                )}
+
+                                {/* Chat */}
+                                <button
+                                    onClick={() =>
+                                        setOpenChatId(
+                                            openChatId === r.idReclamation ? null : r.idReclamation
+                                        )
+                                    }
+                                    className="mt-4 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg"
+                                >
+                                    {openChatId === r.idReclamation ? "Fermer conversation" : "Ouvrir conversation"}
+                                </button>
+
                                 {openChatId === r.idReclamation && (
 
-                                <ReclamationChat
-                                    reclamationId={r.idReclamation}
-                                    currentUser={user}
-                                />
+                                    <ReclamationChat
+                                        reclamationId={r.idReclamation}
+                                        currentUser={user}
+                                    />
 
-)}
+                                )}
 
                             </div>
 
@@ -184,19 +274,20 @@ export default function AgentDashboard({ user }) {
 
                 </div>
 
+                {/* MESSAGE */}
                 {message && (
-            <div className="rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 px-5 py-4 shadow-sm">
-              <div className="flex items-start gap-3">
-                <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white grid place-items-center font-bold">
-                  i
-                </div>
-                <div className="text-sm text-slate-800">
-                  <div className="font-bold text-slate-900">Info</div>
-                  <div className="mt-0.5">{message}</div>
-                </div>
-              </div>
-            </div>
-          )}
+                    <div className="rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 px-5 py-4 shadow-sm">
+                    <div className="flex items-start gap-3">
+                        <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white grid place-items-center font-bold">
+                        i
+                        </div>
+                        <div className="text-sm text-slate-800">
+                        <div className="font-bold text-slate-900">Info</div>
+                        <div className="mt-0.5">{message}</div>
+                        </div>
+                    </div>
+                    </div>
+                )}
 
             </div>
 

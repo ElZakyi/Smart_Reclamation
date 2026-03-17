@@ -9,8 +9,8 @@ import java.util.Optional;
 public interface ReclamationAssignmentRepository extends JpaRepository<ReclamationAssignment,Integer> {
     Optional<ReclamationAssignment> findByReclamationIdReclamationAndIsCurrentTrue(Integer id);
     List<ReclamationAssignment> findByReclamationIdReclamation(Integer id);
-    List<ReclamationAssignment> findByUser_IdUserAndIsCurrentTrueAndReclamation_StatusNot(
+    List<ReclamationAssignment> findByUser_IdUserAndIsCurrentTrueAndReclamation_StatusIn(
             Integer idUser,
-            ReclamationStatus status
+            List<ReclamationStatus> statuses
     );
 }

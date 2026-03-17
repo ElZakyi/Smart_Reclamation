@@ -51,5 +51,9 @@ public class ReclamationController {
         reclamationService.updateReclamation(idReclamation,idUser,reclamation);
         return "Reclamation a été mise à jour avec succés !";
     }
+    @GetMapping("/decision")
+    public List<Reclamation> getReclamationForDecision(){
+        return reclamationService.getReclamationForDecision();
+    }
 
 }

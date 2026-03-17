@@ -94,6 +94,15 @@ public class ReclamationAssignmentService {
         return reclamationAssignmentRepository.save(reclamationAssignment);
     }
     public List<ReclamationAssignment> getAssignmentsForAgent(Integer idAgent){
-        return reclamationAssignmentRepository.findByUser_IdUserAndIsCurrentTrueAndReclamation_StatusNot(idAgent,ReclamationStatus.RESOLUE);
+
+        return reclamationAssignmentRepository
+                .findByUser_IdUserAndIsCurrentTrueAndReclamation_StatusIn(
+                        idAgent,
+                        List.of(
+                                ReclamationStatus.AFFECTEE,
+                                ReclamationStatus.EN_ATTENTE_CLIENT,
+                                ReclamationStatus.RESOLUE
+                        )
+                );
     }
 }
