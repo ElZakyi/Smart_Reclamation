@@ -2,6 +2,7 @@ package com.cihbank.backend.config;
 
 import com.cihbank.backend.permission.Permission;
 import com.cihbank.backend.permission.PermissionRepository;
+import com.cihbank.backend.reclamation.enums.ReclamationStatus;
 import com.cihbank.backend.role.Role;
 import com.cihbank.backend.role.RoleRepository;
 import com.cihbank.backend.rolepermission.RolePermission;
@@ -12,14 +13,18 @@ import com.cihbank.backend.user.UserRepository;
 import com.cihbank.backend.userrole.UserRole;
 import com.cihbank.backend.userrole.UserRoleId;
 import com.cihbank.backend.userrole.UserRoleRepository;
+import com.cihbank.backend.workflowtransition.WorkflowTransition;
+import com.cihbank.backend.workflowtransition.WorkflowTransitionRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-
+import java.util.List;
+@Profile("!test")
 @Configuration
 public class DataInitializer {
 
@@ -30,9 +35,45 @@ public class DataInitializer {
             PermissionRepository permissionRepository,
             RolePermissionRepository rolePermissionRepository,
             UserRoleRepository userRoleRepository,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            WorkflowTransitionRepository workflowRepository
     ) {
         return args -> {
+            Role agent = roleRepository.findByName("AGENT").get();
+            Role responsable = roleRepository.findByName("RESPONSABLE").get();
+
+            // AGENT → EN_VALIDATION
+            WorkflowTransition t1 = new WorkflowTransition();
+            t1.setFromStatus(ReclamationStatus.RESOLUE);
+            t1.setToStatus(ReclamationStatus.EN_VALIDATION);
+            t1.setRole(agent);
+            t1.setActive(true);
+            t1.setCreatedAt(LocalDateTime.now());
+
+            // RESPONSABLE → CLOTURE
+            WorkflowTransition t2 = new WorkflowTransition();
+            t2.setFromStatus(ReclamationStatus.EN_VALIDATION);
+            t2.setToStatus(ReclamationStatus.CLOTUREE);
+            t2.setRole(responsable);
+            t2.setActive(true);
+            t2.setCreatedAt(LocalDateTime.now());
+
+            // RESPONSABLE → RETOUR
+            WorkflowTransition t3 = new WorkflowTransition();
+            t3.setFromStatus(ReclamationStatus.EN_VALIDATION);
+            t3.setToStatus(ReclamationStatus.AFFECTEE);
+            t3.setRole(responsable);
+            t3.setActive(true);
+            t3.setCreatedAt(LocalDateTime.now());
+
+            WorkflowTransition t4 = new WorkflowTransition();
+            t4.setFromStatus(ReclamationStatus.AFFECTEE);
+            t4.setToStatus(ReclamationStatus.RESOLUE);
+            t4.setRole(agent);
+            t4.setActive(true);
+            t4.setCreatedAt(LocalDateTime.now());
+
+            workflowRepository.saveAll(List.of(t1,t2,t3,t4));
 
             String[] roles = {
                     "ADMIN",

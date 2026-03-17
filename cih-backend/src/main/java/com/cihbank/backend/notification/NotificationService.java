@@ -47,6 +47,36 @@ public class NotificationService {
             notificationRepository.save(notification);
         }
     }
+    public void notifyUser(User user, String subject, String body, NotificationChannel channel){
+
+        Notification notification = new Notification();
+
+        notification.setUser(user);
+        notification.setSubject(subject);
+        notification.setBody(body);
+        notification.setSentAt(LocalDateTime.now());
+        notification.setNotificationChannel(channel);
+
+        try {
+
+            if(channel == NotificationChannel.EMAIL){
+                sendEmail(user.getEmail(), subject, body);
+            }
+
+            // plus tard tu peux ajouter :
+            // if(channel == NotificationChannel.SMS){ ... }
+            // if(channel == NotificationChannel.IN_APP){ ... }
+
+            notification.setNotificationStatus(NotificationStatus.SENT);
+
+        } catch (Exception e){
+
+            notification.setNotificationStatus(NotificationStatus.FAILED);
+
+        }
+
+        notificationRepository.save(notification);
+    }
     public void sendEmail(String to, String subject, String body){
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);

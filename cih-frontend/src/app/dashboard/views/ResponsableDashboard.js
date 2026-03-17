@@ -20,7 +20,6 @@ export default function ResponsableDashboard({ user }) {
     useEffect(() => {
         getSuggestions();
         getReclamationForDecision();
-        console.log("reclamation for decision : " , reclamationsForDecision);
     }, []);
 
     const getSuggestions = async () => {
@@ -101,7 +100,7 @@ export default function ResponsableDashboard({ user }) {
     const acceptDecisionProposal = async(idReclamation,idProposal) => {
         try{
             await api.post(`/decision/accept/reclamation/${idReclamation}/user/${user.idUser}/proposal/${idProposal}`,motif);
-            setMessage("Proposition de décision à été accéptée par le responsable !");
+            setMessage("Proposition de décision à été accéptée par le responsable et le client sera notifié !");
             getReclamationForDecision();
             setMotif("");
         }catch(error){
