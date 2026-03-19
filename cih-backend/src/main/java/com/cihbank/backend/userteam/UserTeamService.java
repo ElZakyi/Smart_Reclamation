@@ -1,11 +1,16 @@
 package com.cihbank.backend.userteam;
 
+import com.cihbank.backend.audit.AuditAction;
+import com.cihbank.backend.audit.AuditLogService;
+import com.cihbank.backend.security.CustomUserDetails;
 import com.cihbank.backend.team.Team;
 import com.cihbank.backend.team.TeamRepository;
 import com.cihbank.backend.user.User;
 import com.cihbank.backend.user.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -17,13 +22,18 @@ public class UserTeamService {
     private final UserRepository userRepository;
     private final TeamRepository teamRepository;
     private final UserTeamRepository userTeamRepository;
-    public UserTeamService(UserRepository userRepository, TeamRepository teamRepository, UserTeamRepository userTeamRepository){
+    private final AuditLogService auditLogService;
+    public UserTeamService(UserRepository userRepository, AuditLogService auditLogService, TeamRepository teamRepository, UserTeamRepository userTeamRepository){
         this.userRepository = userRepository;
         this.teamRepository = teamRepository;
         this.userTeamRepository = userTeamRepository;
+        this.auditLogService = auditLogService;
     }
     @Transactional
     public void assignUserToTeam(Integer teamId, Integer userId){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        Integer currentUserId = userDetails.getIdUser();
         User userFound = userRepository.findById(userId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Utilisateur introuvable !"));
         Team teamFound = teamRepository.findById(teamId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Équipe introuvable !"));
         if(!teamFound.getIsActive()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'équipe est inactive ! ");
@@ -41,12 +51,17 @@ public class UserTeamService {
         userTeam.setTeam(teamFound);
         userTeam.setJoinedAt(LocalDateTime.now());
         userTeamRepository.save(userTeam);
+        auditLogService.log(AuditAction.ASSIGN_USER_TO_TEAM,"Équipe",teamId,currentUserId,null);
     }
     @Transactional
     public void removeUserFromTeam(Integer teamId, Integer userId){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        Integer currentUserId = userDetails.getIdUser();
         UserTeamId userTeamId = new UserTeamId(teamId,userId);
         if(!userTeamRepository.existsById(userTeamId)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Adhésion introuvable !");
         userTeamRepository.deleteById(userTeamId);
+        auditLogService.log(AuditAction.REMOVE_USER_FROM_TEAM,"Équipe",teamId,currentUserId,null);
     }
     public List<UserTeam> getMembersOfTeam(Integer teamId) {
         return userTeamRepository.findByTeam_IdTeam(teamId);

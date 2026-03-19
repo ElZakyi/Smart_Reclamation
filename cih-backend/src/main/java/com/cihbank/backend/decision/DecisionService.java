@@ -1,5 +1,8 @@
 package com.cihbank.backend.decision;
 
+import com.cihbank.backend.audit.AuditAction;
+import com.cihbank.backend.audit.AuditLog;
+import com.cihbank.backend.audit.AuditLogService;
 import com.cihbank.backend.decisionproposal.DecisionProposal;
 import com.cihbank.backend.decisionproposal.DecisionProposalRepository;
 import com.cihbank.backend.notification.NotificationChannel;
@@ -26,13 +29,15 @@ public class DecisionService {
     private final DecisionProposalRepository decisionProposalRepository;
     private final NotificationService notificationService;
     private final WorkflowTransitionService workflowTransitionService;
-    public DecisionService(DecisionRepository decisionRepository, ReclamationRepository reclamationRepository, UserRepository userRepository, DecisionProposalRepository decisionProposalRepository, NotificationService notificationService, WorkflowTransitionService workflowTransitionService){
+    private final AuditLogService auditLogService;
+    public DecisionService(DecisionRepository decisionRepository, AuditLogService auditLogService, ReclamationRepository reclamationRepository, UserRepository userRepository, DecisionProposalRepository decisionProposalRepository, NotificationService notificationService, WorkflowTransitionService workflowTransitionService){
         this.decisionRepository=decisionRepository;
         this.reclamationRepository = reclamationRepository;
         this.userRepository = userRepository;
         this.decisionProposalRepository = decisionProposalRepository;
         this.notificationService = notificationService;
         this.workflowTransitionService = workflowTransitionService;
+        this.auditLogService = auditLogService;
     }
     @Transactional
     public void acceptDecision(Integer idReclamation, Integer idDecisionProposal, Integer idUser, String motif){
@@ -51,7 +56,8 @@ public class DecisionService {
         decision.setReclamation(reclamationSaved);
         decision.setDecidedAt(LocalDateTime.now());
         decision.setOutcome(DecisionOutcome.VALIDE);
-        decisionRepository.save(decision);
+        Decision saved = decisionRepository.save(decision);
+        auditLogService.log(AuditAction.DECIDE_CLOTURE,"Decision",saved.getIdDecision(),idUser,null);
         User client = reclamation.getUser();
         // notifier client
         notificationService.notifyUser(
@@ -78,6 +84,7 @@ public class DecisionService {
         decision.setReclamation(reclamationSaved);
         decision.setDecidedAt(LocalDateTime.now());
         decision.setOutcome(DecisionOutcome.REFUSE);
-        decisionRepository.save(decision);
+        Decision saved = decisionRepository.save(decision);
+        auditLogService.log(AuditAction.DECIDE_REJET,"Décision",saved.getIdDecision(),idUser,null);
     }
 }

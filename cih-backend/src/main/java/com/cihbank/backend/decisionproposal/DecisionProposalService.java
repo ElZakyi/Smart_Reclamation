@@ -1,5 +1,7 @@
 package com.cihbank.backend.decisionproposal;
 
+import com.cihbank.backend.audit.AuditAction;
+import com.cihbank.backend.audit.AuditLogService;
 import com.cihbank.backend.reclamation.Reclamation;
 import com.cihbank.backend.reclamation.ReclamationRepository;
 import com.cihbank.backend.reclamation.enums.ReclamationStatus;
@@ -20,11 +22,13 @@ public class DecisionProposalService {
     private final ReclamationRepository reclamationRepository;
     private final UserRepository userRepository;
     private final WorkflowTransitionService workflowTransitionService;
-    public DecisionProposalService(DecisionProposalRepository decisionProposalRepository, ReclamationRepository reclamationRepository, UserRepository userRepository, WorkflowTransitionService workflowTransitionService){
+    private final AuditLogService auditLogService;
+    public DecisionProposalService(DecisionProposalRepository decisionProposalRepository,AuditLogService auditLogService, ReclamationRepository reclamationRepository, UserRepository userRepository, WorkflowTransitionService workflowTransitionService){
         this.decisionProposalRepository = decisionProposalRepository;
         this.reclamationRepository = reclamationRepository;
         this.userRepository = userRepository;
         this.workflowTransitionService = workflowTransitionService;
+        this.auditLogService = auditLogService;
     }
     @Transactional
     public DecisionProposal createProposition(Integer idReclamation,DecisionType type, Integer idUser, String justification){
@@ -40,7 +44,9 @@ public class DecisionProposalService {
         decisionProposal.setType(type);
         decisionProposal.setActive(true);
         decisionProposal.setCreatedAt(LocalDateTime.now());
-        return decisionProposalRepository.save(decisionProposal);
+        DecisionProposal saved = decisionProposalRepository.save(decisionProposal);
+        auditLogService.log(AuditAction.PROPOSE_DECISION,"proposition_décision",saved.getIdDecisionProposal(),idUser,null);
+        return saved;
     }
     public List<DecisionProposal> findByIsActiveTrueAndReclamationStatus(){
         return decisionProposalRepository.findByIsActiveTrueAndReclamation_Status(ReclamationStatus.EN_VALIDATION);

@@ -1,5 +1,8 @@
 package com.cihbank.backend.attachment;
 
+import com.cihbank.backend.audit.AuditAction;
+import com.cihbank.backend.audit.AuditLog;
+import com.cihbank.backend.audit.AuditLogService;
 import com.cihbank.backend.reclamation.Reclamation;
 import com.cihbank.backend.reclamation.ReclamationRepository;
 import com.cihbank.backend.reclamation.enums.ReclamationStatus;
@@ -26,10 +29,12 @@ public class AttachmentService {
     private final AttachmentRepository attachmentRepository;
     private final UserRepository userRepository;
     private final ReclamationRepository reclamationRepository;
-    public AttachmentService(AttachmentRepository attachmentRepository, UserRepository userRepository, ReclamationRepository reclamationRepository){
+    private final AuditLogService auditLogService;
+    public AttachmentService(AttachmentRepository attachmentRepository,AuditLogService auditLogService, UserRepository userRepository, ReclamationRepository reclamationRepository){
         this.attachmentRepository = attachmentRepository;
         this.userRepository = userRepository;
         this.reclamationRepository = reclamationRepository;
+        this.auditLogService = auditLogService;
     }
     @Transactional
     public void uploadattachment(Integer userId, Integer reclamationId, MultipartFile file) throws IOException {
@@ -54,13 +59,14 @@ public class AttachmentService {
         attachment.setFileSize((double) file.getSize());
         attachment.setStorageUrl(path.toString());
         attachment.setUploadedAt(LocalDateTime.now());
-        attachmentRepository.save(attachment);
-
+        Attachment saved = attachmentRepository.save(attachment);
+        auditLogService.log(AuditAction.UPLOAD_ATTACHMENT,"Attachement",saved.getIdAttachment(),userId,null);
     }
     public List<Attachment> getAttachmentByReclamationId(Integer idReclamation){
         return attachmentRepository.findByReclamationIdReclamation(idReclamation);
     }
     public void deleteAttachment(Integer idAttachment){
         attachmentRepository.deleteById(idAttachment);
+        auditLogService.log(AuditAction.DELETE_ATTACHMENT,"Attachement",idAttachment,null,null);
     }
 }

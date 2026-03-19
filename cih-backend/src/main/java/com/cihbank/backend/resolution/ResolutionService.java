@@ -1,5 +1,7 @@
 package com.cihbank.backend.resolution;
 
+import com.cihbank.backend.audit.AuditAction;
+import com.cihbank.backend.audit.AuditLogService;
 import com.cihbank.backend.reclamation.Reclamation;
 import com.cihbank.backend.reclamation.ReclamationRepository;
 import com.cihbank.backend.reclamation.enums.ReclamationStatus;
@@ -19,11 +21,13 @@ public class ResolutionService {
     private final UserRepository userRepository;
     private final ResolutionRepository resolutionRepository;
     private final WorkflowTransitionService workflowTransitionService;
-    public ResolutionService(ReclamationRepository reclamationRepository, UserRepository userRepository, ResolutionRepository resolutionRepository, WorkflowTransitionService workflowTransitionService){
+    private final AuditLogService auditLogService;
+    public ResolutionService(ReclamationRepository reclamationRepository, AuditLogService auditLogService,UserRepository userRepository, ResolutionRepository resolutionRepository, WorkflowTransitionService workflowTransitionService){
         this.reclamationRepository = reclamationRepository;
         this.userRepository = userRepository;
         this.resolutionRepository = resolutionRepository;
         this.workflowTransitionService = workflowTransitionService;
+        this.auditLogService = auditLogService;
     }
     @Transactional
     public Resolution createResolution(Integer idReclamation , Integer idUser, String content){
@@ -34,10 +38,11 @@ public class ResolutionService {
         resolution.setReclamation(reclamation);
         resolution.setCreatedAt(LocalDateTime.now());
         resolution.setContent(content);
-        resolutionRepository.save(resolution);
+        Resolution saved = resolutionRepository.save(resolution);
+        auditLogService.log(AuditAction.CREATE_RESOLUTION,"Résolution", saved.getIdResolution(), idUser,null);
         workflowTransitionService.validateTransition(reclamation,ReclamationStatus.RESOLUE,"AGENT");
         reclamation.setStatus(ReclamationStatus.RESOLUE);
         reclamationRepository.save(reclamation);
-        return resolution;
+        return saved;
     }
 }

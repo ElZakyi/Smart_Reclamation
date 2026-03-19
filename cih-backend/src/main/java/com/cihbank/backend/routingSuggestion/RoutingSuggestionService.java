@@ -1,5 +1,7 @@
 package com.cihbank.backend.routingSuggestion;
 
+import com.cihbank.backend.audit.AuditAction;
+import com.cihbank.backend.audit.AuditLogService;
 import com.cihbank.backend.reclamation.Reclamation;
 import com.cihbank.backend.reclamation.ReclamationRepository;
 import com.cihbank.backend.team.Team;
@@ -21,11 +23,13 @@ public class RoutingSuggestionService {
     private final TeamRepository teamRepository;
     private final UserTeamRepository userTeamRepository;
     private final RoutingSuggestionRepository routingSuggestionRepository;
-    public RoutingSuggestionService(ReclamationRepository reclamationRepository, TeamRepository teamRepository, UserTeamRepository userTeamRepository, RoutingSuggestionRepository routingSuggestionRepository){
+    private final AuditLogService auditLogService;
+    public RoutingSuggestionService(ReclamationRepository reclamationRepository,AuditLogService auditLogService, TeamRepository teamRepository, UserTeamRepository userTeamRepository, RoutingSuggestionRepository routingSuggestionRepository){
         this.reclamationRepository = reclamationRepository;
         this.teamRepository = teamRepository;
         this.userTeamRepository = userTeamRepository;
         this.routingSuggestionRepository = routingSuggestionRepository;
+        this.auditLogService = auditLogService;
     }
     public RoutingSuggestion generateSuggestion(Integer idReclamation){
         Reclamation rec = reclamationRepository.findById(idReclamation).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Réclamation introuvable !"));
@@ -53,7 +57,9 @@ public class RoutingSuggestionService {
         suggestion.setAccepted(false);
         suggestion.setDecidedAt(LocalDateTime.now());
 
-        return routingSuggestionRepository.save(suggestion);
+        RoutingSuggestion saved =  routingSuggestionRepository.save(suggestion);
+        auditLogService.log(AuditAction.AI_ROUTING_SUGGESTED,"Réclamation",idReclamation,saved.getIdRouting(),null);
+        return saved;
     }
     public RoutingSuggestion getSuggestion(Integer idReclamation){
         return routingSuggestionRepository.findByReclamationIdReclamationAndRoutingStatus(idReclamation,RoutingStatus.PENDING).orElse(null);

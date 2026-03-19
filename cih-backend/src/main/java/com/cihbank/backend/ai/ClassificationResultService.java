@@ -1,5 +1,7 @@
 package com.cihbank.backend.ai;
 
+import com.cihbank.backend.audit.AuditAction;
+import com.cihbank.backend.audit.AuditLogService;
 import com.cihbank.backend.reclamation.Reclamation;
 import com.cihbank.backend.reclamation.ReclamationRepository;
 import com.cihbank.backend.reclamation.enums.CanalType;
@@ -16,10 +18,12 @@ public class ClassificationResultService {
     private final AIClientService aiClientService;
     private final ClassificationResultRepository classificationResultRepository;
     private final ReclamationRepository reclamationRepository;
-    public ClassificationResultService(AIClientService aiClientService, ClassificationResultRepository classificationResultRepository, ReclamationRepository reclamationRepository){
+    private final AuditLogService auditLogService;
+    public ClassificationResultService(AIClientService aiClientService, AuditLogService auditLogService, ClassificationResultRepository classificationResultRepository, ReclamationRepository reclamationRepository){
         this.aiClientService = aiClientService;
         this.classificationResultRepository = classificationResultRepository;
         this.reclamationRepository = reclamationRepository;
+        this.auditLogService = auditLogService;
     }
     public Map<String, Object> previewClassification(String description){
         if(description == null || description.trim().isEmpty()){
@@ -48,7 +52,9 @@ public class ClassificationResultService {
         Double confidence = confObj instanceof Number ? ((Number) confObj).doubleValue() : 0.0;
         cr.setConfidenceScore(confidence);
         cr.setModelVersion((String) aiResult.get("modelVersion"));
-        return classificationResultRepository.save(cr);
+        ClassificationResult saved = classificationResultRepository.save(cr);
+        auditLogService.log(AuditAction.AI_CLASSIFICATION,"Réclamation",idReclamation,saved.getIdClassification(),null);
+        return saved;
     }
     public ClassificationResult getByReclamation(Integer idReclamation) {
         return classificationResultRepository.findByReclamation_IdReclamation(idReclamation)

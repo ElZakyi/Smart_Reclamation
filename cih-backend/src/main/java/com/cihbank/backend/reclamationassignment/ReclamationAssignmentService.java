@@ -1,5 +1,7 @@
 package com.cihbank.backend.reclamationassignment;
 
+import com.cihbank.backend.audit.AuditAction;
+import com.cihbank.backend.audit.AuditLogService;
 import com.cihbank.backend.notification.NotificationService;
 import com.cihbank.backend.reclamation.Reclamation;
 import com.cihbank.backend.reclamation.ReclamationRepository;
@@ -27,13 +29,15 @@ public class ReclamationAssignmentService {
     private final UserRepository userRepository;
     private final ReclamationRepository reclamationRepository;
     private final TeamRepository teamRepository;
-    public ReclamationAssignmentService(RoutingSuggestionRepository routingSuggestionRepository, ReclamationAssignmentRepository reclamationAssignmentRepository, UserRepository userRepository, ReclamationRepository reclamationRepository, NotificationService notificationService,TeamRepository teamRepository){
+    private final AuditLogService auditLogService;
+    public ReclamationAssignmentService(RoutingSuggestionRepository routingSuggestionRepository,AuditLogService auditLogService, ReclamationAssignmentRepository reclamationAssignmentRepository, UserRepository userRepository, ReclamationRepository reclamationRepository, NotificationService notificationService,TeamRepository teamRepository){
         this.routingSuggestionRepository = routingSuggestionRepository;
         this.reclamationAssignmentRepository = reclamationAssignmentRepository;
         this.userRepository = userRepository;
         this.reclamationRepository = reclamationRepository;
         this.notificationService = notificationService;
         this.teamRepository = teamRepository;
+        this.auditLogService = auditLogService;
     }
     public ReclamationAssignment acceptSuggestion(Integer idSuggestion, Integer idResponsable){
         RoutingSuggestion routingSuggestion = routingSuggestionRepository.findById(idSuggestion).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Suggéstion IA introuvable !"));
@@ -52,7 +56,8 @@ public class ReclamationAssignmentService {
         reclamationAssignment.setTeam(routingSuggestion.getSuggestedTeam());
         reclamationAssignment.setAssignedBy(responsable);
         reclamationAssignment.setReason("AI_ROUTING_ACCEPTED");
-        reclamationAssignmentRepository.save(reclamationAssignment);
+        ReclamationAssignment saved = reclamationAssignmentRepository.save(reclamationAssignment);
+        auditLogService.log(AuditAction.ACCEPT_ROUTING,"Assignment",saved.getIdAssignment(),idResponsable,null);
         routingSuggestion.setAccepted(true);
         routingSuggestion.setRoutingStatus(RoutingStatus.ACCEPTED);
         User agent = userRepository.findById(idResponsable).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Utilisateur introuvable !"));
@@ -64,7 +69,7 @@ public class ReclamationAssignmentService {
         reclamationRepository.save(rec);
 
         notificationService.notifyTeam(routingSuggestion.getSuggestedTeam(),rec);
-        return reclamationAssignment;
+        return saved;
     }
     public void rejectSuggestion(Integer idSuggestion, Integer idResponsable){
         RoutingSuggestion routingSuggestion = routingSuggestionRepository.findById(idSuggestion).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Suggéstion IA introuvable !"));
@@ -74,6 +79,7 @@ public class ReclamationAssignmentService {
         routingSuggestion.setDecidedBy(responsable);
         routingSuggestion.setDecidedAt(LocalDateTime.now());
         routingSuggestionRepository.save(routingSuggestion);
+        auditLogService.log(AuditAction.REJECT_ROUTING,"routing_suggestion",routingSuggestion.getIdRouting(),idResponsable,null);
     }
     public ReclamationAssignment manualAssignment(Integer idSuggestion, Integer idResponsable,Integer idTeam,Integer idAgent ){
         RoutingSuggestion routingSuggestion = routingSuggestionRepository.findById(idSuggestion).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Routing suggéstion introuvable !"));
@@ -91,7 +97,9 @@ public class ReclamationAssignmentService {
         reclamationAssignment.setReclamation(reclamation);
         reclamationAssignment.setCurrent(true);
         reclamationAssignment.setReason("MANUAL_ROUTING");
-        return reclamationAssignmentRepository.save(reclamationAssignment);
+        ReclamationAssignment saved =  reclamationAssignmentRepository.save(reclamationAssignment);
+        auditLogService.log(AuditAction.MANUAL_ASSIGNMENT,"assignement_réclamation",saved.getIdAssignment(),idResponsable,null);
+        return saved;
     }
     public List<ReclamationAssignment> getAssignmentsForAgent(Integer idAgent){
 

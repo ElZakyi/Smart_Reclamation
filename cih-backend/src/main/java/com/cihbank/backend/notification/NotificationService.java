@@ -1,5 +1,8 @@
 package com.cihbank.backend.notification;
 
+import com.cihbank.backend.audit.AuditAction;
+import com.cihbank.backend.audit.AuditLog;
+import com.cihbank.backend.audit.AuditLogService;
 import com.cihbank.backend.reclamation.Reclamation;
 import com.cihbank.backend.team.Team;
 import com.cihbank.backend.team.TeamRepository;
@@ -18,14 +21,17 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final UserTeamRepository userTeamRepository;
     private final JavaMailSender mailSender;
+    private final AuditLogService auditLogService;
 
     public NotificationService(NotificationRepository notificationRepository,
                                UserTeamRepository userTeamRepository,
-                               JavaMailSender mailSender) {
+                               JavaMailSender mailSender,
+                               AuditLogService auditLogService) {
 
         this.notificationRepository = notificationRepository;
         this.userTeamRepository = userTeamRepository;
         this.mailSender = mailSender;
+        this.auditLogService = auditLogService;
     }
     public void notifyTeam(Team team, Reclamation rec){
         List<UserTeam> member = userTeamRepository.findByTeam_IdTeam(team.getIdTeam());
@@ -75,7 +81,9 @@ public class NotificationService {
 
         }
 
-        notificationRepository.save(notification);
+        Notification saved = notificationRepository.save(notification);
+        auditLogService.log(AuditAction.SEND_NOTIFICATION,"Notification",saved.getIdNotification(),user.getIdUser(),null);
+
     }
     public void sendEmail(String to, String subject, String body){
         SimpleMailMessage message = new SimpleMailMessage();

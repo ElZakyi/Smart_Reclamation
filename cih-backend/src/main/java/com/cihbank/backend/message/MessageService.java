@@ -1,5 +1,7 @@
 package com.cihbank.backend.message;
 
+import com.cihbank.backend.audit.AuditAction;
+import com.cihbank.backend.audit.AuditLogService;
 import com.cihbank.backend.reclamation.Reclamation;
 import com.cihbank.backend.reclamation.ReclamationRepository;
 import com.cihbank.backend.user.User;
@@ -16,10 +18,12 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
     private final ReclamationRepository reclamationRepository;
-    public MessageService(MessageRepository messageRepository, ReclamationRepository reclamationRepository, UserRepository userRepository){
+    private final AuditLogService auditLogService;
+    public MessageService(MessageRepository messageRepository,AuditLogService auditLogService, ReclamationRepository reclamationRepository, UserRepository userRepository){
         this.messageRepository = messageRepository;
         this.reclamationRepository = reclamationRepository;
         this.userRepository = userRepository;
+        this.auditLogService = auditLogService;
     }
     public List<Message> getMessagesByReclamation(Integer idReclamation){
         return messageRepository.findByReclamation_IdReclamationOrderByCreatedAtAsc(idReclamation);
@@ -33,6 +37,8 @@ public class MessageService {
         message.setContent(content);
         message.setCreatedAt(LocalDateTime.now());
         message.setMessageType(messageType);
-        return messageRepository.save(message);
+        Message saved = messageRepository.save(message);
+        auditLogService.log(AuditAction.SEND_MESSAGE,"Message", saved.getIdMessage(), idUser,null);
+        return saved;
     }
 }

@@ -4,6 +4,9 @@ import com.cihbank.backend.ai.AIClientService;
 import com.cihbank.backend.ai.ClassificationResultRepository;
 import com.cihbank.backend.ai.ClassificationResultService;
 import com.cihbank.backend.attachment.AttachmentRepository;
+import com.cihbank.backend.audit.AuditAction;
+import com.cihbank.backend.audit.AuditLog;
+import com.cihbank.backend.audit.AuditLogService;
 import com.cihbank.backend.message.MessageRepository;
 import com.cihbank.backend.reclamation.enums.ReclamationStatus;
 import com.cihbank.backend.routingSuggestion.RoutingSuggestionRepository;
@@ -30,10 +33,12 @@ public class ReclamationService {
     private final AttachmentRepository attachmentRepository;
     private final RoutingSuggestionRepository routingSuggestionRepository;
     private final MessageRepository messageRepository;
+    private final AuditLogService auditLogService;
     public ReclamationService(ReclamationRepository reclamationRepository, UserRepository userRepository, AIClientService aiClientService,
                               ClassificationResultService classificationResultService, ClassificationResultRepository classificationResultRepository,
                               RoutingSuggestionService routingSuggestionService, AttachmentRepository attachmentRepository,
-                              RoutingSuggestionRepository routingSuggestionRepository, MessageRepository messageRepository
+                              RoutingSuggestionRepository routingSuggestionRepository, MessageRepository messageRepository,
+                              AuditLogService auditLogService
                               )
     {
         this.reclamationRepository = reclamationRepository;
@@ -45,6 +50,7 @@ public class ReclamationService {
         this.attachmentRepository = attachmentRepository;
         this.routingSuggestionRepository = routingSuggestionRepository;
         this.messageRepository = messageRepository;
+        this.auditLogService = auditLogService;
     }
     @Transactional
     public Reclamation createReclamation(Integer userId, Reclamation reclamation){
@@ -62,6 +68,7 @@ public class ReclamationService {
         newReclamation.setCreatedAt(LocalDateTime.now());
         newReclamation.setIsAiAssisted(false);
         Reclamation saved = reclamationRepository.save(newReclamation);
+        auditLogService.log(AuditAction.CREATE_RECLAMATION,"Réclamation", saved.getIdReclamation(), userId,null);
         if(Boolean.TRUE.equals(reclamation.getIsAiAssisted())){
             Map<String,Object> aiResult = classificationResultService.previewClassification(saved.getDescription());
             classificationResultService.saveForReclamation(
@@ -98,6 +105,7 @@ public class ReclamationService {
         routingSuggestionRepository.deleteByReclamationIdReclamation(idReclamation);
         classificationResultRepository.deleteByReclamationIdReclamation(idReclamation);
         reclamationRepository.delete(reclamation);
+        auditLogService.log(AuditAction.DELETE_RECLAMATION,"Réclamation",idReclamation,idUser,null);
     }
     @Transactional
     public void updateReclamation(Integer idReclamation , Integer idUser, Reclamation reclamation){
@@ -114,6 +122,7 @@ public class ReclamationService {
         reclamationToUpdate.setCanal(reclamation.getCanal());
         reclamationToUpdate.setPriority(reclamation.getPriority());
         reclamationRepository.save(reclamationToUpdate);
+        auditLogService.log(AuditAction.UPDATE_RECLAMATION,"Réclamation",idReclamation,idUser,null);
     }
     public List<Reclamation> getReclamationForDecision(){
         return reclamationRepository.findByStatus(ReclamationStatus.EN_VALIDATION);
