@@ -14,12 +14,43 @@ export default function AgentDashboard({ user }) {
     const [proposalFormId, setProposalFormId] = useState(null);
     const [proposalJustification, setProposalJustification] = useState("");
     const [proposalDecisionType, setProposalDecisionType] = useState("CLOTURE");
+    const [isPlafondAgent, setIsPlafondAgent] = useState(false);
+    const [plafondRequests, setPlafondRequests] = useState([]); 
 
     const router = useRouter();
 
     useEffect(() => {
-        getReclamationForAgent();
+        getUserTeams();
     }, []);
+
+    const getUserTeams = async () => {
+        try {
+            const res = await api.get(`/user-team/user/${user.idUser}`);
+
+            const plafondTeam = res.data.find(
+                (ut) => ut.team.name === "PLAFOND_TEAM"
+            );
+
+            if (plafondTeam) {
+                setIsPlafondAgent(true);
+                getPlafondRequests(plafondTeam.team.idTeam);
+            } else {
+                getReclamationForAgent();
+            }
+
+        } catch (error) {
+            setMessage("Erreur récupération teams");
+        }
+    };
+
+    const getPlafondRequests = async (teamId) => {
+        try {
+            const res = await api.get(`/plafond-requests/team/${teamId}`);
+            setPlafondRequests(res.data);
+        } catch (error) {
+            setMessage("Erreur récupération plafond");
+        }
+    };
 
     const getReclamationForAgent = async () => {
         try {
@@ -119,174 +150,209 @@ export default function AgentDashboard({ user }) {
             </button>
 
             <div className="max-w-4xl mx-auto">
+                {/* 🔥 CONDITION PRINCIPALE */}
+                {isPlafondAgent ? (
 
-                <h1 className="text-3xl font-bold mb-8 text-gray-800">
-                    Mes réclamations à traiter
-                </h1>
+                    <>
+                        <h1 className="text-3xl font-bold mb-8 text-gray-800">
+                            Demandes de changement de plafond
+                        </h1>
 
-                {assignments.length === 0 && (
-                    <div className="bg-white p-6 rounded-xl shadow text-center">
-                        Aucune réclamation assignée
-                    </div>
-                )}
+                        {plafondRequests.length === 0 && (
+                            <div className="bg-white p-6 rounded-xl shadow text-center">
+                                Aucune demande disponible
+                            </div>
+                        )}
 
-                <div className="space-y-6">
+                        <div className="space-y-6">
 
-                    {assignments.map((assignment) => {
+                            {plafondRequests.map((p) => (
 
-                        const r = assignment.reclamation;
+                                <div key={p.idPlafondRequest} className="bg-white rounded-xl shadow p-6">
 
-                        return (
+                                    <div className="flex justify-between mb-2">
+                                        <span className="font-semibold">
+                                            Carte : {p.card?.cardNumberMasked}
+                                        </span>
 
-                            <div
-                                key={assignment.idAssignment}
-                                className="bg-white rounded-xl shadow p-6 border border-gray-200"
-                            >
+                                        <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">
+                                            {p.status}
+                                        </span>
+                                    </div>
 
-                                {/* Header */}
-                                <div className="flex justify-between items-center mb-2">
+                                    <p><b>Nouveau plafond :</b> {p.requestedLimit}</p>
+                                    <p><b>Justification :</b> {p.justification}</p>
 
-                                    <span className="font-semibold text-gray-700">
-                                        {r.reference}
-                                    </span>
-
-                                    <span className={`text-xs px-3 py-1 rounded ${getStatusColor(r.status)}`}>
-                                        {r.status}
-                                    </span>
-
-                                </div>
-
-                                <h2 className="text-lg font-semibold text-gray-800">
-                                    {r.title}
-                                </h2>
-
-                                <p className="text-gray-600 mt-2">
-                                    {r.description}
-                                </p>
-
-                                {/* Info badges */}
-                                <div className="flex gap-3 mt-3 text-sm">
-
-                                    <span className="bg-gray-200 px-3 py-1 rounded">
-                                        Canal : {r.canal}
-                                    </span>
-
-                                    <span className="bg-gray-200 px-3 py-1 rounded">
-                                        Type : {r.type}
-                                    </span>
-
-                                    <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded">
-                                        Priorité : {r.priority}
-                                    </span>
+                                    <p className="text-sm text-gray-500 mt-2">
+                                        {new Date(p.createdAt).toLocaleString()}
+                                    </p>
 
                                 </div>
 
-                                {/* Résolution */}
-                                {r.status !== "RESOLUE" && (
+                            ))}
 
-                                    <div className="mt-5">
+                        </div>
+                    </>
 
-                                        <textarea
-                                            className="w-full border rounded-lg p-3 focus:outline-none focus:ring focus:ring-blue-300"
-                                            rows="4"
-                                            placeholder="Rédiger la résolution..."
-                                            value={contents[r.idReclamation] || ""}
-                                            onChange={(e) =>
-                                                handleContentChange(
-                                                    r.idReclamation,
-                                                    e.target.value
+                ) : (
+
+                    <>
+                        <h1 className="text-3xl font-bold mb-8 text-gray-800">
+                            Mes réclamations à traiter
+                        </h1>
+
+                        {assignments.length === 0 && (
+                            <div className="bg-white p-6 rounded-xl shadow text-center">
+                                Aucune réclamation assignée
+                            </div>
+                        )}
+
+                        <div className="space-y-6">
+
+                            {assignments.map((assignment) => {
+
+                                const r = assignment.reclamation;
+
+                                return (
+
+                                    <div
+                                        key={assignment.idAssignment}
+                                        className="bg-white rounded-xl shadow p-6 border border-gray-200"
+                                    >
+
+                                        {/* Header */}
+                                        <div className="flex justify-between items-center mb-2">
+
+                                            <span className="font-semibold text-gray-700">
+                                                {r.reference}
+                                            </span>
+
+                                            <span className={`text-xs px-3 py-1 rounded ${getStatusColor(r.status)}`}>
+                                                {r.status}
+                                            </span>
+
+                                        </div>
+
+                                        <h2 className="text-lg font-semibold text-gray-800">
+                                            {r.title}
+                                        </h2>
+
+                                        <p className="text-gray-600 mt-2">
+                                            {r.description}
+                                        </p>
+
+                                        <div className="flex gap-3 mt-3 text-sm">
+
+                                            <span className="bg-gray-200 px-3 py-1 rounded">
+                                                Canal : {r.canal}
+                                            </span>
+
+                                            <span className="bg-gray-200 px-3 py-1 rounded">
+                                                Type : {r.type}
+                                            </span>
+
+                                            <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded">
+                                                Priorité : {r.priority}
+                                            </span>
+
+                                        </div>
+
+                                        {r.status !== "RESOLUE" && (
+
+                                            <div className="mt-5">
+
+                                                <textarea
+                                                    className="w-full border rounded-lg p-3"
+                                                    rows="4"
+                                                    value={contents[r.idReclamation] || ""}
+                                                    onChange={(e) =>
+                                                        handleContentChange(
+                                                            r.idReclamation,
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                />
+
+                                                <button
+                                                    onClick={() => createResolution(r.idReclamation)}
+                                                    className="mt-3 bg-green-600 text-white px-4 py-2 rounded-lg"
+                                                >
+                                                    Valider la résolution
+                                                </button>
+
+                                            </div>
+
+                                        )}
+
+                                        {(r.status === "RESOLUE" || proposalFormId === r.idReclamation) && (
+
+                                            <div className="mt-6 bg-gray-50 p-4 rounded-lg border">
+
+                                                <select
+                                                    onChange={(e) => setProposalDecisionType(e.target.value)}
+                                                    className="border rounded px-3 py-2 mb-3 w-full"
+                                                >
+                                                    <option value="CLOTURE">Clôture</option>
+                                                    <option value="REJET">Rejet</option>
+                                                </select>
+
+                                                <textarea
+                                                    onChange={(e) => setProposalJustification(e.target.value)}
+                                                    className="w-full border rounded-lg p-3 mb-3"
+                                                />
+
+                                                <button
+                                                    onClick={() => createDecisionProposal(user.idUser, r.idReclamation)}
+                                                    className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+                                                >
+                                                    Envoyer la proposition
+                                                </button>
+
+                                            </div>
+
+                                        )}
+
+                                        <button
+                                            onClick={() =>
+                                                setOpenChatId(
+                                                    openChatId === r.idReclamation ? null : r.idReclamation
                                                 )
                                             }
-                                        />
-
-                                        <button
-                                            onClick={() => createResolution(r.idReclamation)}
-                                            className="mt-3 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition"
+                                            className="mt-4 bg-gray-600 text-white px-4 py-2 rounded-lg"
                                         >
-                                            Valider la résolution
+                                            Conversation
                                         </button>
+
+                                        {openChatId === r.idReclamation && (
+                                            <ReclamationChat
+                                                reclamationId={r.idReclamation}
+                                                currentUser={user}
+                                            />
+                                        )}
 
                                     </div>
 
-                                )}
+                                );
 
-                                {/* Proposition décision */}
-                                {(r.status === "RESOLUE" || proposalFormId === r.idReclamation) && (
+                            })}
 
-                                    <div className="mt-6 bg-gray-50 p-4 rounded-lg border">
+                        </div>
 
-                                        <h3 className="font-semibold mb-2 text-gray-700">
-                                            Proposer une décision
-                                        </h3>
-
-                                        <select
-                                            onChange={(e) => setProposalDecisionType(e.target.value)}
-                                            className="border rounded px-3 py-2 mb-3 w-full"
-                                        >
-                                            <option>Choisir une décision</option>
-                                            <option value="CLOTURE">Clôture</option>
-                                            <option value="REJET">Rejet</option>
-                                        </select>
-
-                                        <textarea
-                                            onChange={(e) => setProposalJustification(e.target.value)}
-                                            placeholder="Écrivez votre justification"
-                                            className="w-full border rounded-lg p-3 mb-3"
-                                        />
-
-                                        <button
-                                            onClick={() => createDecisionProposal(user.idUser, r.idReclamation)}
-                                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
-                                        >
-                                            Envoyer la proposition
-                                        </button>
-
-                                    </div>
-
-                                )}
-
-                                {/* Chat */}
-                                <button
-                                    onClick={() =>
-                                        setOpenChatId(
-                                            openChatId === r.idReclamation ? null : r.idReclamation
-                                        )
-                                    }
-                                    className="mt-4 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg"
-                                >
-                                    {openChatId === r.idReclamation ? "Fermer conversation" : "Ouvrir conversation"}
-                                </button>
-
-                                {openChatId === r.idReclamation && (
-
-                                    <ReclamationChat
-                                        reclamationId={r.idReclamation}
-                                        currentUser={user}
-                                    />
-
-                                )}
-
-                            </div>
-
-                        );
-
-                    })}
-
+                        {message && (
+            <div className="rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 px-5 py-4 shadow-sm">
+              <div className="flex items-start gap-3">
+                <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white grid place-items-center font-bold">
+                  i
                 </div>
+                <div className="text-sm text-slate-800">
+                  <div className="font-bold text-slate-900">Info</div>
+                  <div className="mt-0.5">{message}</div>
+                </div>
+              </div>
+            </div>
+          )}
+                    </>
 
-                {/* MESSAGE */}
-                {message && (
-                    <div className="rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 px-5 py-4 shadow-sm">
-                    <div className="flex items-start gap-3">
-                        <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white grid place-items-center font-bold">
-                        i
-                        </div>
-                        <div className="text-sm text-slate-800">
-                        <div className="font-bold text-slate-900">Info</div>
-                        <div className="mt-0.5">{message}</div>
-                        </div>
-                    </div>
-                    </div>
                 )}
 
             </div>

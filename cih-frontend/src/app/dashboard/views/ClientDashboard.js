@@ -193,6 +193,7 @@ export default function ClientDashboard({ user }) {
               <p className="text-sm text-slate-600">
                 Crée et suis tes réclamations en temps réel.
               </p>
+              
             </div>
 
             <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white/70 backdrop-blur px-4 py-2 shadow-sm">
@@ -220,13 +221,24 @@ export default function ClientDashboard({ user }) {
               <p className="text-sm text-slate-600">
                 Remplis les infos, puis clique sur “Créer”.
               </p>
+              <div className="flex items-center justify-between mt-2">
+
               <button
-              disabled={!form.description.trim() || loadingAI}
-              onClick={aiAssist}
-              className="flex ml-auto px-4 py-2 bg-indigo-600 text-white rounded-lg disabled:bg-gray-400"
+                onClick={() => router.push("/dashboard/plafond")}
+                className="px-3 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
               >
-              {loadingAI ? "Analyse IA..." : "Assisté par IA"}
+                Demande plafond
               </button>
+
+              <button
+                disabled={!form.description.trim() || loadingAI}
+                onClick={aiAssist}
+                className="px-3 py-2 text-sm bg-gray-700 text-white rounded-lg disabled:bg-gray-400 hover:bg-gray-800 transition"
+              >
+                {loadingAI ? "Analyse..." : "Assisté IA"}
+              </button>
+
+            </div>
             </div>
             <div className="p-6">
               <form onSubmit={createOrModifyReclamation} className="space-y-5">

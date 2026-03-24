@@ -31,6 +31,6 @@ public class UserTeamController {
     @PreAuthorize("hasAuthority('VIEW_TEAM')")
     @GetMapping("/user/{userId}")
     public List<UserTeam> getTeamsOfUser(@PathVariable Integer userId){
-        return userTeamService.getMembersOfTeam(userId);
+        return userTeamService.getTeamsOfUser(userId);
     }
 }
