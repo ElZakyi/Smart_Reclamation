@@ -22,6 +22,8 @@ export default function PlafondPage() {
     newPlafond: "",
     justification: "",
   });
+  const [showOtpInput, setShowOtpInput] = useState(false);
+  const [otpCode, setOtpCode] = useState("");
 
   useEffect(() => {
     getCards();
@@ -120,35 +122,48 @@ export default function PlafondPage() {
   // SUBMIT PLAFOND REQUEST
   // =========================
   const submitPlafondRequest = async () => {
-    try {
-      const user = JSON.parse(localStorage.getItem("user"));
+  try {
+    const user = JSON.parse(localStorage.getItem("user"));
 
-      if (!plafondForm.newPlafond || !plafondForm.justification) {
-        setMessage("Veuillez remplir tous les champs !");
-        return;
-      }
+    const res = await api.post("/otp/generate", null, {
+      params: {
+        userId: user.idUser,
+        cardId: selectedCardForPlafond.idCard,
+        limit: plafondForm.newPlafond,
+        justification: plafondForm.justification,
+      },
+    });
 
-      await api.post("/plafond-requests", null, {
-        params: {
-          userId: user.idUser,
-          cardId: selectedCardForPlafond.idCard,
-          limit: plafondForm.newPlafond,
-          justification: plafondForm.justification,
-        },
-      });
+    setShowOtpInput(true);
+    setMessage(res.data);
 
-      setMessage("✅ Demande envoyée !");
-      setSelectedCardForPlafond(null);
+  } catch(error) {
+    setMessage(error.response?.data?.error || "Erreur /POST génération OTP : " + error);
+  }
+};
+const verifyOtp = async () => {
+  try {
+    const user = JSON.parse(localStorage.getItem("user"));
 
-      setPlafondForm({
-        newPlafond: "",
-        justification: "",
-      });
+    const res = await api.post("/otp/verify", null, {
+      params: {
+        userId: user.idUser,
+        code: otpCode,
+      },
+    });
 
-    } catch (error) {
-      setMessage("❌ Erreur demande plafond");
-    }
-  };
+    setMessage(res.data);
+    setShowOtpInput(false);
+    setSelectedCardForPlafond(null);
+    setPlafondForm({
+    newPlafond: "",
+    justification: ""
+    });
+
+  } catch(error) {
+    setMessage("❌ Code éxpiré ou incorrect");
+  }
+};
 
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-6">
@@ -232,7 +247,25 @@ export default function PlafondPage() {
           </button>
         )}
       </form>
+    {showOtpInput && (
+    <div className="mt-4 p-4 bg-yellow-50 rounded">
+        <h3>🔐 Vérification OTP</h3>
 
+        <input
+        placeholder="Entrer OTP"
+        value={otpCode}
+        onChange={(e) => setOtpCode(e.target.value)}
+        className="border p-2 rounded w-full mb-2"
+        />
+
+        <button
+        onClick={verifyOtp}
+        className="bg-green-600 text-white px-4 py-2 rounded"
+        >
+        Confirmer
+        </button>
+    </div>
+    )}
       {/* ========================= TABLE ========================= */}
       <div className="bg-white p-6 rounded-xl shadow">
 

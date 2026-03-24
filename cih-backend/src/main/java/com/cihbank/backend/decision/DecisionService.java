@@ -44,6 +44,7 @@ public class DecisionService {
         Reclamation reclamation = reclamationRepository.findById(idReclamation).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Réclamation introuvable !"));
         workflowTransitionService.validateTransition(reclamation,ReclamationStatus.CLOTUREE,"RESPONSABLE");
         reclamation.setStatus(ReclamationStatus.CLOTUREE);
+        reclamation.setClosedAt(LocalDateTime.now());
         Reclamation reclamationSaved = reclamationRepository.save(reclamation);
         User responsable = userRepository.findById(idUser).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Utilisateur introuvable !"));
         DecisionProposal decisionProposal = decisionProposalRepository.findById(idDecisionProposal).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Proposition introuvable !"));

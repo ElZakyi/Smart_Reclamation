@@ -1,5 +1,7 @@
 package com.cihbank.backend.plafondrequest;
 
+import com.cihbank.backend.audit.AuditAction;
+import com.cihbank.backend.audit.AuditLogService;
 import com.cihbank.backend.card.Card;
 import com.cihbank.backend.card.CardRepository;
 import com.cihbank.backend.team.Team;
@@ -20,17 +22,20 @@ public class PlafondRequestService {
     private final UserRepository userRepository;
     private final CardRepository cardRepository;
     private final TeamRepository teamRepository;
+    private final AuditLogService auditLogService;
 
     public PlafondRequestService(
             PlafondRequestRepository repository,
             UserRepository userRepository,
             CardRepository cardRepository,
-            TeamRepository teamRepository
+            TeamRepository teamRepository,
+            AuditLogService auditLogService
     ) {
         this.repository = repository;
         this.userRepository = userRepository;
         this.cardRepository = cardRepository;
         this.teamRepository = teamRepository;
+        this.auditLogService = auditLogService;
     }
 
     // =========================
@@ -61,7 +66,9 @@ public class PlafondRequestService {
         request.setCreatedAt(LocalDateTime.now());
         request.setTeam(team);
 
-        return repository.save(request);
+        PlafondRequest saved =  repository.save(request);
+        auditLogService.log(AuditAction.CREATE_PLAFOND_REQUEST,"DEMANDE_PLAFOND",saved.getIdPlafondRequest(),userId,null);
+        return saved;
     }
 
     // =========================
@@ -81,11 +88,11 @@ public class PlafondRequestService {
     // =========================
     // GET ONE
     // =========================
-    public PlafondRequest getOne(Long id) {
+    public PlafondRequest getOne(Integer id) {
         return repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Request not found"));
     }
     public List<PlafondRequest> getByTeam(Integer idTeam){
-        return repository.findByTeamIdTeam(idTeam);
+        return repository.findByTeamIdTeamAndStatus(idTeam, PlafondRequestStatus.EN_ATTENTE);
     }
 }

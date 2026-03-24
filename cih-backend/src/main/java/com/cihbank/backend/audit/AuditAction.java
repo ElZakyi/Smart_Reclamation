@@ -53,10 +53,13 @@ public enum AuditAction {
 
     // ================= NOTIFICATION =================
     SEND_NOTIFICATION,
-
+    // ================= OTP =================
+    GENERATE_OTP,
+    VERIFY_OTP,
     // ================= PLAFOND =================
     CREATE_PLAFOND_REQUEST,
     PROPOSE_PLAFOND_CHANGE,
     VALIDATE_PLAFOND_CHANGE,
-    REFUSE_PLAFOND_CHANGE
+    REFUSE_PLAFOND_CHANGE,
+    CREATE_PLAFOND_PROPOSAL
 }

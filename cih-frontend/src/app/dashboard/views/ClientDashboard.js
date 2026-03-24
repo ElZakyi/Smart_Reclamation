@@ -122,21 +122,33 @@ export default function ClientDashboard({ user }) {
   }
   // ✅ Helpers UI (pas logique métier)
   const statusBadge = (status) => {
-    switch (status) {
-      case "CREEE":
-      case "CREE":
-        return "bg-sky-100 text-sky-700 ring-sky-200";
-      case "EN_COURS":
-        return "bg-amber-100 text-amber-800 ring-amber-200";
-      case "RESOLUE":
-        return "bg-emerald-100 text-emerald-700 ring-emerald-200";
-      case "REJETEE":
-        return "bg-rose-100 text-rose-700 ring-rose-200";
-      default:
-        return "bg-gray-100 text-gray-700 ring-gray-200";
-    }
-  };
+  switch (status) {
+    case "CREEE":
+    case "CREE":
+      return "bg-sky-100 text-sky-700 ring-sky-200";
 
+    case "AFFECTEE":
+      return "bg-indigo-100 text-indigo-700 ring-indigo-200";
+
+    case "EN_COURS":
+      return "bg-amber-100 text-amber-800 ring-amber-200";
+
+    case "EN_ATTENTE_CLIENT":
+      return "bg-yellow-100 text-yellow-800 ring-yellow-200";
+
+    case "REJETEE":
+      return "bg-rose-100 text-rose-700 ring-rose-200";
+
+    case "RESOLUE":
+  return "bg-emerald-100 text-emerald-700 ring-emerald-200";
+
+    case "CLOTUREE":
+  return "bg-green-200 text-green-900 ring-green-300"; // plus foncé
+
+    default:
+      return "bg-gray-100 text-gray-700 ring-gray-200";
+  }
+};
   const priorityBadge = (p) => {
     switch (p) {
       case "LOW":

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import api from "@/services/api";
+import { useRouter } from "next/navigation";
 
 export default function AuditeurDashboard(){
 
@@ -12,6 +13,7 @@ export default function AuditeurDashboard(){
     const [search,setSearch] = useState("");
     const [actionFilter,setActionFilter] = useState("");
     const [entityFilter,setEntityFilter] = useState("");
+    const router = useRouter();
 
     useEffect(()=>{
         loadAudit();
@@ -31,6 +33,56 @@ export default function AuditeurDashboard(){
             setLoading(false);
         }
     }
+    const entityBadge = (entity) => {
+  const e = entity?.toLowerCase()?.trim();
+
+  switch (e) {
+    case "utilisateur":
+    case "user":
+      return "bg-indigo-100 text-indigo-700";
+
+    case "équipe":
+    case "equipe":
+    case "team":
+      return "bg-purple-100 text-purple-700";
+
+    case "réclamation":
+    case "reclamation":
+      return "bg-blue-100 text-blue-700";
+
+    case "assignment":
+      return "bg-cyan-100 text-cyan-700";
+
+    case "résolution":
+    case "resolution":
+      return "bg-emerald-100 text-emerald-700";
+
+    case "proposition_décision":
+    case "proposition_decision":
+    case "decisionproposal":
+      return "bg-orange-100 text-orange-700";
+
+    case "decision":
+    case "décision":
+      return "bg-pink-100 text-pink-700";
+
+    case "notification":
+      return "bg-yellow-100 text-yellow-700";
+
+    case "attachment":
+    case "pièce jointe":
+    case "piece jointe":
+      return "bg-teal-100 text-teal-700";
+
+    case "plafondrequest":
+    case "plafond_request":
+    case "demande_plafond":
+      return "bg-rose-100 text-rose-700";
+
+    default:
+      return "bg-gray-100 text-gray-700";
+  }
+};
 
     const actionLabels = {
         CREATE_RECLAMATION: "Création de réclamation",
@@ -135,7 +187,7 @@ export default function AuditeurDashboard(){
 
             {/* HEADER */}
             <h1 className="text-3xl font-bold text-gray-800">
-                📊 Audit Logs
+                 Audit & Traçabilité
             </h1>
             <button
                 onClick={handleLogout}
@@ -214,7 +266,7 @@ export default function AuditeurDashboard(){
                                 </td>
 
                                 <td className="p-3">
-                                    <span className="bg-gray-100 px-2 py-1 rounded text-xs">
+                                    <span className={`px-2 py-1 rounded text-xs font-semibold ${entityBadge(log.entityType)}`}>
                                         {log.entityType}
                                     </span>
                                 </td>

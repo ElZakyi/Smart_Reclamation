@@ -12,7 +12,7 @@ public class PlafondRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idPlafondRequest;
+    private Integer idPlafondRequest;
 
     @ManyToOne
     @JoinColumn(name = "id_card")
@@ -36,8 +36,8 @@ public class PlafondRequest {
 
     // ===== GETTERS / SETTERS =====
 
-    public Long getIdPlafondRequest() { return idPlafondRequest; }
-    public void setIdPlafondRequest(Long id) { this.idPlafondRequest = id; }
+    public Integer getIdPlafondRequest() { return idPlafondRequest; }
+    public void setIdPlafondRequest(Integer id) { this.idPlafondRequest = id; }
 
     public Card getCard() { return card; }
     public void setCard(Card card) { this.card = card; }

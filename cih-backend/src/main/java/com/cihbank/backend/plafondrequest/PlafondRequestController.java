@@ -47,7 +47,7 @@ public class PlafondRequestController {
     // GET ONE
     // =========================
     @GetMapping("/{id}")
-    public PlafondRequest getOne(@PathVariable Long id) {
+    public PlafondRequest getOne(@PathVariable Integer id) {
         return service.getOne(id);
     }
     @GetMapping("/team/{idTeam}")

@@ -98,6 +98,14 @@ export default function ReclamationDetail({id}) {
                         <span className="px-3 py-1 text-sm rounded-full bg-blue-100 text-blue-700 font-medium">
                             {reclamation.status}
                         </span>
+                        {reclamation.closedAt && (
+                            <div>
+                                <p className="text-sm text-gray-500">Date de clôture</p>
+                                <p className="font-semibold text-green-600">
+                                    {new Date(reclamation.closedAt).toLocaleString()}
+                                </p>
+                            </div>
+                        )}
                     </div>
 
                     <div>
