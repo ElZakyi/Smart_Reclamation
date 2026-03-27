@@ -15,6 +15,7 @@ public class CustomUserDetails implements UserDetails {
     private List<String> permissions;
 
     private Collection<? extends GrantedAuthority> authorities;
+    private Boolean isActive;
 
     public CustomUserDetails(
             Integer idUser,
@@ -22,7 +23,8 @@ public class CustomUserDetails implements UserDetails {
             String password,
             List<String> roles,
             List<String> permissions,
-            Collection<? extends GrantedAuthority> authorities
+            Collection<? extends GrantedAuthority> authorities,
+            Boolean isActive
     ) {
         this.idUser = idUser;
         this.email = email;
@@ -30,6 +32,7 @@ public class CustomUserDetails implements UserDetails {
         this.roles = roles;
         this.permissions = permissions;
         this.authorities = authorities;
+        this.isActive = isActive;
     }
 
     // ====== UserDetails obligatoire ======
@@ -50,7 +53,9 @@ public class CustomUserDetails implements UserDetails {
     public String getUsername() {
         return email;
     }
-
+    public Boolean getIsActive() {
+        return isActive;
+    }
     @Override
     public boolean isAccountNonExpired() {
         return true;

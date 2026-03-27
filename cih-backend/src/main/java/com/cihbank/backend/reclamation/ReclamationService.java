@@ -111,10 +111,10 @@ public class ReclamationService {
     public void updateReclamation(Integer idReclamation , Integer idUser, Reclamation reclamation){
         Reclamation reclamationToUpdate = reclamationRepository.findById(idReclamation).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Reclamation not found !"));
         if(reclamationToUpdate.getUser().getIdUser() == null || !reclamationToUpdate.getUser().getIdUser().equals(idUser)){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Vous n'avez pas le droit de supprimer cette réclamation !");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Vous n'avez pas le droit de modifier cette réclamation !");
         }
         if(reclamationToUpdate.getStatus() == null || reclamationToUpdate.getStatus() != ReclamationStatus.CREEE){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Seules les réclamations avec le statut CRÉÉES peuvent être supprimées ! !");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Seules les réclamations avec le statut CRÉÉES peuvent être modifiées ! !");
         }
         reclamationToUpdate.setTitle(reclamation.getTitle());
         reclamationToUpdate.setDescription(reclamation.getDescription());

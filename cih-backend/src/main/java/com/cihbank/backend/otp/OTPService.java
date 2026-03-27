@@ -99,7 +99,7 @@ public class OTPService {
         otp.setStatus(OTPStatus.VALIDATED);
         otp.setValidatedAt(LocalDateTime.now());
         OTPVerification otpSaved = otpRepository.save(otp);
-        auditLogService.log(AuditAction.VERIFY_OTP,"Otp",otpSaved.getIdOtp(),userId,null);
+        auditLogService.log(AuditAction.VERIFY_OTP,"OTP",otpSaved.getIdOtp(),userId,null);
         plafondRequestService.create(
                 otp.getTempUserId(),
                 otp.getTempCardId(),

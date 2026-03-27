@@ -10,6 +10,7 @@ import com.cihbank.backend.user.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class PlafondProposalService {
@@ -34,10 +35,10 @@ public class PlafondProposalService {
     public PlafondProposal create(Integer requestId, Integer userId, Double proposedLimit, String justification) {
 
         PlafondRequest request = requestRepository.findById(requestId)
-                .orElseThrow(() -> new RuntimeException("Request introuvable"));
+                .orElseThrow(() -> new RuntimeException("Demande introuvable"));
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User introuvable"));
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
 
         PlafondProposal proposal = new PlafondProposal();
         proposal.setPlafondRequest(request);
@@ -52,7 +53,10 @@ public class PlafondProposalService {
         requestRepository.save(request);
 
         PlafondProposal saved =  repository.save(proposal);
-        auditLogService.log(AuditAction.CREATE_PLAFOND_PROPOSAL,"PROPOSITION_PLAFOND",saved.getIdPlafondProposal(),userId,null);
+        auditLogService.log(AuditAction.CREATE_PLAFOND_PROPOSAL,"Proposition_plafond",saved.getIdPlafondProposal(),userId,null);
         return saved ;
+    }
+    public List<PlafondProposal> getForResponsable(){
+        return repository.findByPlafondRequest_Status(PlafondRequestStatus.EN_VALIDATION); // ou filtré
     }
 }

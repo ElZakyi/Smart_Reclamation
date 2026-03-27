@@ -54,4 +54,9 @@ public class PlafondRequestController {
     public List<PlafondRequest> getByTeam(@PathVariable Integer idTeam) {
         return service.getByTeam(idTeam);
     }
+    @GetMapping("/validation")
+    public List<PlafondRequest> getForValidation(){
+        return service.getForValidation();
+    }
+
 }

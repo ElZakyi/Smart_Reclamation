@@ -67,7 +67,8 @@ public class CustomUserDetailsService implements UserDetailsService {
                 user.getPasswordHash(), // ⚠️ important: hash stocké en DB
                 roles,
                 permissions,
-                authorities
+                authorities,
+                user.getIsActive()
         );
     }
 }

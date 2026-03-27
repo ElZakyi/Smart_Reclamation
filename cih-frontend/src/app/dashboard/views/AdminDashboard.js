@@ -329,7 +329,17 @@ export default function AdminDashboard({ user }) {
     }
   return (
     
-    <div className="min-h-screen bg-gray-100 p-6 md:p-10">
+    <div className="relative min-h-screen">
+      {/* 🔥 BACKGROUND IMAGE */}
+    <div
+      className="fixed inset-0 -z-10 bg-cover bg-center"
+      style={{
+        backgroundImage: "url('/back_cih.png')"
+      }}
+    />
+
+    {/* 🔥 OVERLAY (IMPORTANT POUR LISIBILITÉ) */}
+    <div className="fixed inset-0 -z-10 bg-white/50 backdrop-blur-sm"></div>
       <button
             onClick={handleLogout}
             className="flex ml-auto px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 
@@ -360,219 +370,328 @@ export default function AdminDashboard({ user }) {
           
         </div>
 
-        {/* TABLE USERS */}
-        <div className="bg-white rounded-xl shadow overflow-hidden border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
-            <h2 className="font-semibold text-center text-gray-700">Utilisateurs</h2>
-            <button
-            onClick={() => setShowCreateUser(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition active:scale-[0.99]"
-          >
-            Créer utilisateur
-          </button>
-          </div>
+       {/* TABLE USERS */}
+<div className="rounded-2xl backdrop-blur-sm border border-black/20 shadow-lg overflow-hidden">
 
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Nom complet</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Email</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Téléphone</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Actif</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {users.map((u) => (
-                  <tr key={u.idUser} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 text-sm text-gray-800">{u.fullName}</td>
-                    <td className="px-6 py-4 text-sm text-gray-700">{u.email}</td>
-                    <td className="px-6 py-4 text-sm text-gray-700">{u.phone ? u.phone : <span className="text-gray-400 italic text-sm">Aucun nombre de téléphone trouvé</span> }</td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
-                        u.isActive
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                      }`}>
-                        {u.isActive ? "Actif" : "Inactif"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-wrap gap-2">
-                        <button
-                          onClick={()=>setEditingUser(u)}
-                          className="bg-gray-800 hover:bg-gray-900 text-white px-3 py-1.5 rounded-md text-sm shadow-sm transition active:scale-[0.99]"
-                        >
-                          Modifier utilisateur
-                        </button>
+  {/* HEADER */}
+  <div className="px-6 py-5 border-b border-white/20 flex justify-between items-center">
+    <h2 className="font-semibold text-gray-900 text-lg flex ml-140">
+      Utilisateurs
+    </h2>
 
-                        <button
-                          onClick={() => setSelectedUser(u.idUser)}
-                          className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-md text-sm shadow-sm transition active:scale-[0.99]"
-                        >
-                          {u.userRoles.length > 0 ? "Modifier rôle" : "Affecter rôle"}
-                        </button>
-
-                        {u.isActive ? (
-                          <button
-                            onClick={()=> desactivateAccount(u.idUser)}
-                            className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-md text-sm shadow-sm transition active:scale-[0.99]"
-                          >
-                            Désactiver
-                          </button>
-                        ) : (
-                          <button
-                            onClick={()=> activateAccount(u.idUser)}
-                            className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-md text-sm shadow-sm transition active:scale-[0.99]"
-                          >
-                            Activer
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* TABLE ROLES + PERMISSIONS */}
-        <div className="bg-white rounded-xl shadow overflow-hidden border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-            <h2 className="font-semibold text-center text-gray-700">Rôles & Permissions</h2>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Utilisateur</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Rôle</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Permissions</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Action</th>
-                </tr>
-              </thead>
-
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {users.map((user)=> (
-                  user.userRoles.map((ur)=> (
-                    <tr key={`${user.idUser}-${ur.role.idRole}`} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 text-sm text-gray-800">{user.fullName}</td>
-
-                      <td className="px-6 py-4 text-sm font-semibold text-gray-900">
-                        {ur.role.name || null}
-                      </td>
-
-                      <td className="px-6 py-4 text-sm text-gray-600">
-                        <div className="space-y-1">
-                          {permissionsByRole[ur.role.idRole] &&
-                          permissionsByRole[ur.role.idRole].length > 0 ? (
-
-                            permissionsByRole[ur.role.idRole].map((permName) => {
-                              const permObj = permissions.find(p => p.name === permName);
-
-                              return (
-                                <div key={permName} className="flex items-center justify-between gap-3 rounded-md border border-gray-200 px-3 py-1.5 bg-gray-50">
-                                  <span className="text-xs md:text-sm text-gray-700 break-all">{permName}</span>
-                                  <button
-                                    onClick={() =>
-                                      deletePermissionFromRole(
-                                        ur.role.idRole,
-                                        permObj?.idPermission
-                                      )
-                                    }
-                                    className="text-red-600 hover:text-red-700 text-xs font-semibold"
-                                  >
-                                    Retirer
-                                  </button>
-                                </div>
-                              );
-                            })
-
-                          ) : (
-                            <span className="text-gray-400 italic text-sm">
-                              Aucune permission attribuée
-                            </span>
-                          )}
-                        </div>
-                      </td>
-
-                      <td className="px-6 py-4">
-                        <button
-                          onClick={()=> {
-                            setSelectedRoleIdForPerm(ur.role.idRole);
-                            setMessage("");
-                          }}
-                          className="bg-orange-600 hover:bg-orange-700 text-white px-3 py-1.5 rounded-md text-sm shadow-sm transition active:scale-[0.99]"
-                        >
-                          Gérer permissions
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                ))}
-              </tbody>
-
-            </table>
-          </div>
-        </div>
-        {/* TABLE TEAMS */}
-<div className="bg-white rounded-xl shadow overflow-hidden border border-gray-200">
-  <div className="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
-    <h2 className="font-semibold text-gray-700">Teams</h2>
     <button
-      onClick={() => setShowTeamForm(true)}
-      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition active:scale-[0.99]"
+      onClick={() => setShowCreateUser(true)}
+      className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-lg shadow transition"
     >
-      Créer Team
+      + Créer utilisateur
     </button>
   </div>
 
-  <div className="overflow-x-auto">
-    <table className="min-w-full divide-y divide-gray-200">
-      <thead className="bg-gray-50">
+  {/* TABLE */}
+  <div className="overflow-x-auto rounded-2xl backdrop-blur-md bg-white/10 border border-white/30 shadow-xl">
+
+    <table className="min-w-full">
+
+      {/* HEADER */}
+      <thead className="bg-white/70 backdrop-blur-md">
         <tr>
-          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
-            Nom
-          </th>
-          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
-            Description
-          </th>
-          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
-            Statut
-          </th>
-          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
-            Membres
-          </th>
-          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
-            Actions
-          </th>
+          <th className="px-6 py-4 text-left text-base font-semibold text-gray-900 border-r border-gray-300">Nom complet</th>
+          <th className="px-6 py-4 text-left text-base font-semibold text-gray-900 border-r border-gray-300">Email</th>
+          <th className="px-6 py-4 text-left text-base font-semibold text-gray-900 border-r border-gray-300">Téléphone</th>
+          <th className="px-6 py-4 text-left text-base font-semibold text-gray-900 border-r border-gray-300">Statut</th>
+          <th className="px-6 py-4 text-left text-base font-semibold text-gray-900">Actions</th>
         </tr>
       </thead>
 
-      <tbody className="divide-y divide-gray-200 bg-white">
+      {/* BODY */}
+      <tbody className="divide-y divide-gray-300">
+
+        {users.map((u) => (
+          <tr 
+            key={u.idUser} 
+            className="hover:bg-white/50 transition"
+          >
+
+            {/* NOM */}
+            <td className="px-6 py-5 text-[16px] font-semibold text-gray-900 border-r border-gray-200">
+              {u.fullName}
+            </td>
+
+            {/* EMAIL */}
+            <td className="px-6 py-5 text-[16px] text-gray-900 border-r border-gray-200">
+              {u.email}
+            </td>
+
+            {/* PHONE */}
+            <td className="px-6 py-5 text-[16px] text-gray-900 border-r border-gray-200">
+              {u.phone 
+                ? u.phone 
+                : <span className="text-gray-500 italic">Aucun numéro</span>}
+            </td>
+
+            {/* STATUS */}
+            <td className="px-6 py-5 text-[16px] text-gray-900 border-r border-gray-200">
+              <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold ${
+                u.isActive
+                  ? "bg-green-200 text-green-900"
+                  : "bg-red-200 text-red-900"
+              }`}>
+                {u.isActive ? "Actif" : "Inactif"}
+              </span>
+            </td>
+
+            {/* ACTIONS */}
+            <td className="px-6 py-5 text-[16px] text-gray-900 border-r border-gray-200">
+              <div className="flex flex-wrap gap-2">
+
+                <button
+                  onClick={()=>setEditingUser(u)}
+                  className="bg-orange-300 hover:bg-orange-500 text-white px-4 py-2 rounded-lg text-sm shadow transition"
+                >
+                  Modifier
+                </button>
+
+                <button
+                  onClick={() => setSelectedUser(u.idUser)}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm shadow transition"
+                >
+                  {u.userRoles.length > 0 ? "Rôle" : "Affecter"}
+                </button>
+
+                {u.isActive ? (
+                  <button
+                    onClick={()=> desactivateAccount(u.idUser)}
+                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm shadow transition"
+                  >
+                    Désactiver
+                  </button>
+                ) : (
+                  <button
+                    onClick={()=> activateAccount(u.idUser)}
+                    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm shadow transition"
+                  >
+                    Activer
+                  </button>
+                )}
+
+              </div>
+            </td>
+
+          </tr>
+        ))}
+
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+        {/* TABLE ROLES + PERMISSIONS */}
+<div className="rounded-2xl backdrop-blur-sm border border-white/20 shadow-lg overflow-hidden">
+
+  {/* HEADER */}
+  <div className="px-6 py-5 border-b border-white/20 flex justify-between items-center">
+    <h2 className="font-semibold text-gray-900 text-lg flex ml-140">
+      Rôles & Pérmissions
+    </h2>
+  </div>
+
+  {/* TABLE */}
+  <div className="overflow-x-auto rounded-2xl backdrop-blur-md bg-white/10 border border-black/30 shadow-xl">
+
+    <table className="min-w-full">
+
+      {/* HEADER */}
+      <thead className="bg-white/70 backdrop-blur-md">
+        <tr className="text-gray-900 text-base">
+
+          <th className="px-6 py-4 text-left font-semibold border-r border-gray-300">
+            Utilisateur
+          </th>
+
+          <th className="px-6 py-4 text-left font-semibold border-r border-gray-300">
+            Rôle
+          </th>
+
+          <th className="px-6 py-4 text-left font-semibold border-r border-gray-300">
+            Pérmissions
+          </th>
+
+          <th className="px-6 py-4 text-left font-semibold">
+            Action
+          </th>
+
+        </tr>
+      </thead>
+
+      {/* BODY */}
+      <tbody className="divide-y divide-gray-300">
+
+        {users.map((user)=> (
+          user.userRoles.map((ur)=> (
+            <tr 
+              key={`${user.idUser}-${ur.role.idRole}`} 
+              className="hover:bg-white/50 transition"
+            >
+
+              {/* USER */}
+              <td className="px-6 py-5 border-r border-gray-200 text-[16px] font-semibold text-gray-900">
+                {user.fullName}
+              </td>
+
+              {/* ROLE */}
+              <td className="px-6 py-5 border-r border-gray-200 text-[15px]  text-gray-900">
+                {ur.role.name || null}
+              </td>
+
+              {/* PERMISSIONS */}
+              <td className="px-6 py-5 border-r border-gray-200 text-[15px] text-gray-800">
+                <div className="space-y-2">
+
+                  {permissionsByRole[ur.role.idRole] &&
+                  permissionsByRole[ur.role.idRole].length > 0 ? (
+
+                    permissionsByRole[ur.role.idRole].map((permName) => {
+                      const permObj = permissions.find(p => p.name === permName);
+
+                      return (
+                        <div 
+                          key={permName} 
+                          className="flex items-center justify-between gap-3 rounded-lg border border-gray-300 px-3 py-2 bg-white/60 shadow-sm"
+                        >
+                          <span className="text-sm text-gray-900 break-all font-medium">
+                            {permName}
+                          </span>
+
+                          <button
+                            onClick={() =>
+                              deletePermissionFromRole(
+                                ur.role.idRole,
+                                permObj?.idPermission
+                              )
+                            }
+                            className="text-red-600 hover:text-red-700 text-sm font-semibold"
+                          >
+                            Retirer
+                          </button>
+                        </div>
+                      );
+                    })
+
+                  ) : (
+                    <span className="text-gray-500 italic text-sm">
+                      Aucune permission attribuée
+                    </span>
+                  )}
+                </div>
+              </td>
+
+              {/* ACTION */}
+              <td className="px-6 py-5">
+                <button
+                  onClick={()=> {
+                    setSelectedRoleIdForPerm(ur.role.idRole);
+                    setMessage("");
+                  }}
+                  className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm shadow transition"
+                >
+                  Gérer permissions
+                </button>
+              </td>
+
+            </tr>
+          ))
+        ))}
+
+      </tbody>
+
+    </table>
+  </div>
+</div>
+        {/* TABLE TEAMS */}
+<div className="rounded-2xl backdrop-blur-sm border border-white/20 shadow-lg overflow-hidden">
+
+  {/* HEADER */}
+  <div className="px-6 py-5 border-b border-white/20 flex justify-between items-center">
+    <h2 className="font-semibold text-gray-900 text-lg flex ml-140">
+      Équipes
+    </h2>
+
+    <button
+      onClick={() => setShowTeamForm(true)}
+      className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-lg shadow transition"
+    >
+      + Créer équipe
+    </button>
+  </div>
+
+  {/* TABLE */}
+  <div className="overflow-x-auto rounded-2xl backdrop-blur-md bg-white/10 border border-black/30 shadow-xl">
+
+    <table className="min-w-full">
+
+      {/* HEADER */}
+      <thead className="bg-white/60 backdrop-blur-md">
+        <tr className="text-gray-900 text-base">
+
+          <th className="px-6 py-4 text-left font-semibold border-r border-gray-300">
+            Nom
+          </th>
+
+          <th className="px-6 py-4 text-left font-semibold border-r border-gray-300">
+            Déscription
+          </th>
+
+          <th className="px-6 py-4 text-left font-semibold border-r border-gray-300">
+            Statut
+          </th>
+
+          <th className="px-6 py-4 text-left font-semibold border-r border-gray-300">
+            Membres
+          </th>
+
+          <th className="px-6 py-4 text-left font-semibold">
+            Actions
+          </th>
+
+        </tr>
+      </thead>
+
+      {/* BODY */}
+      <tbody className="divide-y divide-gray-300">
+
         {teams.map((team) => (
-          <tr key={team.idTeam} className="hover:bg-gray-50">
-            <td className="px-6 py-4 text-sm text-gray-800 font-medium">
+          <tr 
+            key={team.idTeam} 
+            className="hover:bg-white/50 transition"
+          >
+
+            {/* NOM */}
+            <td className="px-6 py-5 border-r border-gray-200 text-[16px] font-semibold text-gray-900">
               {team.name}
             </td>
-            <td className="px-6 py-4 text-sm text-gray-600">
+
+            {/* DESCRIPTION */}
+            <td className="px-6 py-5 border-r border-gray-200 text-[15px] text-gray-800">
               {team.description}
             </td>
-            <td className="px-6 py-4">
+
+            {/* STATUS */}
+            <td className="px-6 py-5 border-r border-gray-200">
               <span
-                className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
+                className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold ${
                   team.isActive
-                    ? "bg-green-100 text-green-700"
-                    : "bg-red-100 text-red-700"
+                    ? "bg-green-200 text-green-900"
+                    : "bg-red-200 text-red-900"
                 }`}
               >
                 {team.isActive ? "Actif" : "Inactif"}
               </span>
             </td>
-            <td className="px-6 py-4">
+
+            {/* MEMBERS */}
+            <td className="px-6 py-5 border-r border-gray-200 text-[15px] text-gray-800">
+
               {membersOfTeams[team.idTeam] && membersOfTeams[team.idTeam].length > 0 ? (
 
                 <div className="flex flex-col gap-2">
@@ -581,16 +700,16 @@ export default function AdminDashboard({ user }) {
 
                     <div
                       key={member.user.idUser}
-                      className="flex items-center justify-between bg-gray-50 border rounded-lg px-3 py-2"
+                      className="flex items-center justify-between bg-white/60 border border-gray-300 rounded-lg px-3 py-2 shadow-sm"
                     >
 
-                      <span className="text-sm text-gray-800 font-medium">
+                      <span className="text-sm text-gray-900 font-medium">
                         {member.user.fullName}
                       </span>
 
                       <button
                         onClick={()=>RemoveUserFromTeam(member.user.idUser,team.idTeam)}
-                        className="text-red-600 hover:text-red-700 text-xs font-semibold"
+                        className="text-red-600 hover:text-red-700 text-sm font-semibold"
                       >
                         Retirer
                       </button>
@@ -602,35 +721,40 @@ export default function AdminDashboard({ user }) {
                 </div>
 
               ) : (
-                <span className="text-gray-400 italic text-sm">
+                <span className="text-gray-500 italic text-sm">
                   Aucun membre
                 </span>
               )}
+
             </td>
-            <td className="px-6 py-4">
+
+            {/* ACTIONS */}
+            <td className="px-6 py-5">
+
               <div className="flex gap-2 flex-wrap">
+
                 <button
                   onClick={() => setTeamEditing(team)}
-                  className="bg-gray-800 hover:bg-gray-900 text-white px-3 py-1.5 rounded-md text-sm shadow-sm transition active:scale-[0.99]"
-                >
+                  className="bg-orange-300 hover:bg-orange-500 text-white px-4 py-2 rounded-lg text-sm shadow transition"                >
                   Modifier
                 </button>
 
                 {team.isActive ? (
                   <button
                     onClick={() => deactivateTeam(team.idTeam)}
-                    className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-md text-sm shadow-sm transition active:scale-[0.99]"
+                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm shadow transition"
                   >
                     Désactiver
                   </button>
                 ) : (
                   <button
                     onClick={() => activateTeam(team.idTeam)}
-                    className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-md text-sm shadow-sm transition active:scale-[0.99]"
+                    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm shadow transition"
                   >
                     Activer
                   </button>
                 )}
+
                 <select
                   value={selectedMemberByTeam[team.idTeam] || ""}
                   onChange={(e)=>{
@@ -643,22 +767,27 @@ export default function AdminDashboard({ user }) {
 
                     assignMemberToTeam(team.idTeam,userId);
                   }}
-
-                  className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 >
                   <option>Assigner membre</option>
                   {users.map((user)=>(
-                    <option key = {user.idUser} value = {user.idUser}>{user.fullName}</option>
+                    <option key = {user.idUser} value = {user.idUser}>
+                      {user.fullName}
+                    </option>
                   ))}
                 </select>
+
               </div>
+
             </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+
+          </tr>
+        ))}
+
+      </tbody>
+    </table>
   </div>
+</div>
 
         {/* MODAL UPDATE USER */}
         {editingUser && (
@@ -732,7 +861,7 @@ export default function AdminDashboard({ user }) {
             <div className="w-full max-w-2xl rounded-xl bg-white shadow-xl border border-gray-200">
               <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-gray-800">
-                  Ajouter une permission au role ID : {selectedRoleIdForPerm}
+                  Ajouter une pérmission au role ID : {selectedRoleIdForPerm}
                 </h3>
                 <button
                   onClick={()=> {
@@ -751,7 +880,7 @@ export default function AdminDashboard({ user }) {
                   onChange={(e)=>setSelectedPermissionId(e.target.value)}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
                 >
-                  <option value="">Choisir une permission</option>
+                  <option value="">Choisir une pérmission</option>
                   {[...permissions]
                     .sort((a, b) => a.name.localeCompare(b.name))
                     .map((permission) => (

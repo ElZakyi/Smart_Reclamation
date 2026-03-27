@@ -13,6 +13,7 @@ export default function AuditeurDashboard(){
     const [search,setSearch] = useState("");
     const [actionFilter,setActionFilter] = useState("");
     const [entityFilter,setEntityFilter] = useState("");
+    const [entitySort, setEntitySort] = useState(""); // "", "asc", "desc
     const router = useRouter();
 
     useEffect(()=>{
@@ -21,7 +22,7 @@ export default function AuditeurDashboard(){
 
     useEffect(()=>{
         filterLogs();
-    },[logs,search,actionFilter,entityFilter]);
+    },[logs,search,actionFilter,entityFilter,entitySort]);
 
     const loadAudit = async () => {
         try{
@@ -37,48 +38,72 @@ export default function AuditeurDashboard(){
   const e = entity?.toLowerCase()?.trim();
 
   switch (e) {
+
+    // 👤 USERS / IDENTITÉ
     case "utilisateur":
     case "user":
-      return "bg-indigo-100 text-indigo-700";
+      return "bg-indigo-100 text-indigo-800";
 
+    case "assignment":
+    case "assignement_réclamation":
+      return "bg-violet-100 text-violet-800";
+
+
+    // 👥 ORGANISATION
     case "équipe":
     case "equipe":
     case "team":
-      return "bg-purple-100 text-purple-700";
+      return "bg-purple-100 text-purple-800";
 
+
+    // 📢 MÉTIER PRINCIPAL (réclamations)
     case "réclamation":
     case "reclamation":
-      return "bg-blue-100 text-blue-700";
+      return "bg-blue-100 text-blue-800";
 
-    case "assignment":
-      return "bg-cyan-100 text-cyan-700";
+
+    // ⚙️ TRAITEMENT / WORKFLOW
+    case "routing_suggestion":
+      return "bg-sky-100 text-sky-800";
 
     case "résolution":
     case "resolution":
-      return "bg-emerald-100 text-emerald-700";
+      return "bg-emerald-100 text-emerald-800";
 
+
+    // 📊 DÉCISIONS
     case "proposition_décision":
     case "proposition_decision":
     case "decisionproposal":
-      return "bg-orange-100 text-orange-700";
+      return "bg-amber-100 text-amber-800";
 
     case "decision":
     case "décision":
-      return "bg-pink-100 text-pink-700";
+      return "bg-pink-100 text-pink-800";
 
+    case "décision_plafond":
+    case "decision_plafond":
+      return "bg-fuchsia-100 text-fuchsia-800";
+
+
+    // 💳 PLAFOND / FINANCE
+    case "plafondrequest":
+    case "plafond_request":
+    case "demande_plafond":
+      return "bg-rose-100 text-rose-800";
+
+
+    // 🔔 SUPPORT
     case "notification":
-      return "bg-yellow-100 text-yellow-700";
+      return "bg-yellow-100 text-yellow-800";
 
     case "attachment":
     case "pièce jointe":
     case "piece jointe":
-      return "bg-teal-100 text-teal-700";
+      return "bg-teal-100 text-teal-800";
 
-    case "plafondrequest":
-    case "plafond_request":
-    case "demande_plafond":
-      return "bg-rose-100 text-rose-700";
 
+    // ❓ DEFAULT
     default:
       return "bg-gray-100 text-gray-700";
   }
@@ -133,40 +158,65 @@ export default function AuditeurDashboard(){
         CREATE_PLAFOND_REQUEST: "Demande de plafond",
         PROPOSE_PLAFOND_CHANGE: "Proposition de plafond",
         VALIDATE_PLAFOND_CHANGE: "Validation plafond",
-        REFUSE_PLAFOND_CHANGE: "Refus plafond"
+        REFUSE_PLAFOND_CHANGE: "Refus plafond",
+
+        CREATE_PLAFOND_PROPOSAL : "Proposition de plafond ",
+        VERIFY_OTP : "Vérifier OTP",
+        GENERATE_OTP : "Générer OTP"
     };
 
     const filterLogs = () => {
-        let filtered = logs;
+    let filtered = logs;
 
-        if (search) {
-            const searchLower = search.toLowerCase();
+    // 🔍 SEARCH
+    if (search) {
+        const searchLower = search.toLowerCase();
 
-            filtered = filtered.filter(log => {
-                const actionRaw = log.action?.toLowerCase() || "";
-                const actionFr = actionLabels[log.action]?.toLowerCase() || "";
-                const entity = log.entityType?.toLowerCase() || "";
-                const user = log.user?.fullName?.toLowerCase() || "";
+        filtered = filtered.filter(log => {
+            const actionRaw = log.action?.toLowerCase() || "";
+            const actionFr = actionLabels[log.action]?.toLowerCase() || "";
+            const entity = log.entityType?.toLowerCase() || "";
+            const user = log.user?.fullName?.toLowerCase() || "";
 
-                return (
-                    actionRaw.includes(searchLower) ||
-                    actionFr.includes(searchLower) ||
-                    entity.includes(searchLower) ||
-                    user.includes(searchLower)
-                );
-            });
-        }
-
-        if (actionFilter) {
-            filtered = filtered.filter(log => log.action === actionFilter);
-        }
-
-        if (entityFilter) {
-            filtered = filtered.filter(log => log.entityType === entityFilter);
-        }
-
-        setFilteredLogs(filtered);
+            return (
+                actionRaw.includes(searchLower) ||
+                actionFr.includes(searchLower) ||
+                entity.includes(searchLower) ||
+                user.includes(searchLower)
+            );
+        });
     }
+
+    // 🎯 FILTER ACTION
+    if (actionFilter) {
+        filtered = filtered.filter(log => log.action === actionFilter);
+    }
+
+    // 🎯 FILTER ENTITY
+    if (entityFilter) {
+        filtered = filtered.filter(log => log.entityType === entityFilter);
+    }
+
+    // 🔥 TRI PAR ENTITY (ICI CORRECT)
+    if (entitySort) {
+        filtered = filtered.sort((a, b) => {
+            const entityA = a.entityType?.toLowerCase() || "";
+            const entityB = b.entityType?.toLowerCase() || "";
+
+            if (entitySort === "asc") {
+                return entityA.localeCompare(entityB);
+            }
+
+            if (entitySort === "desc") {
+                return entityB.localeCompare(entityA);
+            }
+
+            return 0;
+        });
+    }
+
+    setFilteredLogs(filtered);
+};
 
     const getBadgeColor = (action) => {
         if(action?.includes("CREATE")) return "bg-green-100 text-green-700";
@@ -183,36 +233,51 @@ export default function AuditeurDashboard(){
     };
 
     return (
-        <div className="p-6 space-y-6">
+    <div className="relative min-h-screen p-6">
+
+        {/* 🔥 BACKGROUND */}
+        <div
+            className="fixed inset-0 -z-10 bg-cover bg-center"
+            style={{
+                backgroundImage: "url('/audit_bank.png')"
+            }}
+        />
+        <div className="fixed inset-0 -z-10 bg-white/40 backdrop-blur-[10px]"></div>
+
+
+        {/* 🔥 CONTENU CENTRÉ */}
+        <div className="max-w-6xl mx-auto space-y-6">
 
             {/* HEADER */}
-            <h1 className="text-3xl font-bold text-gray-800">
-                 Audit & Traçabilité
-            </h1>
-            <button
-                onClick={handleLogout}
-                className="ml-auto flex px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold shadow-md transition active:scale-95"
-            >
-                Déconnexion
-            </button>
+            <div className="flex justify-between items-center">
+                <h1 className="text-3xl font-bold text-gray-900">
+                    Audit & Traçabilité
+                </h1>
 
-            {/* 🔍 FILTRES */}
-            <div className="flex flex-col md:flex-row gap-4">
+                <button
+                    onClick={handleLogout}
+                    className="px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold shadow-md transition active:scale-95"
+                >
+                    Déconnexion
+                </button>
+            </div>
 
-                {/* SEARCH */}
+
+            {/* FILTRES */}
+            <div className="flex flex-col md:flex-row gap-4 bg-white/60 backdrop-blur-md p-4 rounded-2xl border border-white/40 shadow-md">
+
                 <input
                     type="text"
-                    placeholder="Rechercher (action, utilisateur, entité...)"
+                    placeholder="Rechercher..."
                     value={search}
                     onChange={(e)=>setSearch(e.target.value)}
-                    className="border p-2 rounded w-full md:w-1/3"
+                    className="p-3 rounded-lg w-full md:w-1/3 border border-gray-300 bg-white/80"
                 />
 
-                {/* FILTER ACTION */}
                 <select
                     value={actionFilter}
                     onChange={(e)=>setActionFilter(e.target.value)}
-                    className="border p-2 rounded w-full md:w-1/4"
+                    className="p-3 rounded-lg w-full md:w-1/4 border border-gray-300 bg-white/80"
                 >
                     <option value="">Toutes les actions</option>
                     {Object.keys(actionLabels).map(action => (
@@ -222,11 +287,10 @@ export default function AuditeurDashboard(){
                     ))}
                 </select>
 
-                {/* FILTER ENTITY */}
                 <select
                     value={entityFilter}
                     onChange={(e)=>setEntityFilter(e.target.value)}
-                    className="border p-2 rounded w-full md:w-1/4"
+                    className="p-3 rounded-lg w-full md:w-1/4 border border-gray-300 bg-white/80"
                 >
                     <option value="">Toutes les entités</option>
                     {[...new Set(logs.map(log => log.entityType))].map(entity => (
@@ -235,45 +299,61 @@ export default function AuditeurDashboard(){
                         </option>
                     ))}
                 </select>
+                <select
+                value={entitySort}
+                onChange={(e)=>setEntitySort(e.target.value)}
+                className="p-3 rounded-lg w-full md:w-1/4 border border-gray-300 bg-white/80"
+                >
+                <option value="">Tri entité</option>
+                <option value="asc">A → Z</option>
+                <option value="desc">Z → A</option>
+                </select>
             </div>
 
-            {/* TABLE */}
-            <div className="overflow-x-auto rounded-lg shadow">
-                <table className="w-full text-sm border">
 
-                    <thead className="bg-gray-100 text-gray-700">
+            {/* TABLE */}
+            <div className="overflow-x-auto rounded-2xl bg-white/50 backdrop-blur-[10px] border border-white/50 shadow-xl">
+
+                <table className="w-full text-[15px]">
+
+                    <thead className="bg-white/40 border-b border-gray-300 text-gray-900">
                         <tr>
-                            <th className="p-3 text-left">Date</th>
-                            <th className="p-3 text-left">Action</th>
-                            <th className="p-3 text-left">Entité</th>
-                            <th className="p-3 text-left">ID</th>
-                            <th className="p-3 text-left">Utilisateur</th>
+                            <th className="p-4 text-left border-r border-gray-300">Date</th>
+                            <th className="p-4 text-left border-r border-gray-300">Action</th>
+                            <th className="p-4 text-left border-r border-gray-300">Entité</th>
+                            <th className="p-4 text-left border-r border-gray-300">ID</th>
+                            <th className="p-4 text-left">Utilisateur</th>
                         </tr>
                     </thead>
 
-                    <tbody>
+                    <tbody className="divide-y divide-gray-300">
                         {filteredLogs.map((log,index) => (
-                            <tr key={log.idAuditLog || index} className="border hover:bg-gray-50">
+                            <tr key={log.idAuditLog || index} className="hover:bg-white/90 transition">
 
-                                <td className="p-3">
+                                <td className="p-4 border-r border-gray-200">
                                     {new Date(log.createdAt).toLocaleString()}
                                 </td>
 
-                                <td className="p-3">
-                                    <span className={`px-2 py-1 rounded text-xs font-semibold ${getBadgeColor(log.action)}`}>
+                                <td className="p-4 border-r border-gray-200">
+                                    <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getBadgeColor(log.action)}`}>
                                         {actionLabels[log.action] || log.action}
                                     </span>
                                 </td>
 
-                                <td className="p-3">
-                                    <span className={`px-2 py-1 rounded text-xs font-semibold ${entityBadge(log.entityType)}`}>
+                                <td className="p-4 border-r border-gray-200">
+                                    <span className={`px-3 py-1 rounded-full text-sm font-semibold ${entityBadge(log.entityType)}`}>
                                         {log.entityType}
                                     </span>
                                 </td>
 
-                                <td className="p-3 font-mono">{log.entityId}</td>
+                                <td className="p-4 border-r border-gray-200 font-mono">
+                                    {log.entityId}
+                                </td>
 
-                                <td className="p-3">{log.user?.fullName || "—"}</td>
+                                <td className="p-4 font-medium">
+                                    {log.user?.fullName || "—"}
+                                </td>
+
                             </tr>
                         ))}
                     </tbody>
@@ -281,10 +361,15 @@ export default function AuditeurDashboard(){
                 </table>
             </div>
 
+
             {/* EMPTY */}
             {filteredLogs.length === 0 && (
-                <p className="text-gray-500">Aucun log trouvé</p>
+                <div className="text-center text-gray-600 bg-white/60 p-6 rounded-xl shadow">
+                    Aucun log trouvé
+                </div>
             )}
+
         </div>
-    )
+    </div>
+);
 }

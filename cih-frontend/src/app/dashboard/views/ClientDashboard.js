@@ -155,9 +155,9 @@ export default function ClientDashboard({ user }) {
         return "bg-emerald-50 text-emerald-700 ring-emerald-200";
       case "AVERAGE":
       case "MEDIUM":
-        return "bg-amber-50 text-amber-800 ring-amber-200";
+        return "bg-yellow-100 text-amber-800 ring-amber-200";
       case "HIGH":
-        return "bg-orange-50 text-orange-800 ring-orange-200";
+        return "bg-orange-100 text-orange-800 ring-orange-200";
       case "CRITICAL":
       case "URGENT":
         return "bg-rose-50 text-rose-700 ring-rose-200";
@@ -182,62 +182,103 @@ export default function ClientDashboard({ user }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      {/* Top accent bar */}
-      <div />
+    <div className="relative min-h-screen">
 
-      <div className="p-6 md:p-1">
-        <button
-            onClick={handleLogout}
-            className="flex ml-auto px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 
-                      text-white font-semibold shadow-md transition 
-                      active:scale-95"
-          >
-            Déconnexion
-          </button>
-        <div className="max-w-6xl mx-auto space-y-6">
-          {/* Header */}
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900">
-                Client Dashboard
-              </h1>
-              <p className="text-sm text-slate-600">
-                Crée et suis tes réclamations en temps réel.
-              </p>
-              
-            </div>
+    {/* 🔥 BACKGROUND IMAGE */}
+    <div
+      className="fixed inset-0 -z-10 bg-cover bg-no-repeat"
+      style={{
+        backgroundImage: "url('/client_cih_4.png')",
+      }}
+    />
 
-            <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white/70 backdrop-blur px-4 py-2 shadow-sm">
-              <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white grid place-items-center font-bold">
-                {(user?.fullName || user?.email || "U").toString().trim().charAt(0).toUpperCase()}
-              </div>
-              <div className="leading-tight">
-                <div className="text-sm font-semibold text-slate-900">
-                  {user?.fullName ? user.fullName : "Utilisateur"}
-                </div>
-                <div className="text-xs text-slate-500">
-                  {user?.email ? user.email : "—"}
-                </div>
-              </div>
-            </div>
+    {/* 🔥 OVERLAY (léger pour lisibilité) */}
+    <div className="fixed inset-0 -z-10 bg-white/40 backdrop-blur-[2px]" />
+
+    {/* CONTENU */}
+    <div className="p-6 md:p-4">
+
+      {/* LOGOUT */}
+      <button
+        onClick={handleLogout}
+        className="flex ml-auto px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 
+                  text-white font-semibold shadow-md transition active:scale-95"
+      >
+        Déconnexion
+      </button>
+
+      <div className="max-w-6xl mx-auto space-y-6">
+
+        {/* HEADER */}
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+
+          <div>
+            <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900">
+              Client Dashboard
+            </h1>
+            <p className="text-sm text-slate-700">
+              Crée et suis tes réclamations en temps réel.
+            </p>
           </div>
 
+          {/* USER CARD */}
+          <div className="flex items-center gap-3 rounded-2xl 
+                          border border-white/40 
+                          bg-white/30 backdrop-blur-md 
+                          px-4 py-2 shadow-lg">
+
+            <div className="h-9 w-9 rounded-xl 
+                            bg-gradient-to-br from-blue-600 to-indigo-600 
+                            text-white grid place-items-center font-bold">
+              {(user?.fullName || user?.email || "U")
+                .toString()
+                .trim()
+                .charAt(0)
+                .toUpperCase()}
+            </div>
+
+            <div className="leading-tight">
+              <div className="text-sm font-semibold text-slate-900">
+                {user?.fullName ? user.fullName : "Utilisateur"}
+              </div>
+              <div className="text-xs text-slate-600">
+                {user?.email ? user.email : "—"}
+              </div>
+            </div>
+
+          </div>
+        </div>
           {/* Form Card */}
-          <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg">
-            <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600" />
-            <div className="px-6 py-5 border-b border-slate-200 bg-gradient-to-r from-white to-slate-50">
-              <h2 className="text-lg font-bold text-slate-900">
-                Créer une réclamation
-              </h2>
-              <p className="text-sm text-slate-600">
-                Remplis les infos, puis clique sur “Créer”.
-              </p>
-              <div className="flex items-center justify-between mt-2">
+        <div className="relative overflow-hidden rounded-2xl 
+                        border border-black/30 
+                        bg-white/1 backdrop-blur-md 
+                        shadow-xl">
+
+          {/* TOP BAR */}
+          <div className="absolute inset-x-0 top-0 h-1.5 
+                          bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600" />
+
+          {/* HEADER */}
+          <div className="px-6 py-5 border-b border-white/30 
+                          bg-white/30 backdrop-blur-md">
+
+            <h2 className="text-lg font-bold text-gray-900 flex ml-110">
+              Créer une réclamation
+            </h2>
+
+            <p className="text-sm text-gray-700 flex ml-105">
+              Remplis les infos, puis clique sur “Créer”.
+            </p>
+
+            {/* ACTIONS */}
+            <div className="flex items-center justify-between mt-3">
 
               <button
                 onClick={() => router.push("/dashboard/plafond")}
-                className="px-3 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+                className="px-4 py-2 text-sm 
+                          bg-gradient-to-r from-indigo-600 to-blue-600 
+                          text-white rounded-lg shadow-md 
+                          hover:opacity-90 transition"
               >
                 Demande plafond
               </button>
@@ -245,13 +286,17 @@ export default function ClientDashboard({ user }) {
               <button
                 disabled={!form.description.trim() || loadingAI}
                 onClick={aiAssist}
-                className="px-3 py-2 text-sm bg-gray-700 text-white rounded-lg disabled:bg-gray-400 hover:bg-gray-800 transition"
+                className="px-4 py-2 text-sm 
+                          bg-orange-400/90 text-white rounded-lg 
+                          disabled:bg-gray-400 
+                          hover:bg-orange-700 transition shadow-md"
               >
                 {loadingAI ? "Analyse..." : "Assisté IA"}
               </button>
 
             </div>
-            </div>
+
+          </div>
             <div className="p-6">
               <form onSubmit={createOrModifyReclamation} className="space-y-5">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -397,8 +442,8 @@ export default function ClientDashboard({ user }) {
                         isAiAssisted: false,
                       })
                     }
-                    className="inline-flex items-center justify-center rounded-xl bg-slate-100 px-5 py-2.5
-                               text-slate-800 font-semibold shadow-sm hover:bg-slate-200 active:scale-[0.99] transition"
+                    className="inline-flex items-center justify-center rounded-xl bg-orange-400 px-5 py-2.5
+                               text-slate-100 font-semibold shadow-sm hover:bg-slate-200 active:scale-[0.99] transition"
                   >
                     Réinitialiser
                   </button>
@@ -408,10 +453,10 @@ export default function ClientDashboard({ user }) {
           </div>
 
           {/* List */}
-          <div className="rounded-2xl border border-slate-200 bg-white shadow-lg overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-white to-slate-50 flex items-center justify-between">
+          <div className="rounded-2xl border border-white/30 bg-white/10 backdrop-blur-md shadow-lg overflow-hidden">
+            <div className="px-6 py-4 border-b border-white/30 bg-white/20 backdrop-blur-md flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-bold text-slate-900">Mes réclamations</h2>
+                <h2 className="text-lg font-bold text-slate-900 flex ml-115">Mes réclamations</h2>
                 <p className="text-sm text-slate-600">
                   Historique et état actuel de tes demandes.
                 </p>
@@ -425,144 +470,150 @@ export default function ClientDashboard({ user }) {
               </div>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-slate-200">
-                <thead className="bg-slate-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">
-                      Référence
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">
-                      Titre
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">
-                      Priorité
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">
-                      Canal
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">
-                      Créée le
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">
-                        Actions
-                    </th>
-                  </tr>
-                </thead>
+            <div>
+              {/* TABLE RECLAMATIONS */}
+<div className="overflow-x-auto rounded-2xl backdrop-blur-sm bg-white/10 border border-white/30 shadow-lg">
 
-                <tbody className="divide-y divide-slate-200 bg-white">
-                  {reclamations.map((reclamation) => (
-                    <tr
-                      key={reclamation.idReclamation}
-                      className="hover:bg-indigo-50/40 transition"
-                    >
-                      <td className="px-6 py-4 text-sm font-semibold text-slate-800">
-                        {reclamation.reference}
-                      </td>
+  <table className="w-full divide-y divide-white/20 bg-transparent">
 
-                      <td className="px-6 py-4 text-sm text-slate-900">
-                        <div className="font-semibold">{reclamation.title}</div>
-                        <div className="text-xs text-slate-500">
-                          {reclamation.type || "—"}
-                        </div>
-                      </td>
+    {/* HEADER */}
+    <thead className="bg-white/50 backdrop-blur-md">
+      <tr className="text-sm text-slate-800"> 
+        <th className="px-4 py-4 text-left font-semibold w-[130px]">Référence</th>
+        <th className="px-4 py-4 text-left font-semibold w-[200px]">Titre</th>
+        <th className="px-4 py-4 text-left font-semibold w-[120px]">Statut</th>
+        <th className="px-4 py-4 text-left font-semibold w-[110px]">Priorité</th>
+        <th className="px-4 py-4 text-left font-semibold w-[110px]">Canal</th>
+        <th className="px-4 py-4 text-left font-semibold w-[160px]">Créée le</th>
+        <th className="px-4 py-4 text-left font-semibold w-[200px]">Actions</th>
+      </tr>
+    </thead>
 
-                      <td className="px-6 py-4 text-sm">
-                        <span
-                          className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-bold ring-1 ${statusBadge(
-                            reclamation.status
-                          )}`}
-                        >
-                          {reclamation.status}
-                        </span>
-                      </td>
+    {/* BODY */}
+    <tbody className="divide-y divide-white/20">
 
-                      <td className="px-6 py-4 text-sm">
-                        <span
-                          className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-bold ring-1 ${priorityBadge(
-                            reclamation.priority
-                          )}`}
-                        >
-                          {reclamation.priority}
-                        </span>
-                      </td>
+      {reclamations.map((reclamation) => (
+        <tr
+          key={reclamation.idReclamation}
+          className="hover:bg-white/30 transition"
+        >
 
-                      <td className="px-6 py-4 text-sm">
-                        <span
-                          className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-bold ring-1 ${canalBadge(
-                            reclamation.canal
-                          )}`}
-                        >
-                          {reclamation.canal}
-                        </span>
-                      </td>
+          {/* REFERENCE */}
+          <td className="px-4 py-4 text-sm font-semibold text-slate-900 break-words">
+            {reclamation.reference}
+          </td>
 
-                      <td className="px-6 py-4 text-sm text-slate-700">
-                        {reclamation.createdAt
-                          ? new Date(reclamation.createdAt).toLocaleString()
-                          : "-"}
-                      </td>
-                      <td className="px-6 py-4 text-sm">
-                    <div className="flex gap-2">
+          {/* TITRE */}
+          <td className="px-4 py-4 text-sm text-slate-900">
+            <div className="font-semibold break-words">
+              {reclamation.title}
+            </div>
+            <div className="text-xs text-slate-500">
+              {reclamation.type || "—"}
+            </div>
+          </td>
 
-                        <button
-                        onClick={() => deleteReclamation(reclamation.idReclamation)}
-                        className="inline-flex items-center justify-center
-                                    rounded-lg bg-red-500 hover:bg-red-600
-                                    px-3 py-1.5 text-xs font-semibold text-white
-                                    shadow-sm transition active:scale-95"
-                        >
-                        Supprimer
-                        </button>
+          {/* STATUS */}
+          <td className="px-4 py-4">
+            <span
+              className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold ${statusBadge(
+                reclamation.status
+              )}`}
+            >
+              {reclamation.status}
+            </span>
+          </td>
 
-                        <button
-                        onClick={() => {
-                            setForm({
-                            title: reclamation.title,
-                            type: reclamation.type,
-                            canal: reclamation.canal,
-                            priority: reclamation.priority,
-                            description: reclamation.description,
-                            isAiAssisted:false
-                            });
-                            setEditIdReclamation(reclamation.idReclamation);
-                        }}
-                        className="inline-flex items-center justify-center
-                                    rounded-lg bg-amber-500 hover:bg-amber-600
-                                    px-3 py-1.5 text-xs font-semibold text-white
-                                    shadow-sm transition active:scale-95"
-                        >
-                        Modifier
-                        </button>
-                        <button
-                        onClick={() => {
-                          router.push(`/dashboard/reclamation/${reclamation.idReclamation}`);
-                        }}
-                        className="text-indigo-600 hover:underline"
-                      >
-                        Voir détails
-                      </button>
+          {/* PRIORITE */}
+          <td className="px-4 py-4">
+            <span
+              className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold ${priorityBadge(
+                reclamation.priority
+              )}`}
+            >
+              {reclamation.priority}
+            </span>
+          </td>
 
-                    </div>
-                    </td>
-                    </tr>
-                  ))}   
+          {/* CANAL */}
+          <td className="px-4 py-4">
+            <span
+              className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold ${canalBadge(
+                reclamation.canal
+              )}`}
+            >
+              {reclamation.canal}
+            </span>
+          </td>
 
-                  {reclamations.length === 0 && (
-                    <tr>
-                      <td
-                        className="px-6 py-10 text-sm text-slate-500 italic"
-                        colSpan={6}
-                      >
-                        Aucune réclamation pour le moment.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+          {/* DATE */}
+          <td className="px-4 py-4 text-sm text-slate-700">
+            {reclamation.createdAt
+              ? new Date(reclamation.createdAt).toLocaleString()
+              : "-"}
+          </td>
+
+          {/* ACTIONS */}
+          <td className="px-4 py-4">
+            <div className="flex flex-wrap gap-2">
+
+              {/* DELETE */}
+              <button
+                onClick={() => deleteReclamation(reclamation.idReclamation)}
+                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 text-xs rounded-lg shadow transition"
+              >
+                Supprimer
+              </button>
+
+              {/* EDIT */}
+              <button
+                onClick={() => {
+                  setForm({
+                    title: reclamation.title,
+                    type: reclamation.type,
+                    canal: reclamation.canal,
+                    priority: reclamation.priority,
+                    description: reclamation.description,
+                    isAiAssisted:false
+                  });
+                  setEditIdReclamation(reclamation.idReclamation);
+                }}
+                className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 text-xs rounded-lg shadow transition"
+              >
+                Modifier
+              </button>
+
+              {/* DETAILS */}
+              <button
+                onClick={() => {
+                  router.push(`/dashboard/reclamation/${reclamation.idReclamation}`);
+                }}
+                className="text-indigo-600 hover:underline text-xs font-semibold"
+              >
+                Voir détails
+              </button>
+
+            </div>
+          </td>
+
+        </tr>
+      ))}
+
+      {/* EMPTY */}
+      {reclamations.length === 0 && (
+        <tr>
+          <td
+            className="px-6 py-10 text-sm text-slate-500 italic text-center"
+            colSpan={7}
+          >
+            Aucune réclamation pour le moment.
+          </td>
+        </tr>
+      )}
+
+    </tbody>
+  </table>
+</div>
             </div>
           </div>
           {/* Message */}

@@ -58,7 +58,7 @@ public class RoutingSuggestionService {
         suggestion.setDecidedAt(LocalDateTime.now());
 
         RoutingSuggestion saved =  routingSuggestionRepository.save(suggestion);
-        auditLogService.log(AuditAction.AI_ROUTING_SUGGESTED,"Réclamation",idReclamation,saved.getIdRouting(),null);
+        auditLogService.log(AuditAction.AI_ROUTING_SUGGESTED,"IA_suggestion", saved.getIdRouting(), idReclamation,null);
         return saved;
     }
     public RoutingSuggestion getSuggestion(Integer idReclamation){

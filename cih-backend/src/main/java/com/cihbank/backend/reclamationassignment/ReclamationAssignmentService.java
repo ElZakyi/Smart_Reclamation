@@ -98,7 +98,7 @@ public class ReclamationAssignmentService {
         reclamationAssignment.setCurrent(true);
         reclamationAssignment.setReason("MANUAL_ROUTING");
         ReclamationAssignment saved =  reclamationAssignmentRepository.save(reclamationAssignment);
-        auditLogService.log(AuditAction.MANUAL_ASSIGNMENT,"assignement_réclamation",saved.getIdAssignment(),idResponsable,null);
+        auditLogService.log(AuditAction.MANUAL_ASSIGNMENT,"Réclamation_assignement",saved.getIdAssignment(),idResponsable,null);
         return saved;
     }
     public List<ReclamationAssignment> getAssignmentsForAgent(Integer idAgent){

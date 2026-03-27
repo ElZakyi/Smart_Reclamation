@@ -40,23 +40,56 @@ export default function LoginPage() {
 
     } catch (error) {
       setError(true);
-      setMessage("Email ou mot de passe incorrect");
+      setMessage(
+        error.response?.data?.message || 
+        error.message || 
+        "Erreur inconnue"
+      );
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+  <div className="relative min-h-screen flex items-center">
 
-      <div className="bg-white shadow-xl rounded-2xl w-full max-w-md p-8 border space-y-6">
+    {/* 🔥 BACKGROUND IMAGE */}
+    <div
+      className="absolute inset-0 bg-center"
+      style={{
+        backgroundImage: "url('/bank_human.png')",
+        backgroundSize: "100%", // 🔥 zoom out
+        backgroundRepeat: "no-repeat"
+      }}
+    />
 
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800">
-            Connexion
-          </h1>
-          <p className="text-gray-500 text-sm mt-1">
-            Accédez à votre espace
-          </p>
-        </div>
+    {/* 🔥 OVERLAY */}
+    <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/20"></div>
+
+    {/* 🔥 CONTENT */}
+    <div className="relative w-full flex items-center ml-250 pr-20 px-6">
+
+      <div className="backdrop-blur-xl bg-white/90 shadow-2xl rounded-2xl w-full max-w-md p-8 pt-24 border border-white/30 space-y-6">
+
+  <div className="relative">
+
+    {/* 🔥 LOGO */}
+    <img
+      src="/Cih-bank.png"
+      alt="Cih_Bank"
+      className="absolute -top-25 left-1/2 -translate-x-1/2 w-32 drop-shadow-lg"
+    />
+
+    {/* 🔥 CONTENU */}
+    <div className="text-center">
+      <h1 className="text-3xl font-bold text-gray-800">
+        Connexion
+      </h1>
+
+      <p className="text-gray-600 text-sm mt-1">
+        Accédez à votre espace sécurisé
+      </p>
+    </div>
+
+  </div>
 
         <div>
           <label className="block mb-1 text-sm font-medium">
@@ -66,7 +99,7 @@ export default function LoginPage() {
             type="email"
             placeholder="Votre email"
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-blue-500 outline-none"
+            className="w-full px-4 py-3 rounded-lg border bg-white/80 focus:ring-2 focus:ring-blue-500 outline-none"
           />
         </div>
 
@@ -78,27 +111,24 @@ export default function LoginPage() {
             type="password"
             placeholder="Votre mot de passe"
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-blue-500 outline-none"
+            className="w-full px-4 py-3 rounded-lg border bg-white/80 focus:ring-2 focus:ring-blue-500 outline-none"
           />
         </div>
 
         <button
           onClick={handleLogin}
-          className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition"
+          className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-90 text-white font-semibold rounded-lg transition shadow-lg"
         >
           Se connecter
         </button>
 
-        {/* ✅ MESSAGE */}
         {message && (
           <div className={`rounded-xl px-4 py-3 text-sm flex gap-3 items-start shadow-sm 
             ${error ? "bg-red-50 border border-red-200 text-red-700" 
                     : "bg-green-50 border border-green-200 text-green-700"}`}>
-
             <div className="font-bold">
               {error ? "!" : "✓"}
             </div>
-
             <div>{message}</div>
           </div>
         )}
@@ -115,5 +145,6 @@ export default function LoginPage() {
 
       </div>
     </div>
-  );
+  </div>
+);
 }

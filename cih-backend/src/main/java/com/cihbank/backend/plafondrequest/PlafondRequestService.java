@@ -90,9 +90,12 @@ public class PlafondRequestService {
     // =========================
     public PlafondRequest getOne(Integer id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Request not found"));
+                .orElseThrow(() -> new RuntimeException("Demande introuvable !"));
     }
     public List<PlafondRequest> getByTeam(Integer idTeam){
         return repository.findByTeamIdTeamAndStatus(idTeam, PlafondRequestStatus.EN_ATTENTE);
+    }
+    public List<PlafondRequest> getForValidation(){
+        return repository.findByStatus(PlafondRequestStatus.EN_VALIDATION);
     }
 }

@@ -1,10 +1,14 @@
 package com.cihbank.backend.security;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -16,17 +20,32 @@ public class AuthController {
         this.jwtService = jwtService;
     }
     @PostMapping("/login")
-    public String login(@RequestBody AuthRequest request){
+    public ResponseEntity<?> login(@RequestBody AuthRequest request){
         try {
-            authenticationManager.authenticate
-                    (new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+
+            Authentication auth = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+
+            CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
+
+            if (!user.getIsActive()) {
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("message", "Compte désactivé !"));
+            }
+
             String token = jwtService.generateToken(request.getEmail());
 
-            return token;
-        }catch(Exception e){
-            e.printStackTrace();
-            throw e;
+            return ResponseEntity.ok(token);
 
+        } catch (Exception e){
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Email ou mot de passe incorrect"));
         }
     }
     @GetMapping("/me")

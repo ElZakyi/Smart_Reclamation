@@ -16,10 +16,14 @@ export default function ResponsableDashboard({ user }) {
     const [selectedDecision,setSelectedDecision] = useState(null);
     const [motif,setMotif]=useState("");
     const router = useRouter();
+    const [requests,setRequests] = useState([]);
+    const [motifPlafond,setMotifPlafond] = useState("");
+    const [selectedPlafondId, setSelectedPlafondId] = useState(null);
 
     useEffect(() => {
         getSuggestions();
         getReclamationForDecision();
+        getRequestsForValidation();
     }, []);
 
     const getSuggestions = async () => {
@@ -117,6 +121,29 @@ export default function ResponsableDashboard({ user }) {
             setMessage(error.response?.data?.error || "Erreur /POST refus de proposition : " + error);
         }
     }
+    const getRequestsForValidation = async () => {
+        try{
+        const res = await api.get("/plafond-proposal/validation");
+        setRequests(res.data);
+        }catch(error){
+            setMessage(error.response?.data?.error || "Erreur /GET récupération demandes changement de plafond : " + error);
+        }
+    };
+    const handleDecision = async (id, outcome) => {
+        try {
+            await api.post(`/plafond-decision/request/${id}/user/${user.idUser}`, {
+                outcome: outcome,
+                motif: motifPlafond
+            });
+
+            setMessage("Décision envoyée");
+            getRequestsForValidation();
+
+        } catch (error) {
+            setMessage(error.response?.data?.error || "Erreur /POST création de décision : " + error);
+        }
+    };
+    
     return (
 
         <div className="min-h-screen bg-gray-100 p-8">
@@ -129,334 +156,475 @@ export default function ResponsableDashboard({ user }) {
                 Déconnexion
             </button>
 
-            <div className="max-w-4xl mx-auto">
+            <div className="w-full px-8">
 
                 <h1 className="text-3xl font-bold mb-6 text-gray-800">
                     Tableau de bord : Responsable
                 </h1>
 
                 <div className="space-y-6">
-                    {suggestions.length === 0 && (
-                        <div className="bg-white rounded-lg shadow p-6 text-center border">
-                            <h2 className="text-lg font-semibold text-gray-700">
-                                Aucune suggestion IA disponible
-                            </h2>
-                            <p className="text-gray-500 mt-2">
-                                Toutes les réclamations ont déjà été traitées ou aucune suggestion n'est en attente.
-                            </p>
-                        </div>
-                    )}
 
-                    {suggestions.map((suggestion) => {
+                    <h2 className="text-2xl font-bold mt-10 text-gray-800">
+    Suggestions IA
+</h2>
 
-                        const reclamation = suggestion.reclamation;
+<div className="flex gap-6 overflow-x-auto pb-4 mt-4">
 
-                        return (
+    {suggestions.length === 0 && (
+        <div className="min-w-[320px] bg-white p-6 rounded-xl shadow border text-center flex-shrink-0">
+            <p className="text-gray-500 font-medium">
+                Aucune suggestion IA disponible
+            </p>
+        </div>
+    )}
 
-                            <div
-                                key={suggestion.idRouting}
-                                className="bg-white shadow-md rounded-lg p-5 border border-gray-200"
+    {suggestions.map((suggestion) => {
+
+        const reclamation = suggestion.reclamation;
+
+        return (
+
+            <div
+                key={suggestion.idRouting}
+                className="min-w-[360px] bg-white shadow-md rounded-lg p-5 border border-gray-200 flex-shrink-0"
+            >
+
+                <div className="flex justify-between items-center mb-2">
+
+                    <span className="font-semibold text-gray-700">
+                        {reclamation.reference}
+                    </span>
+
+                    <span className="text-xs bg-gray-200 px-2 py-1 rounded">
+                        Réclamation
+                    </span>
+
+                </div>
+
+                <h2 className="text-lg font-semibold text-gray-800">
+                    {reclamation.title}
+                </h2>
+
+                <p className="text-gray-600 mt-1">
+                    {reclamation.description}
+                </p>
+
+                <div className="mt-4 p-4 bg-gray-50 rounded border">
+
+                    <h3 className="font-semibold text-gray-700 mb-3">
+                        Suggestion IA
+                    </h3>
+
+                    <div className="flex flex-wrap gap-4 text-sm mb-4">
+
+                        <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded">
+                            Team : {suggestion.suggestedTeam?.name}
+                        </span>
+
+                        <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded">
+                            Agent : {suggestion.suggestedUser?.fullName}
+                        </span>
+
+                        <span className="bg-green-100 text-green-700 px-3 py-1 rounded">
+                            Score IA : {suggestion.score?.toFixed(2)}
+                        </span>
+
+                    </div>
+
+                    <div className="flex gap-3">
+
+                        <button
+                            onClick={() => acceptSuggestion(suggestion.idRouting)}
+                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition"
+                        >
+                            Accepter
+                        </button>
+
+                        <button
+                            onClick={async () => {
+                                await rejectSuggestion(suggestion.idRouting);
+                                await getTeams();
+                                setManualSuggestionId(suggestion.idRouting);
+                            }}
+                            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded transition"
+                        >
+                            Refuser
+                        </button>
+
+                    </div>
+
+                </div>
+
+                {manualSuggestionId === suggestion.idRouting && (
+
+                    <div className="mt-5 bg-white border rounded-lg p-5 shadow-sm">
+
+                        <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                            Assignation manuelle
+                        </h2>
+
+                        <div className="mb-4">
+
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Choisir une équipe
+                            </label>
+
+                            <select
+                                onChange={(e) => {
+                                    const teamId = e.target.value;
+                                    setSelectedTeam(teamId);
+                                    getMembersOfTeam(teamId);
+                                }}
+                                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                             >
 
-                                <div className="flex justify-between items-center mb-2">
+                                <option value="">Sélectionner une équipe</option>
 
-                                    <span className="font-semibold text-gray-700">
-                                        {reclamation.reference}
-                                    </span>
+                                {teams.map((team) => (
+                                    <option key={team.idTeam} value={team.idTeam}>
+                                        {team.name}
+                                    </option>
+                                ))}
 
-                                    <span className="text-xs bg-gray-200 px-2 py-1 rounded">
-                                        Réclamation
-                                    </span>
+                            </select>
 
-                                </div>
+                        </div>
 
-                                <h2 className="text-lg font-semibold text-gray-800">
-                                    {reclamation.title}
-                                </h2>
+                        {selectedTeam && (
 
-                                <p className="text-gray-600 mt-1">
-                                    {reclamation.description}
-                                </p>
+                            <div className="mb-4">
 
-                                <div className="mt-4 p-4 bg-gray-50 rounded border">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Choisir un agent
+                                </label>
 
-                                    <h3 className="font-semibold text-gray-700 mb-3">
-                                        Suggestion IA
-                                    </h3>
+                                <select
+                                    onChange={(e) => setSelectedAgent(e.target.value)}
+                                    className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                                >
 
-                                    <div className="flex flex-wrap gap-4 text-sm mb-4">
+                                    <option value="">Sélectionner un agent</option>
 
-                                        <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded">
-                                            Team : {suggestion.suggestedTeam?.name}
-                                        </span>
-
-                                        <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded">
-                                            Agent : {suggestion.suggestedUser?.fullName}
-                                        </span>
-
-                                        <span className="bg-green-100 text-green-700 px-3 py-1 rounded">
-                                            Score IA : {suggestion.score?.toFixed(2)}
-                                        </span>
-
-                                    </div>
-
-                                    <div className="flex gap-3">
-
-                                        <button
-                                            onClick={() => acceptSuggestion(suggestion.idRouting)}
-                                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition"
-                                        >
-                                            Accepter
-                                        </button>
-
-                                        <button
-                                            onClick={async () => {
-                                                await rejectSuggestion(suggestion.idRouting);
-                                                await getTeams();
-                                                setManualSuggestionId(suggestion.idRouting);
-                                            }}
-                                            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded transition"
-                                        >
-                                            Refuser
-                                        </button>
-
-                                    </div>
-
-                                </div>
-                                {manualSuggestionId === suggestion.idRouting && (
-
-                                <div className="mt-5 bg-white border rounded-lg p-5 shadow-sm">
-
-                                    <h2 className="text-lg font-semibold text-gray-800 mb-4">
-                                        Assignation manuelle
-                                    </h2>
-
-                                    {/* Team selection */}
-
-                                    <div className="mb-4">
-
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Choisir une équipe
-                                        </label>
-
-                                        <select
-                                            onChange={(e) => {
-                                                const teamId = e.target.value;
-                                                setSelectedTeam(teamId);
-                                                getMembersOfTeam(teamId);
-                                            }}
-                                            className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                                        >
-
-                                            <option value="">Sélectionner une équipe</option>
-
-                                            {teams.map((team) => (
-                                                <option key={team.idTeam} value={team.idTeam}>
-                                                    {team.name}
-                                                </option>
-                                            ))}
-
-                                        </select>
-
-                                    </div>
-
-                                    {/* Agent selection */}
-
-                                    {selectedTeam && (
-
-                                        <div className="mb-4">
-
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                Choisir un agent
-                                            </label>
-
-                                            <select
-                                                onChange={(e) => setSelectedAgent(e.target.value)}
-                                                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                                    {members
+                                        .filter(member =>
+                                            member.user.userRoles?.some(
+                                                ur => ur.role.name === "AGENT"
+                                            )
+                                        )
+                                        .map(member => (
+                                            <option
+                                                key={member.user.idUser}
+                                                value={member.user.idUser}
                                             >
+                                                {member.user.fullName}
+                                            </option>
+                                        ))}
 
-                                                <option value="">Sélectionner un agent</option>
+                                </select>
 
-                                                {members
-                                                    .filter(member =>
-                                                        member.user.userRoles?.some(
-                                                            ur => ur.role.name === "AGENT"
-                                                        )
-                                                    )
-                                                    .map(member => (
-                                                        <option
-                                                            key={member.user.idUser}
-                                                            value={member.user.idUser}
-                                                        >
-                                                            {member.user.fullName}
-                                                        </option>
-                                                    ))}
+                            </div>
 
-                                            </select>
+                        )}
 
-                                        </div>
+                        <div className="flex gap-3">
 
-                                    )}
+                            <button
+                                onClick={() => setManualSuggestionId(null)}
+                                className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition"
+                            >
+                                Annuler
+                            </button>
 
-                                    {/* Buttons */}
+                            <button
+                                disabled={!selectedTeam || !selectedAgent}
+                                onClick={() => manualAssign(suggestion.idRouting)}
+                                className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium disabled:bg-gray-400 transition"
+                            >
+                                Valider l’assignation
+                            </button>
 
-                                    <div className="flex gap-3">
+                        </div>
 
-                                        <button
-                                            onClick={() => setManualSuggestionId(null)}
-                                            className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition"
-                                        >
-                                            Annuler
-                                        </button>
+                    </div>
 
-                                        <button
-                                            disabled={!selectedTeam || !selectedAgent}
-                                            onClick={() => manualAssign(suggestion.idRouting)}
-                                            className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium disabled:bg-gray-400 transition"
-                                        >
-                                            Valider l’assignation
-                                        </button>
+                )}
 
-                                    </div>
+            </div>
 
-                                </div>
+        );
 
-                            )}
+    })}
+
+</div>
+                    <h2 className="text-2xl font-bold mt-10 text-gray-800">
+                        Décisions en attente
+                    </h2>
+
+                    <div className="flex gap-6 overflow-x-auto pb-4 mt-4">
+
+                        {reclamationsForDecision.length === 0 && (
+                            <div className="min-w-[320px] bg-white p-6 rounded-xl shadow border text-center flex-shrink-0">
+                                <p className="text-gray-500 font-medium">
+                                    Aucune décision en attente
+                                </p>
+                            </div>
+                        )}
+
+    {reclamationsForDecision.map((proposal) => {
+
+        const rec = proposal.reclamation;
+
+        return (
+
+            <div
+                key={proposal.idDecisionProposal}
+                className="min-w-[350px] bg-white rounded-xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition flex-shrink-0"
+            >
+
+                {/* HEADER */}
+                <div className="flex justify-between items-center mb-3">
+
+                    <span className="font-semibold text-gray-700">
+                        {rec.reference}
+                    </span>
+
+                    <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">
+                        {rec.status}
+                    </span>
+
+                </div>
+
+                {/* RECLAMATION */}
+                <h3 className="text-lg font-bold text-gray-800">
+                    {rec.title}
+                </h3>
+
+                <p className="text-gray-600 mt-1">
+                    {rec.description}
+                </p>
+
+                {/* PROPOSAL */}
+                <div className="mt-4 bg-indigo-50 border border-indigo-200 p-4 rounded-lg">
+
+                    <h4 className="font-semibold text-indigo-700 mb-2">
+                        Proposition de l’agent
+                    </h4>
+
+                    <div className="flex flex-wrap gap-3 text-sm mb-3">
+
+                        <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded">
+                            Type : {proposal.type}
+                        </span>
+
+                        <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded">
+                            Agent : {proposal.user?.fullName}
+                        </span>
+
+                    </div>
+
+                    <p className="text-gray-700 text-sm italic">
+                        "{proposal.justification}"
+                    </p>
+
+                </div>
+
+                {/* ACTION */}
+                <div className="mt-4">
+
+                    <button
+                        onClick={() => setSelectedDecision(proposal.idDecisionProposal)}
+                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition"
+                    >
+                        Prendre décision
+                    </button>
+
+                </div>
+
+                {/* FORM */}
+                {selectedDecision === proposal.idDecisionProposal && (
+
+                    <div className="mt-4 border-t pt-4">
+
+                        <textarea
+                            placeholder="Motif de votre décision"
+                            value={motif}
+                            onChange={(e) => setMotif(e.target.value)}
+                            className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 outline-none"
+                        />
+
+                        <div className="flex gap-3 mt-3">
+
+                            <button
+                                onClick={() =>
+                                    acceptDecisionProposal(
+                                        rec.idReclamation,
+                                        proposal.idDecisionProposal
+                                    )
+                                }
+                                className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
+                            >
+                                 Accepter
+                            </button>
+
+                            <button
+                                onClick={() =>
+                                    rejectDecisionProposal(
+                                        rec.idReclamation,
+                                        proposal.idDecisionProposal
+                                    )
+                                }
+                                className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
+                            >
+                                Refuser
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                                )}
+
                             </div>
 
                         );
-                        
 
                     })}
+
+                </div>
                     <h2 className="text-2xl font-bold mt-10 text-gray-800">
-                    Décisions en attente
+                     Demande changement de plafond en attente
                     </h2>
 
-                    {reclamationsForDecision.length === 0 && (
-                        <div className="bg-white p-6 rounded shadow text-center mt-4">
-                            <p className="text-gray-500">Aucune décision en attente</p>
-                        </div>
-                    )}
-
-                    {reclamationsForDecision.map((proposal) => {
-
-                        const rec = proposal.reclamation;
-
-                        return (
-
-                            <div
-                                key={proposal.idDecisionProposal}
-                                className="bg-white rounded-xl shadow-md p-6 mt-4 border border-gray-200 hover:shadow-lg transition"
-                            >
-
-                                {/* HEADER */}
-                                <div className="flex justify-between items-center mb-3">
-
-                                    <span className="font-semibold text-gray-700">
-                                        {rec.reference}
-                                    </span>
-
-                                    <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">
-                                        {rec.status}
-                                    </span>
-
-                                </div>
-
-                                {/* RECLAMATION */}
-                                <h3 className="text-lg font-bold text-gray-800">
-                                    {rec.title}
-                                </h3>
-
-                                <p className="text-gray-600 mt-1">
-                                    {rec.description}
+                    <div className="flex gap-6 overflow-x-auto pb-4 mt-4">
+                        {requests.length === 0 && (
+                            <div className="min-w-[320px] bg-white p-6 rounded-xl shadow border border-gray-200 flex-shrink-0 text-center">
+                                <p className="text-gray-600 font-medium">
+                                    Aucune demande de changement de plafond en attente
                                 </p>
+                                <p className="text-sm text-gray-400 mt-2">
+                                    Toutes les demandes ont été traitées
+                                </p>
+                            </div>
+                        )}
 
-                                {/* PROPOSAL */}
-                                <div className="mt-4 bg-indigo-50 border border-indigo-200 p-4 rounded-lg">
+                        {requests.map((r) => {
 
-                                    <h4 className="font-semibold text-indigo-700 mb-2">
-                                        Proposition de l’agent
-                                    </h4>
+                        const request = r.plafondRequest;
+                        if (!request) return null;
+    return (
 
-                                    <div className="flex flex-wrap gap-3 text-sm mb-3">
+        <div
+            key={r.idPlafondProposal}
+            className="min-w-[320px] bg-white p-6 rounded-xl shadow border border-gray-200 flex-shrink-0"
+        >
 
-                                        <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded">
-                                            Type : {proposal.type}
-                                        </span>
+            {/* HEADER */}
+            <div className="mb-3 flex justify-between items-center">
+                <span className="font-semibold text-gray-700">
+                    Carte
+                </span>
 
-                                        <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded">
-                                            Agent : {proposal.user?.fullName}
-                                        </span>
+                <span className="text-xs px-3 py-1 rounded bg-yellow-100 text-yellow-700">
+                    {request.status}
+                </span>
+            </div>
 
-                                    </div>
+            {/* INFOS DEMANDE */}
+            <div className="space-y-2 text-sm text-gray-700">
+                <p>
+                    <b>Numéro :</b> {request.card.cardNumberMasked}
+                </p>
 
-                                    <p className="text-gray-700 text-sm italic">
-                                        "{proposal.justification}"
-                                    </p>
+                <p>
+                    <b>Plafond demandé :</b>
+                    <span className="text-indigo-600 font-semibold ml-1">
+                        {request.requestedLimit} DH
+                    </span>
+                </p>
+            </div>
 
-                                </div>
+            {/* 🔥 PROPOSITION AGENT */}
+            <div className="mt-4 bg-indigo-50 border border-indigo-200 p-4 rounded-lg">
 
-                                {/* ACTION */}
-                                <div className="mt-4">
+                <h4 className="font-semibold text-indigo-700 mb-2">
+                    Proposition de l’agent
+                </h4>
 
-                                    <button
-                                        onClick={() => setSelectedDecision(proposal.idDecisionProposal)}
-                                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition"
-                                    >
-                                        Prendre décision
-                                    </button>
+                <div className="flex flex-wrap gap-3 text-sm mb-2">
 
-                                </div>
+                    <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded">
+                        Nouveau plafond : {r.proposedLimit} DH
+                    </span>
 
-                                {/* FORM */}
-                                {selectedDecision === proposal.idDecisionProposal && (
+                    <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded">
+                        Agent : {r.user?.fullName}
+                    </span>
 
-                                    <div className="mt-4 border-t pt-4">
+                </div>
 
-                                        <textarea
-                                            placeholder="Motif de votre décision"
-                                            value={motif}
-                                            onChange={(e) => setMotif(e.target.value)}
-                                            className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 outline-none"
-                                        />
+                <p className="text-gray-700 text-sm italic">
+                    "{r.justification}"
+                </p>
 
-                                        <div className="flex gap-3 mt-3">
+            </div>
 
-                                            <button
-                                                onClick={() =>
-                                                    acceptDecisionProposal(
-                                                        rec.idReclamation,
-                                                        proposal.idDecisionProposal
-                                                    )
-                                                }
-                                                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
-                                            >
-                                                ✔ Accepter
-                                            </button>
+            {/* BOUTON */}
+            <button
+                onClick={() => setSelectedPlafondId(r.idPlafondProposal)}
+                className="mt-4 bg-indigo-600 text-white px-4 py-2 rounded-lg w-full"
+            >
+                Traiter
+            </button>
 
-                                            <button
-                                                onClick={() =>
-                                                    rejectDecisionProposal(
-                                                        rec.idReclamation,
-                                                        proposal.idDecisionProposal
-                                                    )
-                                                }
-                                                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
-                                            >
-                                                ✖ Refuser
-                                            </button>
+            {/* FORM */}
+            {selectedPlafondId === r.idPlafondProposal && (
 
-                                            </div>
+                <>
+                    <textarea
+                        placeholder="Motif de décision..."
+                        value={motifPlafond}
+                        onChange={(e) => setMotifPlafond(e.target.value)}
+                        className="w-full border rounded-lg p-2 mt-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    />
 
-                                        </div>
+                    <div className="flex gap-3 mt-4">
 
-                                    )}
+                        <button
+                            onClick={() => handleDecision(r.idPlafondProposal, "VALIDE")}
+                            className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition"
+                        >
+                            Valider
+                        </button>
 
-                                </div>
+                        <button
+                            onClick={() => handleDecision(r.idPlafondProposal, "REFUSE")}
+                            className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition"
+                        >
+                            Refuser
+                        </button>
 
-                            );
+                        <button
+                            onClick={() => {
+                                setSelectedPlafondId(null);
+                                setMotifPlafond("");
+                            }}
+                            className="flex-1 bg-gray-300 px-4 py-2 rounded-lg"
+                        >
+                            Annuler
+                        </button>
 
-                        })}
+                    </div>
+                </>
+
+            )}
+
+        </div>
+
+    );
+
+})}
+
+                        </div>
                 </div>
 
                 {message && (

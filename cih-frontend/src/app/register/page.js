@@ -45,21 +45,51 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+  <div className="relative min-h-screen flex items-center">
+
+    {/* 🔥 BACKGROUND */}
+    <div
+      className="absolute inset-0 bg-center"
+      style={{
+        backgroundImage: "url('/bank_human.png')",
+        backgroundSize: "100%",
+        backgroundRepeat: "no-repeat"
+      }}
+    />
+
+    {/* 🔥 OVERLAY */}
+    <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/20"></div>
+
+    {/* 🔥 CONTENT */}
+    <div className="relative w-full flex items-center ml-250 pr-20 px-6">
 
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md space-y-5 border"
+        className="backdrop-blur-xl bg-white/90 shadow-2xl rounded-2xl w-full max-w-md p-8 pt-24 border border-white/30 space-y-5"
       >
 
-        <h1 className="text-3xl font-bold text-center text-gray-800">
-          Inscription
-        </h1>
+        {/* 🔥 HEADER + LOGO */}
+        <div className="relative">
 
-        <p className="text-center text-gray-500 text-sm">
-          Créez votre compte
-        </p>
+          <img
+            src="/Cih-bank.png"
+            alt="CIH Bank"
+            className="absolute -top-24 left-1/2 -translate-x-1/2 w-32 drop-shadow-lg"
+          />
 
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-gray-800">
+              Inscription
+            </h1>
+
+            <p className="text-gray-600 text-sm mt-1">
+              Créez votre compte sécurisé
+            </p>
+          </div>
+
+        </div>
+
+        {/* 🔥 INPUTS */}
         <input
           type="text"
           name="fullName"
@@ -67,7 +97,7 @@ export default function RegisterPage() {
           value={form.fullName}
           onChange={handleChange}
           required
-          className="w-full border px-4 py-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+          className="w-full border px-4 py-3 rounded-lg bg-white/80 focus:ring-2 focus:ring-blue-500 outline-none"
         />
 
         <input
@@ -77,7 +107,7 @@ export default function RegisterPage() {
           value={form.email}
           onChange={handleChange}
           required
-          className="w-full border px-4 py-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+          className="w-full border px-4 py-3 rounded-lg bg-white/80 focus:ring-2 focus:ring-blue-500 outline-none"
         />
 
         <input
@@ -87,7 +117,7 @@ export default function RegisterPage() {
           value={form.password}
           onChange={handleChange}
           required
-          className="w-full border px-4 py-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+          className="w-full border px-4 py-3 rounded-lg bg-white/80 focus:ring-2 focus:ring-blue-500 outline-none"
         />
 
         <input
@@ -96,17 +126,18 @@ export default function RegisterPage() {
           placeholder="Téléphone"
           value={form.phone}
           onChange={handleChange}
-          className="w-full border px-4 py-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+          className="w-full border px-4 py-3 rounded-lg bg-white/80 focus:ring-2 focus:ring-blue-500 outline-none"
         />
 
+        {/* 🔥 BUTTON */}
         <button
           type="submit"
-          className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition"
+          className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-90 text-white font-semibold rounded-lg transition shadow-lg"
         >
           S'inscrire
         </button>
 
-        {/* ✅ MESSAGE */}
+        {/* 🔥 MESSAGE */}
         {message && (
           <div className={`rounded-xl px-4 py-3 text-sm flex gap-3 items-start shadow-sm 
             ${success ? "bg-green-50 border border-green-200 text-green-700" 
@@ -120,6 +151,7 @@ export default function RegisterPage() {
           </div>
         )}
 
+        {/* 🔥 LOGIN LINK */}
         <p className="text-center text-sm">
           Déjà un compte ?{" "}
           <span
@@ -132,5 +164,6 @@ export default function RegisterPage() {
 
       </form>
     </div>
-  );
+  </div>
+);
 }

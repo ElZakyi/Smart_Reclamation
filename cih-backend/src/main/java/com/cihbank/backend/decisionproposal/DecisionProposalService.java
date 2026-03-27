@@ -45,7 +45,7 @@ public class DecisionProposalService {
         decisionProposal.setActive(true);
         decisionProposal.setCreatedAt(LocalDateTime.now());
         DecisionProposal saved = decisionProposalRepository.save(decisionProposal);
-        auditLogService.log(AuditAction.PROPOSE_DECISION,"proposition_décision",saved.getIdDecisionProposal(),idUser,null);
+        auditLogService.log(AuditAction.PROPOSE_DECISION,"Proposition_décision",saved.getIdDecisionProposal(),idUser,null);
         return saved;
     }
     public List<DecisionProposal> findByIsActiveTrueAndReclamationStatus(){

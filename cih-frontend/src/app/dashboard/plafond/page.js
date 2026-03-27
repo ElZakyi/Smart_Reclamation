@@ -247,25 +247,7 @@ const verifyOtp = async () => {
           </button>
         )}
       </form>
-    {showOtpInput && (
-    <div className="mt-4 p-4 bg-yellow-50 rounded">
-        <h3>🔐 Vérification OTP</h3>
-
-        <input
-        placeholder="Entrer OTP"
-        value={otpCode}
-        onChange={(e) => setOtpCode(e.target.value)}
-        className="border p-2 rounded w-full mb-2"
-        />
-
-        <button
-        onClick={verifyOtp}
-        className="bg-green-600 text-white px-4 py-2 rounded"
-        >
-        Confirmer
-        </button>
-    </div>
-    )}
+    
       {/* ========================= TABLE ========================= */}
       <div className="bg-white p-6 rounded-xl shadow">
 
@@ -392,6 +374,25 @@ const verifyOtp = async () => {
             </button>
 
           </div>
+          {showOtpInput && (
+    <div className="mt-4 p-4 bg-yellow-50 rounded">
+        <h3>🔐 Vérification OTP</h3>
+
+        <input
+        placeholder="Entrer OTP"
+        value={otpCode}
+        onChange={(e) => setOtpCode(e.target.value)}
+        className="border p-2 rounded w-full mb-2"
+        />
+
+        <button
+        onClick={verifyOtp}
+        className="bg-green-600 text-white px-4 py-2 rounded"
+        >
+        Confirmer
+        </button>
+    </div>
+    )}
 
         </div>
       )}

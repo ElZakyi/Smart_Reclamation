@@ -135,7 +135,7 @@
             getUserTeams(); // recharge tout proprement // refresh
 
         } catch (error) {
-            setMessage(error.response?.data?.error || "Erreur /POST création de proposition");
+            setMessage(error.response?.data?.error || "Erreur /POST création de proposition : " + error);
         }
     };
         const handleLogout = () => {

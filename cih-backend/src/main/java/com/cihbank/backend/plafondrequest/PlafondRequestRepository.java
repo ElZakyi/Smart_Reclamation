@@ -7,5 +7,6 @@ import java.util.List;
 public interface PlafondRequestRepository extends JpaRepository<PlafondRequest, Integer> {
     List<PlafondRequest> findByTeamIdTeamAndStatus(Integer idTeam, PlafondRequestStatus status);
     List<PlafondRequest> findByUser_IdUser(Integer idUser);
+    List<PlafondRequest> findByStatus(PlafondRequestStatus status);
 
 }

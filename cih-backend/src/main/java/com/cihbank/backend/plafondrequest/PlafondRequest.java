@@ -34,6 +34,7 @@ public class PlafondRequest {
 
     private LocalDateTime createdAt;
 
+    private LocalDateTime closedAt;
     // ===== GETTERS / SETTERS =====
 
     public Integer getIdPlafondRequest() { return idPlafondRequest; }
@@ -63,5 +64,13 @@ public class PlafondRequest {
 
     public void setTeam(Team team) {
         this.team = team;
+    }
+
+    public LocalDateTime getClosedAt() {
+        return closedAt;
+    }
+
+    public void setClosedAt(LocalDateTime closedAt) {
+        this.closedAt = closedAt;
     }
 }
