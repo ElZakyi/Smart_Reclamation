@@ -90,9 +90,9 @@ export default function ReclamationChat({ reclamationId, currentUser }) {
 };
 
     return (
-        <div className="bg-white border rounded-lg p-4 mt-6 shadow">
+        <div className="bg-white/15 border rounded-lg p-4 mt-6 shadow">
 
-            <h2 className="font-semibold mb-3">Conversation</h2>
+            <h2 className="font-semibold mb-3 text-center">Conversation</h2>
 
             <div className="h-80 overflow-y-auto p-2 space-y-3 border rounded">
 
@@ -145,7 +145,7 @@ export default function ReclamationChat({ reclamationId, currentUser }) {
                 <select
                     value={type}
                     onChange={(e)=>setType(e.target.value)}
-                    className="border rounded px-2 py-1"
+                    className="border border-white/30 bg-white/20 backdrop-blur-sm text-slate-900 rounded-lg px-3 py-2 shadow focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
                     <option value="COMMENT">Commentaire</option>
                     <option value="REQUEST_INFO">Demande info</option>

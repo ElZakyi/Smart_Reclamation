@@ -234,6 +234,12 @@ export default function AuditeurDashboard(){
 
     return (
     <div className="relative min-h-screen p-6">
+        <button
+                    onClick={handleLogout}
+                    className="px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold shadow-md transition active:scale-95 flex ml-430"
+                >
+                    Déconnexion
+                </button>
 
         {/* 🔥 BACKGROUND */}
         <div
@@ -249,20 +255,16 @@ export default function AuditeurDashboard(){
         <div className="max-w-6xl mx-auto space-y-6">
 
             {/* HEADER */}
-            <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold text-gray-900">
+            <div className="flex items-center justify-center rounded-2xl p-5 mb-6 
+            bg-gradient-to-r from-blue-600 via-indigo-600 to-orange-500 shadow-lg">
+
+                <h1 className="text-3xl font-bold text-white tracking-wide">
                     Audit & Traçabilité
                 </h1>
 
-                <button
-                    onClick={handleLogout}
-                    className="px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold shadow-md transition active:scale-95"
-                >
-                    Déconnexion
-                </button>
             </div>
 
-
+            
             {/* FILTRES */}
             <div className="flex flex-col md:flex-row gap-4 bg-white/60 backdrop-blur-md p-4 rounded-2xl border border-white/40 shadow-md">
 

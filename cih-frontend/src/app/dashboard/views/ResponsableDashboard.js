@@ -146,92 +146,144 @@ export default function ResponsableDashboard({ user }) {
     
     return (
 
-        <div className="min-h-screen bg-gray-100 p-8">
+        <div
+  className="min-h-screen bg-cover bg-center bg-fixed relative"
+  style={{
+    backgroundImage: "url('/responsable_cih_2.png')"
+  }}
+>
 
-            <button
-                onClick={handleLogout}
-                className="flex ml-auto px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 
-                text-white font-semibold shadow-md transition active:scale-95"
-            >
-                Déconnexion
-            </button>
+  {/* 🔥 OVERLAY (PLUS LÉGER) */}
+  <div className="absolute inset-0 backdrop-blur-[3px] "></div>
 
-            <div className="w-full px-8">
+  {/* 🔥 BOUTON DECONNEXION */}
+  <div className="absolute top-6 right-6 z-20">
+    <button
+      onClick={handleLogout}
+      className="px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 
+      text-white font-semibold shadow-md transition active:scale-95"
+    >
+      Déconnexion
+    </button>
+  </div>
 
-                <h1 className="text-3xl font-bold mb-6 text-gray-800">
-                    Tableau de bord : Responsable
-                </h1>
+  {/* 🔥 CONTENT */}
+  <div className="relative z-10 px-6 py-8">
 
-                <div className="space-y-6">
+    <div className="w-full max-w-6xl mx-auto bg-red/1000 backdrop-blur-sm 
+    border border-white/20 rounded-3xl shadow-2xl p-8">
 
-                    <h2 className="text-2xl font-bold mt-10 text-gray-800">
-    Suggestions IA
-</h2>
+      {/* HEADER */}
+      <div className="relative flex items-center justify-center rounded-2xl p-5 mb-6 
+        bg-gradient-to-r from-blue-600 via-indigo-600 to-orange-500 shadow-lg">
 
-<div className="flex gap-6 overflow-x-auto pb-4 mt-4">
+        {/* LOGO (positionné à gauche) */}
+        <img
+            src="/Cih-bank.png"
+            alt="CIH Bank"
+            className="absolute left-6 w-30 h-30 object-contain"
+        />
 
-    {suggestions.length === 0 && (
-        <div className="min-w-[320px] bg-white p-6 rounded-xl shadow border text-center flex-shrink-0">
-            <p className="text-gray-500 font-medium">
-                Aucune suggestion IA disponible
-            </p>
+        {/* TITRE */}
+        <h1 className="text-2xl md:text-3xl font-bold text-white tracking-wide">
+            Tableau de bord Responsable
+        </h1>
+
         </div>
-    )}
 
-    {suggestions.map((suggestion) => {
+      <div className="space-y-6">
 
-        const reclamation = suggestion.reclamation;
+        {/* Sous titre */}
+        <div className="flex items-center justify-center rounded-xl p-4 
+        bg-white/20 backdrop-blur-lg rounded-xl p-4 border border-white/20 shadow">
+          <h2 className="text-xl font-bold text-slate-800">
+            Suggestions intelligentes (IA)
+          </h2>
+        </div>
 
-        return (
+        <div className="flex gap-6 overflow-x-auto pb-4 mt-4 items-start">
 
-            <div
+          {suggestions.length === 0 && (
+            <div className="min-w-[320px] bg-white/30 backdrop-blur-md p-6 rounded-2xl shadow border border-white/20 text-center flex-shrink-0">
+              <p className="text-gray-500 font-medium">
+                Aucune suggestion IA disponible
+              </p>
+            </div>
+          )}
+
+          {suggestions.map((suggestion) => {
+
+            const reclamation = suggestion.reclamation;
+
+            return (
+
+              <div
                 key={suggestion.idRouting}
-                className="min-w-[360px] bg-white shadow-md rounded-lg p-5 border border-gray-200 flex-shrink-0"
-            >
+                className="min-w-[360px] bg-white/20 backdrop-blur-lg shadow-lg rounded-2xl p-5 border border-white/20 flex-shrink-0 self-start"
+              >
 
-                <div className="flex justify-between items-center mb-2">
+            {/* HEADER */}
+            <div className="text-center space-y-2 mb-4">
 
-                    <span className="font-semibold text-gray-700">
-                        {reclamation.reference}
-                    </span>
+              <div>
+                <p className="text-sm text-slate-500">Référence</p>
+                <h3 className="font-semibold text-slate-900">
+                  {reclamation.reference}
+                </h3>
+              </div>
 
-                    <span className="text-xs bg-gray-200 px-2 py-1 rounded">
-                        Réclamation
-                    </span>
+              <div>
+                <p className="text-sm text-slate-500">Titre</p>
+                <h2 className="text-lg font-bold text-slate-900">
+                  {reclamation.title}
+                </h2>
+              </div>
 
+            </div>
+
+            {/* DESCRIPTION */}
+            <div className="bg-white/20 backdrop-blur-md rounded-xl p-4 mb-4">
+              <p className="text-sm text-slate-500 mb-1">Description</p>
+              <p className="text-slate-800">
+                {reclamation.description}
+              </p>
+            </div>
+
+            {/* SUGGESTION IA */}
+            <div className="bg-white/5 backdrop-blur-md border border-white/20">
+
+              <h3 className="font-semibold text-slate-700 mb-4 text-center">
+                Suggestion IA
+              </h3>
+
+              <div className="grid grid-cols-3 gap-3 text-sm">
+
+                {/* Team */}
+                <div className="bg-purple-100/80 rounded-xl p-3 text-center">
+                  <p className="text-slate-600 text-xs mb-1">Équipe</p>
+                  <p className="font-semibold text-purple-700">
+                    {suggestion.suggestedTeam?.name}
+                  </p>
                 </div>
 
-                <h2 className="text-lg font-semibold text-gray-800">
-                    {reclamation.title}
-                </h2>
+                {/* Agent */}
+                <div className="bg-indigo-100/80 rounded-xl p-3 text-center">
+                  <p className="text-slate-600 text-xs mb-1">Agent</p>
+                  <p className="font-semibold text-indigo-700">
+                    {suggestion.suggestedUser?.fullName}
+                  </p>
+                </div>
 
-                <p className="text-gray-600 mt-1">
-                    {reclamation.description}
-                </p>
+                {/* Score */}
+                <div className="bg-green-100/80 rounded-xl p-3 text-center">
+                  <p className="text-slate-600 text-xs mb-1">Score IA</p>
+                  <p className="font-semibold text-green-700">
+                    {suggestion.score?.toFixed(2)}
+                  </p>
+                </div>
 
-                <div className="mt-4 p-4 bg-gray-50 rounded border">
-
-                    <h3 className="font-semibold text-gray-700 mb-3">
-                        Suggestion IA
-                    </h3>
-
-                    <div className="flex flex-wrap gap-4 text-sm mb-4">
-
-                        <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded">
-                            Team : {suggestion.suggestedTeam?.name}
-                        </span>
-
-                        <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded">
-                            Agent : {suggestion.suggestedUser?.fullName}
-                        </span>
-
-                        <span className="bg-green-100 text-green-700 px-3 py-1 rounded">
-                            Score IA : {suggestion.score?.toFixed(2)}
-                        </span>
-
-                    </div>
-
-                    <div className="flex gap-3">
+              </div>
+                    <div className="flex justify-center gap-4 mt-4">
 
                         <button
                             onClick={() => acceptSuggestion(suggestion.idRouting)}
@@ -257,9 +309,9 @@ export default function ResponsableDashboard({ user }) {
 
                 {manualSuggestionId === suggestion.idRouting && (
 
-                    <div className="mt-5 bg-white border rounded-lg p-5 shadow-sm">
+                    <div className="bg-white/20 backdrop-blur-md border border-white/20">
 
-                        <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                        <h2 className="font-semibold text-slate-700 mb-4 text-center">
                             Assignation manuelle
                         </h2>
 
@@ -338,7 +390,7 @@ export default function ResponsableDashboard({ user }) {
                             <button
                                 disabled={!selectedTeam || !selectedAgent}
                                 onClick={() => manualAssign(suggestion.idRouting)}
-                                className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium disabled:bg-gray-400 transition"
+                                className="px-4 py-2 rounded-lg bg-orange-600 hover:bg-orange-700 text-white font-medium disabled:bg-gray-400 transition"
                             >
                                 Valider l’assignation
                             </button>
@@ -356,148 +408,177 @@ export default function ResponsableDashboard({ user }) {
     })}
 
 </div>
-                    <h2 className="text-2xl font-bold mt-10 text-gray-800">
-                        Décisions en attente
-                    </h2>
+                    {/* TITRE */}
+<div className="flex items-center justify-center rounded-xl p-4 mt-10
+bg-white/20 backdrop-blur-md border border-white/20 shadow">
+  <h2 className="text-xl font-bold text-slate-800">
+    Décisions en attentes
+  </h2>
+</div>
 
-                    <div className="flex gap-6 overflow-x-auto pb-4 mt-4">
+{/* LISTE */}
+<div className="flex gap-6 overflow-x-auto pb-4 mt-4 items-start">
 
-                        {reclamationsForDecision.length === 0 && (
-                            <div className="min-w-[320px] bg-white p-6 rounded-xl shadow border text-center flex-shrink-0">
-                                <p className="text-gray-500 font-medium">
-                                    Aucune décision en attente
-                                </p>
-                            </div>
-                        )}
+  {reclamationsForDecision.length === 0 && (
+    <div className="min-w-[320px] bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-2xl shadow text-center flex-shrink-0">
+      <p className="text-gray-500 font-medium">
+        Aucune décision en attente
+      </p>
+    </div>
+  )}
 
-    {reclamationsForDecision.map((proposal) => {
+  {reclamationsForDecision.map((proposal) => {
 
-        const rec = proposal.reclamation;
+    const rec = proposal.reclamation;
 
-        return (
+    return (
 
-            <div
-                key={proposal.idDecisionProposal}
-                className="min-w-[350px] bg-white rounded-xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition flex-shrink-0"
-            >
+      <div
+  key={proposal.idDecisionProposal}
+  className="min-w-[350px] bg-white/10 backdrop-blur-xl border border-white/20 
+  rounded-2xl shadow-lg p-6 transition flex-shrink-0 self-start"
+>
+  {/* HEADER */}
+  {/* HEADER */}
+<div className="text-center mb-4">
 
-                {/* HEADER */}
-                <div className="flex justify-between items-center mb-3">
+  {/* Référence */}
+  <div className="mb-3">
+    <p className="text-sm text-slate-500">Référence</p>
+    <h3 className="font-semibold text-slate-900">
+      {rec.reference}
+    </h3>
+  </div>
 
-                    <span className="font-semibold text-gray-700">
-                        {rec.reference}
-                    </span>
+  {/* TITRE */}
+  <div className="mb-3">
+    <p className="text-sm text-slate-500">Titre</p>
+    <h3 className="text-lg font-bold text-slate-900">
+      {rec.title}
+    </h3>
+  </div>
 
-                    <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">
-                        {rec.status}
-                    </span>
+  {/* STATUS → 🔥 maintenant ici */}
+  <div>
+    <p className="text-sm text-slate-500">Statut</p>
+    <span className="inline-block mt-1 text-xs bg-yellow-100/80 text-yellow-700 px-3 py-1 rounded-full">
+      {rec.status}
+    </span>
+  </div>
 
-                </div>
+</div>
 
-                {/* RECLAMATION */}
-                <h3 className="text-lg font-bold text-gray-800">
-                    {rec.title}
-                </h3>
+  {/* DESCRIPTION */}
+  <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 mb-4">
+    <p className="text-sm text-slate-500 mb-1">Description</p>
+    <p className="text-slate-800">
+      {rec.description}
+    </p>
+  </div>
 
-                <p className="text-gray-600 mt-1">
-                    {rec.description}
-                </p>
+  {/* PROPOSITION */}
+  <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-xl">
 
-                {/* PROPOSAL */}
-                <div className="mt-4 bg-indigo-50 border border-indigo-200 p-4 rounded-lg">
+    <h4 className="font-semibold text-slate-700 mb-4 text-center">
+      Proposition de l’agent
+    </h4>
 
-                    <h4 className="font-semibold text-indigo-700 mb-2">
-                        Proposition de l’agent
-                    </h4>
+    {/* 🔥 BADGES COMME EN HAUT */}
+    <div className="grid grid-cols-2 gap-3 text-sm mb-3">
 
-                    <div className="flex flex-wrap gap-3 text-sm mb-3">
+      <div className="bg-indigo-100/80 rounded-xl p-3 text-center">
+        <p className="text-slate-600 text-xs mb-1">Type</p>
+        <p className="font-semibold text-indigo-700">
+          {proposal.type}
+        </p>
+      </div>
 
-                        <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded">
-                            Type : {proposal.type}
-                        </span>
+      <div className="bg-gray-100/80 rounded-xl p-3 text-center">
+        <p className="text-slate-600 text-xs mb-1">Agent</p>
+        <p className="font-semibold text-gray-700">
+          {proposal.user?.fullName}
+        </p>
+      </div>
 
-                        <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded">
-                            Agent : {proposal.user?.fullName}
-                        </span>
+    </div>
 
-                    </div>
+   <div className="bg-white/20 backdrop-blur-md rounded-xl p-3 mt-3">
+    <p className="text-gray-700 text-sm italic text-center">
+        "{proposal.justification}"
+    </p>
+    </div>
 
-                    <p className="text-gray-700 text-sm italic">
-                        "{proposal.justification}"
-                    </p>
+  </div>
 
-                </div>
+  {/* ACTION */}
+  <div className="mt-4">
+    <button
+      onClick={() => setSelectedDecision(proposal.idDecisionProposal)}
+      className="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition"
+    >
+      Prendre décision
+    </button>
+  </div>
 
-                {/* ACTION */}
-                <div className="mt-4">
 
-                    <button
-                        onClick={() => setSelectedDecision(proposal.idDecisionProposal)}
-                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition"
-                    >
-                        Prendre décision
-                    </button>
+        {/* FORM */}
+        {selectedDecision === proposal.idDecisionProposal && (
 
-                </div>
+          <div className="mt-4 border-t border-white/20 pt-4">
 
-                {/* FORM */}
-                {selectedDecision === proposal.idDecisionProposal && (
+            <textarea
+              placeholder="Motif de votre décision"
+              value={motif}
+              onChange={(e) => setMotif(e.target.value)}
+              className="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 outline-none"
+            />
 
-                    <div className="mt-4 border-t pt-4">
+            <div className="flex gap-3 mt-3">
 
-                        <textarea
-                            placeholder="Motif de votre décision"
-                            value={motif}
-                            onChange={(e) => setMotif(e.target.value)}
-                            className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 outline-none"
-                        />
+              <button
+                onClick={() =>
+                  acceptDecisionProposal(
+                    rec.idReclamation,
+                    proposal.idDecisionProposal
+                  )
+                }
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
+              >
+                Accepter
+              </button>
 
-                        <div className="flex gap-3 mt-3">
+              <button
+                onClick={() =>
+                  rejectDecisionProposal(
+                    rec.idReclamation,
+                    proposal.idDecisionProposal
+                  )
+                }
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
+              >
+                Refuser
+              </button>
 
-                            <button
-                                onClick={() =>
-                                    acceptDecisionProposal(
-                                        rec.idReclamation,
-                                        proposal.idDecisionProposal
-                                    )
-                                }
-                                className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
-                            >
-                                 Accepter
-                            </button>
+            </div>
 
-                            <button
-                                onClick={() =>
-                                    rejectDecisionProposal(
-                                        rec.idReclamation,
-                                        proposal.idDecisionProposal
-                                    )
-                                }
-                                className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
-                            >
-                                Refuser
-                            </button>
+          </div>
 
-                        </div>
+        )}
 
-                    </div>
+      </div>
 
-                                )}
+    );
 
-                            </div>
+  })}
 
-                        );
-
-                    })}
-
-                </div>
+</div>
                     <h2 className="text-2xl font-bold mt-10 text-gray-800">
                      Demande changement de plafond en attente
                     </h2>
 
                     <div className="flex gap-6 overflow-x-auto pb-4 mt-4">
                         {requests.length === 0 && (
-                            <div className="min-w-[320px] bg-white p-6 rounded-xl shadow border border-gray-200 flex-shrink-0 text-center">
+                            <div className="min-w-[320px] bg-white/20 backdrop-blur-md border border-white/20 p-6 rounded-xl shadow border border-gray-200 flex-shrink-0 text-center">
                                 <p className="text-gray-600 font-medium">
                                     Aucune demande de changement de plafond en attente
                                 </p>
@@ -515,7 +596,7 @@ export default function ResponsableDashboard({ user }) {
 
         <div
             key={r.idPlafondProposal}
-            className="min-w-[320px] bg-white p-6 rounded-xl shadow border border-gray-200 flex-shrink-0"
+            className="min-w-[320px]  bg-white/20 backdrop-blur-md border border-white/20 p-6 rounded-xl shadow border border-gray-200 flex-shrink-0"
         >
 
             {/* HEADER */}
@@ -561,7 +642,7 @@ export default function ResponsableDashboard({ user }) {
                     </span>
 
                 </div>
-
+                
                 <p className="text-gray-700 text-sm italic">
                     "{r.justification}"
                 </p>
@@ -643,6 +724,7 @@ export default function ResponsableDashboard({ user }) {
 
             </div>
 
+        </div>
         </div>
 
     );

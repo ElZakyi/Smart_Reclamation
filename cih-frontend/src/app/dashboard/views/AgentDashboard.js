@@ -166,251 +166,386 @@
 
         return (
 
-            <div className="min-h-screen bg-gray-100 p-8">
+           <div
+  className="min-h-screen bg-fixed bg-cover bg-center relative"
+  style={{
+    backgroundImage: "url('/agent_cih.png')"
+  }}
+>
+  {/* Overlay */}
+  <div className="absolute inset-0 backdrop-blur-[1px] bg-white/35"></div>
 
-                <button
-                    onClick={handleLogout}
-                    className="ml-auto flex px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold shadow-md transition active:scale-95"
-                >
-                    Déconnexion
-                </button>
+  <div className="relative z-10 p-8">
+    <button
+      onClick={handleLogout}
+      className="ml-auto flex px-4 py-2 rounded-xl bg-red-500/90 hover:bg-red-600 text-white font-semibold shadow-md transition active:scale-95"
+    >
+      Déconnexion
+    </button>
 
-                <div className="max-w-4xl mx-auto">
-                    {/* 🔥 CONDITION PRINCIPALE */}
-                    {isPlafondAgent ? (
+    <div className="max-w-5xl mx-auto">
+      {isPlafondAgent ? (
+        <>
+          <div className="flex items-center justify-center rounded-2xl p-5 mb-6 
+        bg-gradient-to-r from-blue-600 via-indigo-600 to-orange-500 shadow-lg">
+
+        <h1 className="text-2xl md:text-3xl font-bold text-white tracking-wide">
+            Traitement des demandes de plafonds
+        </h1>
+
+        </div>  
+
+          {plafondRequests.length === 0 && (
+            <div className="bg-white/70 backdrop-blur-lg border border-slate-200 p-6 rounded-3xl shadow text-center text-slate-700">
+              Aucune demande disponible
+            </div>
+          )}
+
+          <div className="space-y-6">
+            {plafondRequests.map((p) => (
+              <div
+                key={p.idPlafondRequest}
+                className="rounded-[28px] border border-slate-300/70 bg-white/15 backdrop-blur-[10px] shadow-lg p-6"
+              >
+                {/* HEADER */}
+                <div className="flex items-start justify-between gap-4 mb-6">
+                  <div className="flex items-start gap-4">
+                    {/* Icône carte */}
+                    <div className="h-12 w-12 rounded-2xl bg-blue-100 flex items-center justify-center shrink-0">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-6 w-6 text-blue-600"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <rect x="3" y="6" width="18" height="12" rx="2" />
+                        <path d="M3 10h18" />
+                      </svg>
+                    </div>
+
+                    <div>
+                      <h2 className="text-[20px] font-bold text-slate-900 leading-tight">
+                        Carte •••• {p.card?.cardNumberMasked?.slice(-4)}
+                      </h2>
+
+                      <div className="mt-2 flex items-center gap-2 text-slate-500 text-sm">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <rect x="3" y="4" width="18" height="18" rx="2" />
+                          <path d="M16 2v4M8 2v4M3 10h18" />
+                        </svg>
+                        <span>{new Date(p.createdAt).toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Badge statut */}
+                  <span className="inline-flex items-center gap-2 rounded-full border border-yellow-300 bg-yellow-100 px-4 py-2 text-sm font-medium text-orange-700 whitespace-nowrap">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <circle cx="12" cy="12" r="9" />
+                      <path d="M12 7v5l3 2" />
+                    </svg>
+                    {p.status}
+                  </span>
+                </div>
+
+                {/* BLOCS PLAFOND */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                  <div className="border border-black/60 rounded-3xl bg-gray-200/90 p-5">
+                    <p className="btext-slate-700 text-sm mb-2">Plafond actuel</p>
+                    <p className="text-[20px] font-bold text-slate-900">
+                      {p.card?.currentLimit ?? 0} €
+                    </p>
+                  </div>
+
+                  <div className="border border-black/60 rounded-3xl bg-orange-50/90 p-5">
+                    <p className="text-slate-700 text-sm mb-2">Plafond demandé</p>
+                    <p className="text-[20px] font-bold text-orange-600">
+                      {p.requestedLimit} €
+                    </p>
+                  </div>
+                </div>
+
+                {/* JUSTIFICATION */}
+                <div className="border border-black/20 rounded-3xl bg-blue-100/80 p-5">
+                  <div className="flex items-center gap-2 text-slate-600 mb-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <circle cx="12" cy="12" r="9" />
+                      <path d="M12 8h.01M11 12h1v4h1" />
+                    </svg>
+                    <span className="text-sm font-medium">Justification</span>
+                  </div>
+
+                  <p className="text-slate-900">{p.justification}</p>
+                </div>
+
+                {/* ACTION */}
+                <div className="mt-5 flex flex-wrap gap-3">
+                  <button
+                    onClick={() => setOpenPlafondFormId(p.idPlafondRequest)}
+                    className="bg-orange-500 hover:bg-orange-600 text-white px-5 py-2.5 rounded-xl shadow-md transition active:scale-95 font-medium"
+                  >
+                    Proposer plafond
+                  </button>
+                </div>
+
+                {/* FORMULAIRE OUVERT */}
+                {openPlafondFormId === p.idPlafondRequest && (
+                  <div className="mt-5 border-t border-slate-300/60 pt-5">
+                    <div className="grid gap-3">
+                      <input
+                        type="number"
+                        placeholder="Nouveau plafond"
+                        value={proposalLimit}
+                        onChange={(e) => setProposalLimit(e.target.value)}
+                        className="bg-gray-100/50 border border-slate-300 p-3 rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-orange-300"
+                        />
+
+                        <textarea
+                        placeholder="Justification"
+                        value={proposalJustification}
+                        onChange={(e) => setProposalJustification(e.target.value)}
+                        rows={4}
+                        className="bg-gray-100/50 border border-slate-300 p-3 rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-orange-300"
+                        />
+
+                      <div className="flex gap-3 mt-3 justify-end mr-200">
+
+                    <button
+                        onClick={() => createPlafondProposal(p.idPlafondRequest)}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition active:scale-95 text-sm"
+                    >
+                        Envoyer
+                    </button>
+
+                    <button
+                        onClick={() => setOpenPlafondFormId(false)}
+                        className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg shadow transition active:scale-95 text-sm"
+                    >
+                        Annuler
+                    </button>
+
+                    </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {message && (
+            <div className="mt-6 rounded-2xl border border-blue-300/40 bg-blue-100/40 backdrop-blur-lg px-5 py-4 shadow-lg">
+              <div className="flex items-start gap-3">
+                <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white grid place-items-center font-bold">
+                  i
+                </div>
+                <div className="text-sm text-slate-800">
+                  <div className="font-bold text-slate-900">Info</div>
+                  <div className="mt-0.5">{message}</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+        </>
+
+      )  : (
 
                         <>
-                            <h1 className="text-3xl font-bold mb-8 text-gray-800">
-                                Demandes de changement de plafond
-                            </h1>
+                <div className="flex items-center justify-center rounded-2xl p-5 mb-6 
+                bg-gradient-to-r from-blue-600 via-indigo-600 to-orange-500 shadow-lg">
 
-                            {plafondRequests.length === 0 && (
-                                <div className="bg-white p-6 rounded-xl shadow text-center">
-                                    Aucune demande disponible
-                                </div>
-                            )}
+                <h1 className="text-2xl md:text-3xl font-bold text-white tracking-wide">
+                    Traitement des réclamations
+                </h1>
 
-                            <div className="space-y-6">
+                </div>
 
-                                {plafondRequests.map((p) => (
+  {assignments.length === 0 && (
+    <div className="bg-white/60 backdrop-blur-lg border border-white/40 p-6 rounded-2xl shadow text-center">
+      Aucune réclamation assignée
+    </div>
+  )}
 
-                                    <div key={p.idPlafondRequest} className="bg-white rounded-xl shadow p-6">
+  <div className="space-y-6">
 
-                                        <div className="flex justify-between mb-2">
-                                            <span className="font-semibold">
-                                                Carte : {p.card?.cardNumberMasked}
-                                            </span>
+    {assignments.map((assignment) => {
 
-                                            <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">
-                                                {p.status}
-                                            </span>
-                                        </div>
+      const r = assignment.reclamation;
 
-                                        <p><b>Nouveau plafond :</b> {p.requestedLimit}</p>
-                                        <p><b>Justification :</b> {p.justification}</p>
+      return (
 
-                                        <p className="text-sm text-gray-500 mt-2">
-                                            {new Date(p.createdAt).toLocaleString()}
-                                        </p>
-                                    <button
-                                        onClick={() => setOpenPlafondFormId(p.idPlafondRequest)}
-                                        className="mt-3 bg-indigo-600 text-white px-4 py-2 rounded-lg"
-                                    >
-                                        Proposer plafond
-                                    </button>
-                                    {openPlafondFormId === p.idPlafondRequest && (
+        <div
+          key={assignment.idAssignment}
+          className="bg-white/40 backdrop-blur-lg border border-white/40 rounded-2xl shadow-lg p-6"
+        >
 
-                                    <div className="mt-4 border-t pt-4">
+          {/* Header */}
+<div className="space-y-5">
 
-                                        <input
-                                            type="number"
-                                            placeholder="Nouveau plafond"
-                                            value={proposalLimit}
-                                            onChange={(e) => setProposalLimit(e.target.value)}
-                                            className="border p-2 rounded w-full mb-2"
-                                        />
+  {/* Référence + statut */}
+  <div className="flex justify-between items-center">
 
-                                        <textarea
-                                            placeholder="Justification"
-                                            value={proposalJustification}
-                                            onChange={(e) => setProposalJustification(e.target.value)}
-                                            className="border p-2 rounded w-full mb-2"
-                                        />
+    <h2 className="text-lg font-semibold text-slate-800">
+      {r.reference}
+    </h2>
 
-                                        <button
-                                            onClick={() => createPlafondProposal(p.idPlafondRequest)}
-                                            className="bg-blue-600 text-white px-4 py-2 rounded-lg"
-                                        >
-                                            Envoyer
-                                        </button>
+    <span className={`text-xs px-3 py-1 rounded-full ${getStatusColor(r.status)}`}>
+      {r.status}
+    </span>
 
-                                    </div>
+  </div>
 
-                                )}
+  {/* Titre */}
+    <p className="text-sm text-slate-500 mb-1">Titre</p>
+    <h3 className="text-lg font-bold text-slate-900">
+      {r.title}
+    </h3>
 
-                                    </div>
+  {/* Description */}
+  <div className="bg-slate-200/80 rounded-xl p-4">
+    <p className="text-sm text-slate-500 mb-1">Description</p>
+    <p className="text-slate-800">
+      {r.description}
+    </p>
+  </div>
 
-                                ))}
+</div>
 
-                            </div>
-                            {message && (
-                                <div className="rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 px-5 py-4 shadow-sm">
-                                <div className="flex items-start gap-3">
-                                    <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white grid place-items-center font-bold">
-                                    i
-                                    </div>
-                                    <div className="text-sm text-slate-800">
-                                    <div className="font-bold text-slate-900">Info</div>
-                                    <div className="mt-0.5">{message}</div>
-                                    </div>
-                                </div>
-                                </div>
-                            )}
-                        </>
+{/* Infos (cards comme ta capture) */}
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
 
-                    ) : (
+  {/* Canal */}
+  <div className="bg-blue-100/70 rounded-2xl p-4">
+    <p className="text-sm text-slate-600 mb-1">Canal</p>
+    <p className="font-semibold text-blue-700">
+      {r.canal}
+    </p>
+  </div>
 
-                        <>
-                            <h1 className="text-3xl font-bold mb-8 text-gray-800">
-                                Mes réclamations à traiter
-                            </h1>
+  {/* Type */}
+  <div className="bg-green-100/70 rounded-2xl p-4">
+    <p className="text-sm text-slate-600 mb-1">Type</p>
+    <p className="font-semibold text-green-700">
+      {r.type}
+    </p>
+  </div>
 
-                            {assignments.length === 0 && (
-                                <div className="bg-white p-6 rounded-xl shadow text-center">
-                                    Aucune réclamation assignée
-                                </div>
-                            )}
+  {/* Priorité */}
+  <div className="bg-orange-100/70 rounded-2xl p-4">
+    <p className="text-sm text-slate-600 mb-1">Priorité</p>
+    <p className="font-semibold text-orange-700">
+      {r.priority}
+    </p>
+  </div>
 
-                            <div className="space-y-6">
+</div>
 
-                                {assignments.map((assignment) => {
+          {r.status !== "RESOLUE" && (
 
-                                    const r = assignment.reclamation;
+            <div className="mt-5">
 
-                                    return (
+              <textarea
+                className="w-full bg-gray-100/80 backdrop-blur-sm border border-black/40 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-green-400"
+                rows="4"
+                value={contents[r.idReclamation] || ""}
+                onChange={(e) =>
+                  handleContentChange(
+                    r.idReclamation,
+                    e.target.value
+                  )
+                }
+                placeholder="Votre résolution ici"
+              />
 
-                                        <div
-                                            key={assignment.idAssignment}
-                                            className="bg-white rounded-xl shadow p-6 border border-gray-200"
-                                        >
+              <button
+                onClick={() => createResolution(r.idReclamation)}
+                className="mt-3 bg-orange-600/90 hover:bg-orange-700 text-white px-4 py-2 rounded-xl shadow-md transition active:scale-95"
+              >
+                Valider la résolution
+              </button>
 
-                                            {/* Header */}
-                                            <div className="flex justify-between items-center mb-2">
+            </div>
 
-                                                <span className="font-semibold text-gray-700">
-                                                    {r.reference}
-                                                </span>
+          )}
 
-                                                <span className={`text-xs px-3 py-1 rounded ${getStatusColor(r.status)}`}>
-                                                    {r.status}
-                                                </span>
+          {(r.status === "RESOLUE" || proposalFormId === r.idReclamation) && (
 
-                                            </div>
+            <div className="mt-6 bg-white/40 backdrop-blur-lg p-4 rounded-2xl border border-white/40">
 
-                                            <h2 className="text-lg font-semibold text-gray-800">
-                                                {r.title}
-                                            </h2>
+              <select
+                onChange={(e) => setProposalDecisionType(e.target.value)}
+                className="bg-gray-100/80 border border-white/40 rounded-xl px-3 py-2 mb-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+              >
+                <option value="CLOTURE">Clôture</option>
+                <option value="REJET">Rejet</option>
+              </select>
 
-                                            <p className="text-gray-600 mt-2">
-                                                {r.description}
-                                            </p>
+              <textarea
+                onChange={(e) => setProposalJustification(e.target.value)}
+                className="w-full bg-gray-100/80 border border-white/40 rounded-xl p-3 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
 
-                                            <div className="flex gap-3 mt-3 text-sm">
+              <button
+                onClick={() => createDecisionProposal(user.idUser, r.idReclamation)}
+                className="bg-orange-600/90 hover:bg-orange-700 text-white px-4 py-2 rounded-xl shadow-md transition active:scale-95"
+              >
+                Envoyer la proposition
+              </button>
 
-                                                <span className="bg-gray-200 px-3 py-1 rounded">
-                                                    Canal : {r.canal}
-                                                </span>
+            </div>
 
-                                                <span className="bg-gray-200 px-3 py-1 rounded">
-                                                    Type : {r.type}
-                                                </span>
+          )}
 
-                                                <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded">
-                                                    Priorité : {r.priority}
-                                                </span>
+          <button
+            onClick={() =>
+              setOpenChatId(
+                openChatId === r.idReclamation ? null : r.idReclamation
+              )
+            }
+            className="mt-4 bg-blue-700/90 hover:bg-blue-800 text-white px-4 py-2 rounded-xl shadow-md transition active:scale-95"
+          >
+            Conversation
+          </button>
 
-                                            </div>
+          {openChatId === r.idReclamation && (
+            <div className="mt-4 bg-white/20 backdrop-blur-lg border border-white/40 rounded-2xl p-4">
+              <ReclamationChat
+                reclamationId={r.idReclamation}
+                currentUser={user}
+              />
+            </div>
+          )}
 
-                                            {r.status !== "RESOLUE" && (
+        </div>
 
-                                                <div className="mt-5">
+      );
 
-                                                    <textarea
-                                                        className="w-full border rounded-lg p-3"
-                                                        rows="4"
-                                                        value={contents[r.idReclamation] || ""}
-                                                        onChange={(e) =>
-                                                            handleContentChange(
-                                                                r.idReclamation,
-                                                                e.target.value
-                                                            )
-                                                        }
-                                                    />
+    })}
 
-                                                    <button
-                                                        onClick={() => createResolution(r.idReclamation)}
-                                                        className="mt-3 bg-green-600 text-white px-4 py-2 rounded-lg"
-                                                    >
-                                                        Valider la résolution
-                                                    </button>
-
-                                                </div>
-
-                                            )}
-
-                                            {(r.status === "RESOLUE" || proposalFormId === r.idReclamation) && (
-
-                                                <div className="mt-6 bg-gray-50 p-4 rounded-lg border">
-
-                                                    <select
-                                                        onChange={(e) => setProposalDecisionType(e.target.value)}
-                                                        className="border rounded px-3 py-2 mb-3 w-full"
-                                                    >
-                                                        <option value="CLOTURE">Clôture</option>
-                                                        <option value="REJET">Rejet</option>
-                                                    </select>
-
-                                                    <textarea
-                                                        onChange={(e) => setProposalJustification(e.target.value)}
-                                                        className="w-full border rounded-lg p-3 mb-3"
-                                                    />
-
-                                                    <button
-                                                        onClick={() => createDecisionProposal(user.idUser, r.idReclamation)}
-                                                        className="bg-blue-600 text-white px-4 py-2 rounded-lg"
-                                                    >
-                                                        Envoyer la proposition
-                                                    </button>
-
-                                                </div>
-
-                                            )}
-
-                                            <button
-                                                onClick={() =>
-                                                    setOpenChatId(
-                                                        openChatId === r.idReclamation ? null : r.idReclamation
-                                                    )
-                                                }
-                                                className="mt-4 bg-gray-600 text-white px-4 py-2 rounded-lg"
-                                            >
-                                                Conversation
-                                            </button>
-
-                                            {openChatId === r.idReclamation && (
-                                                <ReclamationChat
-                                                    reclamationId={r.idReclamation}
-                                                    currentUser={user}
-                                                />
-                                            )}
-
-                                        </div>
-
-                                    );
-
-                                })}
-
-                            </div>
+  </div>
 
                             {message && (
                 <div className="rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 px-5 py-4 shadow-sm">
@@ -431,6 +566,7 @@
 
                 </div>
 
+            </div>
             </div>
 
         );
