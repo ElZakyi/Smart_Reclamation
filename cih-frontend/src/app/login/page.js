@@ -53,16 +53,14 @@ export default function LoginPage() {
 
     {/* 🔥 BACKGROUND IMAGE */}
     <div
-      className="absolute inset-0 bg-center"
+      className="absolute inset-0 bg-cover  bg-[position:center_100%]"
       style={{
-        backgroundImage: "url('/bank_human.png')",
-        backgroundSize: "100%", // 🔥 zoom out
-        backgroundRepeat: "no-repeat"
+        backgroundImage: "url('/acceuil_v3.png')",
       }}
     />
 
     {/* 🔥 OVERLAY */}
-    <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/20"></div>
+    <div className="absolute inset-0 bg-gradient-to-r bg-black/20"></div>
 
     {/* 🔥 CONTENT */}
     <div className="relative w-full flex items-center ml-250 pr-20 px-6">

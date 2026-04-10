@@ -2,10 +2,12 @@ package com.cihbank.backend.card;
 
 import com.cihbank.backend.user.User;
 import com.cihbank.backend.user.UserRepository;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,15 +19,17 @@ public class CardService {
         this.cardRepository = cardRepository;
         this.userRepository = userRepository;
     }
-    public Card createCard(Integer idUser, String cardNumberMasked, String cardType, Double currentLimit){
+    public Card createCard(Integer idUser, String cardNumberMasked, String cardType, Double currentLimit, String cvc, LocalDate expiresAt){
         User user = userRepository.findById(idUser).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Utilisateur introuvable"));
         Card card = new Card();
         card.setUser(user);
         card.setCardNumberMasked(cardNumberMasked);
-        card.setCardType(cardType);
+        card.setCardType(cardType   );
         card.setCurrentLimit(currentLimit);
         card.setStatus(CardStatus.ACTIVE);
         card.setCreatedAt(LocalDateTime.now());
+        card.setCvc(cvc);
+        card.setExpiryDate(expiresAt);
         return cardRepository.save(card);
     }
     public List<Card> getCardsOfUser(Integer idUser){

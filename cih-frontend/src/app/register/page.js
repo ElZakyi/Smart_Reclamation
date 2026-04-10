@@ -49,11 +49,9 @@ export default function RegisterPage() {
 
     {/* 🔥 BACKGROUND */}
     <div
-      className="absolute inset-0 bg-center"
+      className="absolute inset-0 bg-cover bg-[position:center_0%]"
       style={{
-        backgroundImage: "url('/bank_human.png')",
-        backgroundSize: "100%",
-        backgroundRepeat: "no-repeat"
+        backgroundImage: "url('/register.png')",
       }}
     />
 

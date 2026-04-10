@@ -3,6 +3,7 @@ package com.cihbank.backend.card;
 import com.cihbank.backend.user.User;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -20,7 +21,25 @@ public class Card {
     @Enumerated(EnumType.STRING)
     private CardStatus status;
     private LocalDateTime createdAt;
+    private String cvc;
+    private LocalDate expiryDate;
     public Card(){}
+
+    public String getCvc() {
+        return cvc;
+    }
+
+    public void setCvc(String cvc) {
+        this.cvc = cvc;
+    }
+
+    public LocalDate getExpiryDate() {
+        return expiryDate;
+    }
+
+    public void setExpiryDate(LocalDate expiryDate) {
+        this.expiryDate = expiryDate;
+    }
 
     public User getUser() {
         return user;

@@ -149,7 +149,7 @@ export default function ResponsableDashboard({ user }) {
         <div
   className="min-h-screen bg-cover bg-center bg-fixed relative"
   style={{
-    backgroundImage: "url('/responsable_cih_2.png')"
+    backgroundImage: "url('/responsable_cih_2.png')",
   }}
 >
 
@@ -168,14 +168,14 @@ export default function ResponsableDashboard({ user }) {
   </div>
 
   {/* 🔥 CONTENT */}
-  <div className="relative z-10 px-6 py-8">
+  <div className="relative z-10 px-6 py-8 bg-black/20">
 
-    <div className="w-full max-w-6xl mx-auto bg-red/1000 backdrop-blur-sm 
-    border border-white/20 rounded-3xl shadow-2xl p-8">
+    <div className="w-full max-w-6xl mx-auto backdrop-blur-sm bg-white/20
+    border border-white/20  rounded-3xl shadow-2xl p-8">
 
       {/* HEADER */}
       <div className="relative flex items-center justify-center rounded-2xl p-5 mb-6 
-        bg-gradient-to-r from-blue-600 via-indigo-600 to-orange-500 shadow-lg">
+        bg-gradient-to-r from-blue-600 via-orange-300 to-orange-500 shadow-lg">
 
         {/* LOGO (positionné à gauche) */}
         <img
@@ -572,9 +572,12 @@ bg-white/20 backdrop-blur-md border border-white/20 shadow">
   })}
 
 </div>
-                    <h2 className="text-2xl font-bold mt-10 text-gray-800">
-                     Demande changement de plafond en attente
-                    </h2>
+                    <div className="flex items-center justify-center rounded-xl p-4 mt-10
+bg-white/20 backdrop-blur-md border border-white/20 shadow">
+  <h2 className="text-xl font-bold text-slate-800">
+    Demandes changement de plafond 
+  </h2>
+</div>
 
                     <div className="flex gap-6 overflow-x-auto pb-4 mt-4">
                         {requests.length === 0 && (
@@ -594,114 +597,135 @@ bg-white/20 backdrop-blur-md border border-white/20 shadow">
                         if (!request) return null;
     return (
 
-        <div
-            key={r.idPlafondProposal}
-            className="min-w-[320px]  bg-white/20 backdrop-blur-md border border-white/20 p-6 rounded-xl shadow border border-gray-200 flex-shrink-0"
-        >
+  <div
+    key={r.idPlafondProposal}
+    className="min-w-[320px] bg-white/10 backdrop-blur-xl border border-white/20 
+    rounded-2xl shadow-lg p-6 flex flex-col gap-5 flex-shrink-0"
+  >
 
-            {/* HEADER */}
-            <div className="mb-3 flex justify-between items-center">
-                <span className="font-semibold text-gray-700">
-                    Carte
-                </span>
+    {/* HEADER */}
+    <div className="text-center space-y-2">
 
-                <span className="text-xs px-3 py-1 rounded bg-yellow-100 text-yellow-700">
-                    {request.status}
-                </span>
-            </div>
+      <div>
+        <p className="text-sm text-slate-500">Carte</p>
+        <h3 className="font-semibold text-slate-900">
+          {request.card.cardNumberMasked}
+        </h3>
+      </div>
 
-            {/* INFOS DEMANDE */}
-            <div className="space-y-2 text-sm text-gray-700">
-                <p>
-                    <b>Numéro :</b> {request.card.cardNumberMasked}
-                </p>
+      <div>
+        <p className="text-sm text-slate-500">Statut</p>
+        <span className="inline-block mt-1 text-xs bg-yellow-100/80 text-yellow-700 px-3 py-1 rounded-full">
+          {request.status}
+        </span>
+      </div>
 
-                <p>
-                    <b>Plafond demandé :</b>
-                    <span className="text-indigo-600 font-semibold ml-1">
-                        {request.requestedLimit} DH
-                    </span>
-                </p>
-            </div>
+    </div>
 
-            {/* 🔥 PROPOSITION AGENT */}
-            <div className="mt-4 bg-indigo-50 border border-indigo-200 p-4 rounded-lg">
+    {/* INFOS DEMANDE */}
+    <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 text-center">
+      <p className="text-sm text-slate-500 mb-1">Plafond demandé</p>
+      <p className="text-indigo-600 font-semibold text-lg">
+        {request.requestedLimit} DH
+      </p>
+    </div>
 
-                <h4 className="font-semibold text-indigo-700 mb-2">
-                    Proposition de l’agent
-                </h4>
+    {/* 🔥 PROPOSITION AGENT */}
+    <div className="bg-white/10 backdrop-blur-md border border-white/20 p-5 rounded-xl space-y-4">
 
-                <div className="flex flex-wrap gap-3 text-sm mb-2">
+      <h4 className="font-semibold text-slate-700 text-center">
+        Proposition de l’agent
+      </h4>
 
-                    <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded">
-                        Nouveau plafond : {r.proposedLimit} DH
-                    </span>
+      {/* BADGES */}
+      <div className="grid grid-cols-2 gap-4 text-sm">
 
-                    <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded">
-                        Agent : {r.user?.fullName}
-                    </span>
+        <div className="bg-indigo-100/80 rounded-xl p-3 text-center">
+          <p className="text-slate-600 text-xs mb-1">Nouveau plafond</p>
+          <p className="font-semibold text-indigo-700">
+            {r.proposedLimit} DH
+          </p>
+        </div>
 
-                </div>
-                
-                <p className="text-gray-700 text-sm italic">
-                    "{r.justification}"
-                </p>
+        <div className="bg-gray-100/80 rounded-xl p-3 text-center">
+          <p className="text-slate-600 text-xs mb-1">Agent</p>
+          <p className="font-semibold text-gray-700">
+            {r.user?.fullName}
+          </p>
+        </div>
 
-            </div>
+      </div>
 
-            {/* BOUTON */}
-            <button
-                onClick={() => setSelectedPlafondId(r.idPlafondProposal)}
-                className="mt-4 bg-indigo-600 text-white px-4 py-2 rounded-lg w-full"
-            >
-                Traiter
-            </button>
+      {/* JUSTIFICATION */}
+<div className="bg-white/20 backdrop-blur-md rounded-xl p-3 text-center">
 
-            {/* FORM */}
-            {selectedPlafondId === r.idPlafondProposal && (
+  <p className="text-xs text-slate-500 mb-1">
+    Justification
+  </p>
 
-                <>
-                    <textarea
-                        placeholder="Motif de décision..."
-                        value={motifPlafond}
-                        onChange={(e) => setMotifPlafond(e.target.value)}
-                        className="w-full border rounded-lg p-2 mt-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                    />
+  <p className="text-gray-700 text-sm italic">
+    "{r.justification}"
+  </p>
 
-                    <div className="flex gap-3 mt-4">
+</div>
 
-                        <button
-                            onClick={() => handleDecision(r.idPlafondProposal, "VALIDE")}
-                            className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition"
-                        >
-                            Valider
-                        </button>
+    </div>
 
-                        <button
-                            onClick={() => handleDecision(r.idPlafondProposal, "REFUSE")}
-                            className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition"
-                        >
-                            Refuser
-                        </button>
+    {/* ACTION */}
+    <button
+      onClick={() => setSelectedPlafondId(r.idPlafondProposal)}
+      className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition"
+    >
+      Traiter
+    </button>
 
-                        <button
-                            onClick={() => {
-                                setSelectedPlafondId(null);
-                                setMotifPlafond("");
-                            }}
-                            className="flex-1 bg-gray-300 px-4 py-2 rounded-lg"
-                        >
-                            Annuler
-                        </button>
+    {/* FORM */}
+    {selectedPlafondId === r.idPlafondProposal && (
 
-                    </div>
-                </>
+      <div className="space-y-4">
 
-            )}
+        <textarea
+          placeholder="Motif de décision..."
+          value={motifPlafond}
+          onChange={(e) => setMotifPlafond(e.target.value)}
+          className="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        />
+
+        <div className="flex gap-3">
+
+          <button
+            onClick={() => handleDecision(r.idPlafondProposal, "VALIDE")}
+            className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition"
+          >
+            Valider
+          </button>
+
+          <button
+            onClick={() => handleDecision(r.idPlafondProposal, "REFUSE")}
+            className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition"
+          >
+            Refuser
+          </button>
+
+          <button
+            onClick={() => {
+              setSelectedPlafondId(null);
+              setMotifPlafond("");
+            }}
+            className="flex-1 bg-gray-300 px-4 py-2 rounded-lg"
+          >
+            Annuler
+          </button>
 
         </div>
 
-    );
+      </div>
+
+    )}
+
+  </div>
+
+);
 
 })}
 

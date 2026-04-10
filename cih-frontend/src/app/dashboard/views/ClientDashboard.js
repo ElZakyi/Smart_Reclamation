@@ -193,7 +193,7 @@ export default function ClientDashboard({ user }) {
     />
 
     {/* 🔥 OVERLAY (léger pour lisibilité) */}
-    <div className="fixed inset-0 -z-10 bg-white/40 backdrop-blur-[2px]" />
+    <div className="fixed inset-0 -z-10 bg-black/20 backdrop-blur-[10px]" />
 
     {/* CONTENU */}
     <div className="p-6 md:p-4">
@@ -209,45 +209,53 @@ export default function ClientDashboard({ user }) {
 
       <div className="max-w-6xl mx-auto space-y-6">
 
-        {/* HEADER */}
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+  {/* HEADER */}
+  <div className="relative flex flex-col md:flex-row items-center justify-center 
+  rounded-2xl p-6 
+  bg-gradient-to-r from-blue-600 via-orange-300 to-orange-500 shadow-lg">
 
-          <div>
-            <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900">
-              Client Dashboard
-            </h1>
-            <p className="text-sm text-slate-700">
-              Crée et suis tes réclamations en temps réel.
-            </p>
-          </div>
+    {/* 🔥 LOGO PLUS GRAND */}
+    <img
+      src="/Cih-bank.png"
+      alt="CIH Bank"
+      className="absolute left-6 top-1/2 -translate-y-1/2 w-33 h-33 object-contain"
+    />
 
-          {/* USER CARD */}
-          <div className="flex items-center gap-3 rounded-2xl 
-                          border border-white/40 
-                          bg-white/30 backdrop-blur-md 
-                          px-4 py-2 shadow-lg">
+    {/* 🔥 TITRE CENTRÉ */}
+    <div className="text-center">
+      <h1 className="text-2xl md:text-3xl font-extrabold text-white">
+        Client Dashboard
+      </h1>
+      <p className="text-sm text-white/80">
+        Crée et suis tes réclamations en temps réel.
+      </p>
+    </div>
 
-            <div className="h-9 w-9 rounded-xl 
-                            bg-gradient-to-br from-blue-600 to-indigo-600 
-                            text-white grid place-items-center font-bold">
-              {(user?.fullName || user?.email || "U")
-                .toString()
-                .trim()
-                .charAt(0)
-                .toUpperCase()}
-            </div>
+    {/* 🔥 USER CARD (reste à droite) */}
+    <div className="absolute right-6 flex items-center gap-3 rounded-2xl 
+    bg-white/20 backdrop-blur-md px-4 py-2 shadow-md">
 
-            <div className="leading-tight">
-              <div className="text-sm font-semibold text-slate-900">
-                {user?.fullName ? user.fullName : "Utilisateur"}
-              </div>
-              <div className="text-xs text-slate-600">
-                {user?.email ? user.email : "—"}
-              </div>
-            </div>
+      <div className="h-9 w-9 rounded-xl 
+                      bg-white/30 text-white grid place-items-center font-bold">
+        {(user?.fullName || user?.email || "U")
+          .toString()
+          .trim()
+          .charAt(0)
+          .toUpperCase()}
+      </div>
 
-          </div>
+      <div className="leading-tight text-left">
+        <div className="text-sm font-semibold text-white">
+          {user?.fullName ? user.fullName : "Client"}
         </div>
+        <div className="text-xs text-white/80">
+          {user?.email ? user.email : "—"}
+        </div>
+      </div>
+
+    </div>
+
+  </div>
           {/* Form Card */}
         <div className="relative overflow-hidden rounded-2xl 
                         border border-black/30 
@@ -310,7 +318,7 @@ export default function ClientDashboard({ user }) {
                       name="title"
                       value={form.title}
                       onChange={handleChange}
-                      className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-slate-900 shadow-sm
+                      className="w-full rounded-xl border border-slate-300 bg-white/50 px-4 py-2.5 text-slate-900 shadow-sm
                                  focus:outline-none focus:ring-4 focus:ring-blue-200 focus:border-blue-500"
                     />
                   </div>
@@ -324,7 +332,7 @@ export default function ClientDashboard({ user }) {
                         name="type"
                         value={form.type}
                         onChange={handleChange}
-                        className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-slate-900 shadow-sm
+                        className="w-full rounded-xl border border-slate-300 bg-white/50 px-4 py-2.5 text-slate-900 shadow-sm
                                    focus:outline-none focus:ring-4 focus:ring-blue-200 focus:border-blue-500"
                       >
                         <option value="AUTRE">AUTRE</option>
@@ -345,7 +353,7 @@ export default function ClientDashboard({ user }) {
                         name="canal"
                         value={form.canal}
                         onChange={handleChange}
-                        className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-slate-900 shadow-sm
+                        className="w-full rounded-xl border border-slate-300 bg-white/50 px-4 py-2.5 text-slate-900 shadow-sm
                                    focus:outline-none focus:ring-4 focus:ring-blue-200 focus:border-blue-500"
                       >
                         <option value="AUTRE">AUTRE</option>
@@ -364,7 +372,7 @@ export default function ClientDashboard({ user }) {
                         name="priority"
                         value={form.priority}
                         onChange={handleChange}
-                        className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-slate-900 shadow-sm
+                        className="w-full rounded-xl border border-slate-300 bg-white/50 px-4 py-2.5 text-slate-900 shadow-sm
                                    focus:outline-none focus:ring-4 focus:ring-blue-200 focus:border-blue-500"
                       >
                         <option value="LOW">FAIBLE</option>
@@ -386,7 +394,7 @@ export default function ClientDashboard({ user }) {
                     onChange={handleChange}
                     required
                     rows={4}
-                    className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-slate-900 shadow-sm
+                    className="w-full rounded-xl border border-slate-300 bg-white/50 px-4 py-2.5 text-slate-900 shadow-sm
                                focus:outline-none focus:ring-4 focus:ring-blue-200 focus:border-blue-500"
                   />
                   {loadingAI && (
@@ -479,13 +487,13 @@ export default function ClientDashboard({ user }) {
     {/* HEADER */}
     <thead className="bg-white/50 backdrop-blur-md">
       <tr className="text-sm text-slate-800"> 
-        <th className="px-4 py-4 text-left font-semibold w-[130px]">Référence</th>
-        <th className="px-4 py-4 text-left font-semibold w-[200px]">Titre</th>
-        <th className="px-4 py-4 text-left font-semibold w-[120px]">Statut</th>
-        <th className="px-4 py-4 text-left font-semibold w-[110px]">Priorité</th>
-        <th className="px-4 py-4 text-left font-semibold w-[110px]">Canal</th>
-        <th className="px-4 py-4 text-left font-semibold w-[160px]">Créée le</th>
-        <th className="px-4 py-4 text-left font-semibold w-[200px]">Actions</th>
+        <th className="px-4 py-4 text-left font-semibold w-[130px] border-r border-white/20">Référence</th>
+        <th className="px-4 py-4 text-left font-semibold w-[200px] border-r border-white/20">Titre</th>
+        <th className="px-4 py-4 text-left font-semibold w-[120px] border-r border-white/20">Statut</th>
+        <th className="px-4 py-4 text-left font-semibold w-[110px] border-r border-white/20">Priorité</th>
+        <th className="px-4 py-4 text-left font-semibold w-[110px] border-r border-white/20">Canal</th>
+        <th className="px-4 py-4 text-left font-semibold w-[160px] border-r border-white/20">Créée le</th>
+        <th className="px-4 py-4 text-left font-semibold w-[200px] border-r border-white/20">Actions</th>
       </tr>
     </thead>
 
@@ -499,12 +507,12 @@ export default function ClientDashboard({ user }) {
         >
 
           {/* REFERENCE */}
-          <td className="px-4 py-4 text-sm font-semibold text-slate-900 break-words">
+          <td className="px-4 py-4 text-sm font-semibold text-slate-900 break-words border-r border-white/20">
             {reclamation.reference}
           </td>
 
           {/* TITRE */}
-          <td className="px-4 py-4 text-sm text-slate-900">
+          <td className="px-4 py-4 text-sm text-slate-900 border-r border-white/20">
             <div className="font-semibold break-words">
               {reclamation.title}
             </div>
@@ -514,7 +522,7 @@ export default function ClientDashboard({ user }) {
           </td>
 
           {/* STATUS */}
-          <td className="px-4 py-4">
+          <td className="px-4 py-4 border-r border-white/20">
             <span
               className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold ${statusBadge(
                 reclamation.status
@@ -525,7 +533,7 @@ export default function ClientDashboard({ user }) {
           </td>
 
           {/* PRIORITE */}
-          <td className="px-4 py-4">
+          <td className="px-4 py-4 border-r border-white/20">
             <span
               className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold ${priorityBadge(
                 reclamation.priority
@@ -536,7 +544,7 @@ export default function ClientDashboard({ user }) {
           </td>
 
           {/* CANAL */}
-          <td className="px-4 py-4">
+          <td className="px-4 py-4 border-r border-white/20">
             <span
               className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold ${canalBadge(
                 reclamation.canal
@@ -547,14 +555,14 @@ export default function ClientDashboard({ user }) {
           </td>
 
           {/* DATE */}
-          <td className="px-4 py-4 text-sm text-slate-700">
+          <td className="px-4 py-4 text-sm text-slate-700 border-r border-white/20">
             {reclamation.createdAt
               ? new Date(reclamation.createdAt).toLocaleString()
               : "-"}
           </td>
 
           {/* ACTIONS */}
-          <td className="px-4 py-4">
+          <td className="px-4 py-4 ">
             <div className="flex flex-wrap gap-2">
 
               {/* DELETE */}

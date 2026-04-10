@@ -334,12 +334,13 @@ export default function AdminDashboard({ user }) {
     <div
       className="fixed inset-0 -z-10 bg-cover bg-center"
       style={{
-        backgroundImage: "url('/back_cih.png')"
+        backgroundImage: "url('/admin_v2.png')",
+         filter: "brightness(0.8)"
       }}
     />
 
     {/* 🔥 OVERLAY (IMPORTANT POUR LISIBILITÉ) */}
-    <div className="fixed inset-0 -z-10 bg-white/50 backdrop-blur-sm"></div>
+    <div className="fixed inset-0 -z-10 bg-white/10 backdrop-blur-sm"></div>
       <button
             onClick={handleLogout}
             className="flex ml-auto px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 
@@ -350,33 +351,54 @@ export default function AdminDashboard({ user }) {
           </button>
       <div className="max-w-7xl mx-auto space-y-8">
 
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-gray-800">
-            Dashboard administrateur :
-          </h1>
-          <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white/70 backdrop-blur px-4 py-2 shadow-sm">
-              <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white grid place-items-center font-bold">
-                {(user?.fullName || user?.email || "U").toString().trim().charAt(0).toUpperCase()}
-              </div>
-              <div className="leading-tight">
-                <div className="text-sm font-semibold text-slate-900">
-                  {user?.fullName ? user.fullName : "Utilisateur"}
-                </div>
-                <div className="text-xs text-slate-500">
-                  {user?.email ? user.email : "—"}
-                </div>
-              </div>
-            </div>
-          
-        </div>
+        <div className="relative flex items-center justify-between rounded-2xl p-5 mb-6 
+bg-gradient-to-r from-blue-600 via-orange-300 to-orange-500 shadow-lg">
 
+  {/* 🔥 LOGO GAUCHE */}
+  <img
+    src="/Cih-bank.png"
+    alt="CIH Bank"
+    className="absolute left-6 top-1/2 -translate-y-1/2 w-32 h-32 object-contain"
+  />
+
+  {/* 🔥 TITRE CENTRÉ */}
+  <div className="w-full text-center">
+    <h1 className="text-2xl md:text-3xl font-bold text-white tracking-wide">
+      Dashboard Administrateur
+    </h1>
+  </div>
+
+  {/* 🔥 USER À DROITE */}
+  <div className="absolute right-6 flex items-center gap-3 rounded-2xl 
+  bg-white/20 backdrop-blur-md px-4 py-2 shadow-md">
+
+    <div className="h-9 w-9 rounded-xl bg-white/30 text-white grid place-items-center font-bold">
+      {(user?.fullName || user?.email || "U")
+        .toString()
+        .trim()
+        .charAt(0)
+        .toUpperCase()}
+    </div>
+
+    <div className="leading-tight text-left">
+      <div className="text-sm font-semibold text-white">
+        {user?.fullName ? user.fullName : "Utilisateur"}
+      </div>
+      <div className="text-xs text-white/80">
+        {user?.email ? user.email : "—"}
+      </div>
+    </div>
+
+  </div>
+
+</div>
        {/* TABLE USERS */}
 <div className="rounded-2xl backdrop-blur-sm border border-black/20 shadow-lg overflow-hidden">
 
   {/* HEADER */}
-  <div className="px-6 py-5 border-b border-white/20 flex justify-between items-center">
-    <h2 className="font-semibold text-gray-900 text-lg flex ml-140">
-      Utilisateurs
+  <div className="px-6 py-5 bg-white/40 border-b border-white/20 flex justify-between items-center">
+    <h2 className="font-semibold text-gray-900 text-lg flex ml-130">
+      Gestion utilisateurs
     </h2>
 
     <button
@@ -388,7 +410,7 @@ export default function AdminDashboard({ user }) {
   </div>
 
   {/* TABLE */}
-  <div className="overflow-x-auto rounded-2xl backdrop-blur-md bg-white/10 border border-white/30 shadow-xl">
+  <div className="overflow-x-auto rounded-2xl backdrop-blur-md bg-white/40 border border-white/30 shadow-xl">
 
     <table className="min-w-full">
 
@@ -490,14 +512,14 @@ export default function AdminDashboard({ user }) {
 <div className="rounded-2xl backdrop-blur-sm border border-white/20 shadow-lg overflow-hidden">
 
   {/* HEADER */}
-  <div className="px-6 py-5 border-b border-white/20 flex justify-between items-center">
-    <h2 className="font-semibold text-gray-900 text-lg flex ml-140">
-      Rôles & Pérmissions
+  <div className="px-6 py-5 border-b bg-white/40 border-white/20 flex justify-between items-center">
+    <h2 className="font-semibold text-gray-900 text-lg flex ml-130">
+      Gestion rôles & pérmissions
     </h2>
   </div>
 
   {/* TABLE */}
-  <div className="overflow-x-auto rounded-2xl backdrop-blur-md bg-white/10 border border-black/30 shadow-xl">
+  <div className="overflow-x-auto rounded-2xl backdrop-blur-md bg-white/40 border border-black/30 shadow-xl">
 
     <table className="min-w-full">
 
@@ -595,7 +617,7 @@ export default function AdminDashboard({ user }) {
                   }}
                   className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm shadow transition"
                 >
-                  Gérer permissions
+                  Gérer pérmissions
                 </button>
               </td>
 
@@ -612,9 +634,9 @@ export default function AdminDashboard({ user }) {
 <div className="rounded-2xl backdrop-blur-sm border border-white/20 shadow-lg overflow-hidden">
 
   {/* HEADER */}
-  <div className="px-6 py-5 border-b border-white/20 flex justify-between items-center">
-    <h2 className="font-semibold text-gray-900 text-lg flex ml-140">
-      Équipes
+  <div className="px-6 py-5 border-b bg-white/40 border-white/20 flex justify-between items-center">
+    <h2 className="font-semibold  text-gray-900 text-lg flex ml-130">
+      Gestion équipes
     </h2>
 
     <button
@@ -626,7 +648,7 @@ export default function AdminDashboard({ user }) {
   </div>
 
   {/* TABLE */}
-  <div className="overflow-x-auto rounded-2xl backdrop-blur-md bg-white/10 border border-black/30 shadow-xl">
+  <div className="overflow-x-auto rounded-2xl backdrop-blur-md bg-white/40 border border-black/30 shadow-xl">
 
     <table className="min-w-full">
 

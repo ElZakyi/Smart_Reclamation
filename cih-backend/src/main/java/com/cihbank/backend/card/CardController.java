@@ -2,6 +2,8 @@ package com.cihbank.backend.card;
 
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -28,7 +30,9 @@ public class CardController {
         String cardNumber = card.getCardNumberMasked();
         String cardType = card.getCardType();
         Double currentLimit = card.getCurrentLimit();
-        return cardService.createCard(idUser,cardNumber,cardType,currentLimit);
+        String cvc = card.getCvc();
+        LocalDate expiresAt = card.getExpiryDate();
+        return cardService.createCard(idUser,cardNumber,cardType,currentLimit,cvc,expiresAt);
     }
     @PutMapping("/{idCard}")
     public Card updateCard(@PathVariable Integer idCard,@RequestBody Card card){

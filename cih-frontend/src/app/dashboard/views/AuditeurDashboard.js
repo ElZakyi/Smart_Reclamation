@@ -245,24 +245,34 @@ export default function AuditeurDashboard(){
         <div
             className="fixed inset-0 -z-10 bg-cover bg-center"
             style={{
-                backgroundImage: "url('/audit_bank.png')"
+                backgroundImage: "url('/audit_bank.png')",
             }}
         />
-        <div className="fixed inset-0 -z-10 bg-white/40 backdrop-blur-[10px]"></div>
+        <div className="fixed inset-0 -z-10 bg-black/20 backdrop-blur-[10px]"></div>
 
 
         {/* 🔥 CONTENU CENTRÉ */}
         <div className="max-w-6xl mx-auto space-y-6">
+            
 
             {/* HEADER */}
-            <div className="flex items-center justify-center rounded-2xl p-5 mb-6 
-            bg-gradient-to-r from-blue-600 via-indigo-600 to-orange-500 shadow-lg">
+            <div className="relative flex items-center justify-between rounded-2xl p-5 mb-6 
+bg-gradient-to-r from-blue-600 via-orange-300 to-orange-500 shadow-lg">
 
-                <h1 className="text-3xl font-bold text-white tracking-wide">
-                    Audit & Traçabilité
-                </h1>
+  {/* 🔥 LOGO GAUCHE */}
+  <img
+    src="/Cih-bank.png"
+    alt="CIH Bank"
+    className="absolute left-6 top-1/2 -translate-y-1/2 w-32 h-32 object-contain"
+  />
 
-            </div>
+  {/* 🔥 TITRE CENTRÉ */}
+  <div className="w-full text-center">
+    <h1 className="text-2xl md:text-3xl font-bold text-white tracking-wide">
+      Audit & Traçabilité
+    </h1>
+  </div>
+  </div>
 
             
             {/* FILTRES */}
@@ -307,8 +317,8 @@ export default function AuditeurDashboard(){
                 className="p-3 rounded-lg w-full md:w-1/4 border border-gray-300 bg-white/80"
                 >
                 <option value="">Tri entité</option>
-                <option value="asc">A → Z</option>
-                <option value="desc">Z → A</option>
+                <option value="asc">Z → A</option>
+                <option value="desc">A → Z</option>
                 </select>
             </div>
 

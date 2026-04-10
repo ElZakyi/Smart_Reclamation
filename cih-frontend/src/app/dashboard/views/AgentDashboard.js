@@ -173,7 +173,7 @@
   }}
 >
   {/* Overlay */}
-  <div className="absolute inset-0 backdrop-blur-[1px] bg-white/35"></div>
+  <div className="absolute inset-0 backdrop-blur-[10px] bg-black/20"></div>
 
   <div className="relative z-10 p-8">
     <button
@@ -186,14 +186,20 @@
     <div className="max-w-5xl mx-auto">
       {isPlafondAgent ? (
         <>
-          <div className="flex items-center justify-center rounded-2xl p-5 mb-6 
-        bg-gradient-to-r from-blue-600 via-indigo-600 to-orange-500 shadow-lg">
+          <div className="relative flex items-center justify-center rounded-2xl p-5 mb-6 
+bg-gradient-to-r from-blue-600 via-orange-300 to-orange-500 shadow-lg">
 
-        <h1 className="text-2xl md:text-3xl font-bold text-white tracking-wide">
-            Traitement des demandes de plafonds
-        </h1>
+  <h1 className="text-2xl md:text-3xl font-bold text-white tracking-wide">
+    Traitement des demandes de plafonds
+  </h1>
 
-        </div>  
+  <img
+    src="/Cih-bank.png"
+    alt="CIH Bank"
+    className="absolute left-6 top-1/2 -translate-y-1/2 w-26 h-26 object-contain"
+  />
+
+</div>
 
           {plafondRequests.length === 0 && (
             <div className="bg-white/70 backdrop-blur-lg border border-slate-200 p-6 rounded-3xl shadow text-center text-slate-700">
@@ -205,7 +211,7 @@
             {plafondRequests.map((p) => (
               <div
                 key={p.idPlafondRequest}
-                className="rounded-[28px] border border-slate-300/70 bg-white/15 backdrop-blur-[10px] shadow-lg p-6"
+                className="rounded-[28px] border border-slate-300/70 bg-white/40 backdrop-blur-[10px] shadow-lg p-6"
               >
                 {/* HEADER */}
                 <div className="flex items-start justify-between gap-4 mb-6">
@@ -374,14 +380,20 @@
       )  : (
 
                         <>
-                <div className="flex items-center justify-center rounded-2xl p-5 mb-6 
-                bg-gradient-to-r from-blue-600 via-indigo-600 to-orange-500 shadow-lg">
+                <div className="relative flex items-center justify-center rounded-2xl p-5 mb-6 
+bg-gradient-to-r from-blue-600 via-orange-300 to-orange-500 shadow-lg">
 
-                <h1 className="text-2xl md:text-3xl font-bold text-white tracking-wide">
-                    Traitement des réclamations
-                </h1>
+  <h1 className="text-2xl md:text-3xl font-bold text-white tracking-wide">
+    Traitement des réclamations
+  </h1>
 
-                </div>
+  <img
+    src="/Cih-bank.png"
+    alt="CIH Bank"
+    className="absolute left-6 top-1/2 -translate-y-1/2 w-30 h-30 object-contain"
+  />
+
+</div>
 
   {assignments.length === 0 && (
     <div className="bg-white/60 backdrop-blur-lg border border-white/40 p-6 rounded-2xl shadow text-center">
@@ -391,145 +403,173 @@
 
   <div className="space-y-6">
 
-    {assignments.map((assignment) => {
+  {assignments.map((assignment) => {
 
-      const r = assignment.reclamation;
+    const r = assignment.reclamation;
 
-      return (
+    return (
 
-        <div
-          key={assignment.idAssignment}
-          className="bg-white/40 backdrop-blur-lg border border-white/40 rounded-2xl shadow-lg p-6"
-        >
+      <div
+        key={assignment.idAssignment}
+        className="bg-white/40 backdrop-blur-lg border border-white/40 rounded-2xl shadow-lg overflow-hidden"
+      >
 
-          {/* Header */}
-<div className="space-y-5">
+        {/* HEADER GRADIENT */}
+        <div className="flex justify-between items-center px-6 py-5 
+        bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white">
 
-  {/* Référence + statut */}
-  <div className="flex justify-between items-center">
+          <div>
+            <p className="text-sm opacity-80">Référence</p>
+            <h2 className="text-xl font-bold">{r.reference}</h2>
+          </div>
 
-    <h2 className="text-lg font-semibold text-slate-800">
-      {r.reference}
-    </h2>
+          <span className={`bg-white/80 text-indigo-700 px-4 py-1 rounded-xl text-sm font-semibold`}>
+            {r.status}
+          </span>
+        </div>
 
-    <span className={`text-xs px-3 py-1 rounded-full ${getStatusColor(r.status)}`}>
-      {r.status}
-    </span>
+        {/* BODY */}
+        <div className="p-6 space-y-6">
 
-  </div>
+          {/* TITRE */}
+          <div className="bg-blue-100/40 border border-blue-300/40 rounded-2xl p-5">
+            <p className="text-sm text-blue-600 font-semibold mb-1">TITRE</p>
+            <h3 className="text-xl font-bold text-slate-900">{r.title}</h3>
+          </div>
 
-  {/* Titre */}
-    <p className="text-sm text-slate-500 mb-1">Titre</p>
-    <h3 className="text-lg font-bold text-slate-900">
-      {r.title}
-    </h3>
+          {/* DESCRIPTION */}
+          <div>
+            <p className="text-sm text-slate-500 font-semibold mb-2">DESCRIPTION</p>
+            <div className="bg-gray-100/80 border border-gray-300 rounded-2xl p-4 text-slate-800">
+              {r.description}
+            </div>
+          </div>
 
-  {/* Description */}
-  <div className="bg-slate-200/80 rounded-xl p-4">
-    <p className="text-sm text-slate-500 mb-1">Description</p>
-    <p className="text-slate-800">
-      {r.description}
-    </p>
-  </div>
+          {/* INFOS */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-</div>
+            <div className="bg-blue-100/60 border border-blue-300 rounded-2xl p-4">
+              <p className="text-sm text-blue-600 font-semibold mb-1">CANAL</p>
+              <p className="text-lg font-bold text-blue-800">{r.canal}</p>
+            </div>
 
-{/* Infos (cards comme ta capture) */}
-<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
+            <div className="bg-green-100/60 border border-green-300 rounded-2xl p-4">
+              <p className="text-sm text-green-600 font-semibold mb-1">TYPE</p>
+              <p className="text-lg font-bold text-green-800">{r.type}</p>
+            </div>
 
-  {/* Canal */}
-  <div className="bg-blue-100/70 rounded-2xl p-4">
-    <p className="text-sm text-slate-600 mb-1">Canal</p>
-    <p className="font-semibold text-blue-700">
-      {r.canal}
-    </p>
-  </div>
+            <div className="bg-red-100/60 border border-red-300 rounded-2xl p-4">
+              <p className="text-sm text-red-600 font-semibold mb-1">PRIORITÉ</p>
+              <p className="text-lg font-bold text-red-800">{r.priority}</p>
+            </div>
 
-  {/* Type */}
-  <div className="bg-green-100/70 rounded-2xl p-4">
-    <p className="text-sm text-slate-600 mb-1">Type</p>
-    <p className="font-semibold text-green-700">
-      {r.type}
-    </p>
-  </div>
+          </div>
 
-  {/* Priorité */}
-  <div className="bg-orange-100/70 rounded-2xl p-4">
-    <p className="text-sm text-slate-600 mb-1">Priorité</p>
-    <p className="font-semibold text-orange-700">
-      {r.priority}
-    </p>
-  </div>
-
-</div>
-
+          {/* ================== RESOLUTION ================== */}
           {r.status !== "RESOLUE" && (
 
-            <div className="mt-5">
+            <div className="mt-6">
 
-              <textarea
-                className="w-full bg-gray-100/80 backdrop-blur-sm border border-black/40 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-green-400"
-                rows="4"
-                value={contents[r.idReclamation] || ""}
-                onChange={(e) =>
-                  handleContentChange(
-                    r.idReclamation,
-                    e.target.value
-                  )
-                }
-                placeholder="Votre résolution ici"
-              />
+              <div className="flex items-center gap-4 mb-6">
+                <div className="flex-1 h-px bg-gray-300"></div>
+                <p className="text-sm font-semibold text-slate-500">RÉSOLUTION</p>
+                <div className="flex-1 h-px bg-gray-300"></div>
+              </div>
 
-              <button
-                onClick={() => createResolution(r.idReclamation)}
-                className="mt-3 bg-orange-600/90 hover:bg-orange-700 text-white px-4 py-2 rounded-xl shadow-md transition active:scale-95"
-              >
-                Valider la résolution
-              </button>
+              <div className="bg-purple-100/40 border border-purple-300 rounded-2xl p-6">
+
+                <p className="text-purple-800 font-semibold mb-3">
+                  Votre résolution ici
+                </p>
+
+                <textarea
+                  className="w-full bg-white border border-purple-300 rounded-2xl p-4 
+                  focus:outline-none focus:ring-2 focus:ring-purple-400"
+                  rows="3"
+                  value={contents[r.idReclamation] || ""}
+                  onChange={(e) =>
+                    handleContentChange(r.idReclamation, e.target.value)
+                  }
+                  placeholder="Décrivez votre solution ou réponse à cette réclamation..."
+                />
+
+              </div>
+
+              {/* BUTTONS */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+
+                <button
+                  onClick={() => {
+                    createResolution(r.idReclamation);
+                    setProposalFormId(r.idReclamation); // ✅ FIX BUG
+                  }}
+                  className="bg-orange-500 hover:bg-orange-600 text-white 
+                  px-6 py-4 rounded-2xl font-bold shadow-md transition"
+                >
+                  ✔️ Valider la résolution
+                </button>
+
+                <button
+                  onClick={() =>
+                    setOpenChatId(
+                      openChatId === r.idReclamation ? null : r.idReclamation
+                    )
+                  }
+                  className="bg-blue-600 hover:bg-blue-700 text-white 
+                  px-6 py-4 rounded-2xl font-bold shadow-md transition"
+                >
+                  💬 Conversation
+                </button>
+
+              </div>
 
             </div>
 
           )}
 
+          {/* ================== PROPOSITION ================== */}
           {(r.status === "RESOLUE" || proposalFormId === r.idReclamation) && (
 
-            <div className="mt-6 bg-white/40 backdrop-blur-lg p-4 rounded-2xl border border-white/40">
+            <div className="mt-6">
 
-              <select
-                onChange={(e) => setProposalDecisionType(e.target.value)}
-                className="bg-gray-100/80 border border-white/40 rounded-xl px-3 py-2 mb-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-              >
-                <option value="CLOTURE">Clôture</option>
-                <option value="REJET">Rejet</option>
-              </select>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="flex-1 h-px bg-gray-300"></div>
+                <p className="text-sm font-semibold text-slate-500">
+                  PROPOSITION DE DÉCISION
+                </p>
+                <div className="flex-1 h-px bg-gray-300"></div>
+              </div>
 
-              <textarea
-                onChange={(e) => setProposalJustification(e.target.value)}
-                className="w-full bg-gray-100/80 border border-white/40 rounded-xl p-3 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
+              <div className="bg-white/10 backdrop-blur-md border border-white/40 p-6 rounded-2xl">
 
-              <button
-                onClick={() => createDecisionProposal(user.idUser, r.idReclamation)}
-                className="bg-orange-600/90 hover:bg-orange-700 text-white px-4 py-2 rounded-xl shadow-md transition active:scale-95"
-              >
-                Envoyer la proposition
-              </button>
+                <select
+                  onChange={(e) => setProposalDecisionType(e.target.value)}
+                  className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+                  <option value="CLOTURE">Clôture</option>
+                  <option value="REJET">Rejet</option>
+                </select>
+
+                <textarea
+                  onChange={(e) => setProposalJustification(e.target.value)}
+                  className="w-full bg-white border border-gray-300 rounded-xl p-4 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  placeholder="Justification..."
+                />
+
+                <button
+                  onClick={() => createDecisionProposal(user.idUser, r.idReclamation)}
+                  className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-xl font-semibold shadow-md transition"
+                >
+                  Envoyer la proposition
+                </button>
+
+              </div>
 
             </div>
 
           )}
 
-          <button
-            onClick={() =>
-              setOpenChatId(
-                openChatId === r.idReclamation ? null : r.idReclamation
-              )
-            }
-            className="mt-4 bg-blue-700/90 hover:bg-blue-800 text-white px-4 py-2 rounded-xl shadow-md transition active:scale-95"
-          >
-            Conversation
-          </button>
-
+          {/* CHAT (affichage) */}
           {openChatId === r.idReclamation && (
             <div className="mt-4 bg-white/20 backdrop-blur-lg border border-white/40 rounded-2xl p-4">
               <ReclamationChat
@@ -541,11 +581,13 @@
 
         </div>
 
-      );
+      </div>
 
-    })}
+    );
 
-  </div>
+  })}
+
+</div>
 
                             {message && (
                 <div className="rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 px-5 py-4 shadow-sm">

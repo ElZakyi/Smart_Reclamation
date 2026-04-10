@@ -89,169 +89,193 @@ export default function ReclamationDetail({id}) {
   />
 
   {/* 🔥 OVERLAY */}
-  <div className="fixed inset-0 -z-10 bg-white/20 backdrop-blur-[10px]" />
+  <div className="fixed inset-0 -z-10 bg-black/20 backdrop-blur-[10px]" />
 
   {/* 🔥 CONTENT */}
-<div className="max-w-5xl mx-auto p-6 space-y-8">
+<div className="max-w-5xl mx-auto p-6 space-y-6">
 
-  {/* CARD RÉCLAMATION */}
-  <div className="rounded-2xl border border-white/30 bg-white/10 backdrop-blur-md shadow-xl overflow-hidden">
+  {/* CARD PRINCIPALE */}
+  <div className="rounded-2xl border border-white/30 bg-white/30 backdrop-blur-xl shadow-xl p-6 space-y-6 text-center">
 
     {/* HEADER */}
-    <div className="px-6 py-5 border-b border-white/20 bg-white/20 backdrop-blur-md text-center">
+    <div>
       <h1 className="text-2xl font-extrabold text-indigo-700">
         Réclamation {reclamation.reference}
       </h1>
     </div>
 
-    {/* BODY */}
-    <div className="p-6">
-      <div className="rounded-xl bg-white/20 border border-white/20 p-6 text-slate-900">
-        <div className="space-y-5 text-center">
+    {/* TITRE */}
+    <div className="rounded-xl bg-blue-100/30 border border-blue-300/30 p-5 flex flex-col items-center">
+      <p className="text-sm text-blue-600 font-semibold mb-1">TITRE</p>
+      <h2 className="text-xl font-bold text-slate-900">
+        {reclamation.title}
+      </h2>
+    </div>
 
-          <div>
-            <span className="font-semibold text-gray-700">Titre :</span>{" "}
-            <span className="font-semibold">{reclamation.title}</span>
-          </div>
+    {/* PRIORITE + STATUT */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-center items-stretch">
 
-          <div>
-            <span className="font-semibold text-gray-700">Priorité :</span>{" "}
-            <span
-            className={`inline-flex px-3 py-1.5 text-sm rounded-full font-semibold ${
-                reclamation.priority === "CRITICAL"
-                ? "bg-red-500/20 text-red-800 border border-red-400"
-                : reclamation.priority === "HIGH"
-                ? "bg-orange-500/20 text-orange-800 border border-orange-400"
-                : reclamation.priority === "MEDIUM"
-                ? "bg-yellow-500/20 text-yellow-800 border border-yellow-400"
-                : reclamation.priority === "LOW"
-                ? "bg-green-500/20 text-green-800 border border-green-400"
-                : "bg-gray-200 text-gray-700"
-            }`}
-            >
-            {reclamation.priority}
-            </span>
-          </div>
+      {/* PRIORITE */}
+      <div className="rounded-xl bg-orange-100/30 border border-orange-300/30 p-5 flex flex-col items-center justify-center">
+        <p className="text-sm text-orange-600 font-semibold mb-2">PRIORITÉ</p>
 
-          <div>
-            <span className="font-semibold text-gray-700">Statut :</span>{" "}
-            <span className="inline-flex px-3 py-1.5 text-sm rounded-full bg-blue-200/70 text-blue-900 font-medium">
-              {reclamation.status}
-            </span>
-          </div>
+        <span
+          className={`px-4 py-2 rounded-xl font-semibold ${
+            reclamation.priority === "CRITICAL"
+              ? "bg-red-500/20 text-red-800"
+              : reclamation.priority === "HIGH"
+              ? "bg-orange-500/20 text-orange-800"
+              : reclamation.priority === "MEDIUM"
+              ? "bg-yellow-500/20 text-yellow-800"
+              : "bg-green-500/20 text-green-800"
+          }`}
+        >
+          {reclamation.priority}
+        </span>
+      </div>
 
-          {reclamation.closedAt && (
-            <div>
-              <span className="font-semibold text-gray-700">Date de clôture :</span>{" "}
-              <span className="font-semibold text-green-700">
-                {new Date(reclamation.closedAt).toLocaleString()}
-              </span>
-            </div>
-          )}
+      {/* STATUT */}
+      <div className="rounded-xl bg-blue-100/30 border border-blue-300/30 p-5 flex flex-col items-center justify-center">
+        <p className="text-sm text-blue-600 font-semibold mb-2">STATUT</p>
 
-          <div>
-            <span className="font-semibold text-gray-700">Client :</span>{" "}
-            <span>{reclamation.user.fullName}</span>
-          </div>
+        <span className="px-4 py-2 rounded-xl bg-blue-500/20 text-blue-800 font-semibold">
+          {reclamation.status}
+        </span>
+      </div>
 
-          <div>
-            <span className="font-semibold text-gray-700">Description :</span>
-            <div className="mt-3 rounded-lg bg-white/20 border border-white/20 p-4 leading-relaxed whitespace-pre-wrap text-slate-800">
-              {reclamation.description}
-            </div>
-          </div>
+    </div>
 
+    {/* CLIENT + DATE */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-center items-stretch">
+
+      {/* CLIENT */}
+      <div className="rounded-xl bg-purple-100/30 border border-purple-300/30 p-5 flex flex-col items-center justify-center">
+        <p className="text-sm text-purple-600 font-semibold mb-1">CLIENT</p>
+        <p className="text-lg font-semibold text-slate-900">
+          {reclamation.user.fullName}
+        </p>
+      </div>
+
+      {/* DATE CLOTURE */}
+      {reclamation.closedAt && (
+        <div className="rounded-xl bg-green-100/30 border border-green-300/30 p-5 flex flex-col items-center justify-center">
+          <p className="text-sm text-green-600 font-semibold mb-1">
+            DATE DE CLÔTURE
+          </p>
+
+          <p className="text-lg font-semibold text-green-800">
+            {new Date(reclamation.closedAt).toLocaleString()}
+          </p>
         </div>
+      )}
+
+    </div>
+
+    {/* DESCRIPTION */}
+    <div className="flex flex-col items-center">
+      <p className="text-sm text-slate-600 font-semibold mb-2">
+        DESCRIPTION
+      </p>
+
+      <div className="rounded-xl bg-white/20 border border-white/20 p-5 text-slate-800 max-w-2xl">
+        {reclamation.description}
       </div>
     </div>
+
   </div>
 
-  {/* CARD ATTACHMENTS */}
-  <div className="rounded-2xl border border-white/30 bg-white/10 backdrop-blur-md shadow-xl p-6">
 
-    <h2 className="text-xl font-bold text-indigo-700 mb-4 text-center">
-      Pièces jointes
-    </h2>
 
-    {attachments.length === 0 ? (
-      <p className="text-gray-600 text-center italic">
-        Aucune pièce jointe.
-      </p>
-    ) : (
-      <ul className="space-y-4">
-        {attachments.map((attachment) => (
-          <li
-            key={attachment.idAttachment}
-            className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 rounded-xl bg-white/20 border border-white/20 p-4 hover:bg-white/30 transition"
-          >
-            <span className="text-slate-900 font-semibold break-words">
-              {attachment.fileName}
-            </span>
+{/* CARD UPLOAD */}
+<div className="rounded-2xl border border-white/30 bg-white/30 backdrop-blur-md shadow-xl p-6 space-y-6">
 
-            <div className="flex flex-wrap gap-2 justify-center md:justify-end">
-              <a
-                href={`http://localhost:8081/${attachment.storageUrl}`}
-                target="_blank"
-                className="px-4 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 shadow transition"
-              >
-                Télécharger
-              </a>
+  {/* TITLE */}
+  <h3 className="text-lg font-bold text-indigo-700 text-center">
+    Ajouter une pièce jointe
+  </h3>
 
-              <button
-                onClick={() => deleteAttachment(attachment.idAttachment)}
-                className="px-4 py-2 text-sm font-semibold text-white bg-red-500 rounded-lg hover:bg-red-600 shadow transition"
-              >
-                Supprimer
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
-    )}
+  {/* DROP ZONE */}
+  <label className="block">
+  <div
+    className="border-2 border-dashed border-indigo-400/50 rounded-xl p-8 text-center bg-white/10 hover:bg-white/20 transition cursor-pointer"
+    
+    onDragOver={(e) => {
+      e.preventDefault(); // 🔥 OBLIGATOIRE
+    }}
+
+    onDrop={(e) => {
+      e.preventDefault();
+      const droppedFile = e.dataTransfer.files[0];
+      if (droppedFile) {
+        setFile(droppedFile);
+      }
+    }}
+  >
+
+    <div className="flex flex-col items-center gap-3">
+
+      <div className="text-4xl text-indigo-500">⬆️</div>
+
+      {file ? (
+        <p className="text-green-600 font-semibold">
+          {file.name}
+        </p>
+      ) : (
+        <>
+          <p className="text-indigo-600 font-semibold">
+            Cliquer pour choisir un fichier
+          </p>
+          <p className="text-sm text-gray-500">
+            ou glisser-déposer ici
+          </p>
+        </>
+      )}
+
+    </div>
+
+    {/* INPUT */}
+    <input
+      ref={fileInputRef}
+      type="file"
+      onChange={(e) => setFile(e.target.files[0])}
+      className="hidden"
+    />
+
   </div>
+</label>
 
-  {/* CARD UPLOAD */}
-  <div className="rounded-2xl border border-white/30 bg-white/10 backdrop-blur-md shadow-xl p-6">
+  {/* BUTTONS */}
+  <div className="flex justify-center gap-4">
 
-    <h3 className="text-lg font-bold text-indigo-700 mb-4 text-center">
-      Ajouter une pièce jointe
-    </h3>
-
-    <form
-      onSubmit={handleUpload}
-      className="flex flex-col md:flex-row gap-4 items-center justify-center"
+    <button
+      onClick={() => {
+        setFile(null);
+        fileInputRef.current.value = "";
+      }}
+      className="px-5 py-2 rounded-lg bg-gray-300 text-gray-700 font-medium hover:bg-gray-400 transition"
     >
-      <input
-        ref={fileInputRef}
-        type="file"
-        onChange={(e) => setFile(e.target.files[0])}
-        className="block w-full md:w-auto text-sm text-gray-700
-                   file:mr-4 file:py-2 file:px-4
-                   file:rounded-lg file:border-0
-                   file:text-sm file:font-semibold
-                   file:bg-indigo-600 file:text-white
-                   hover:file:bg-indigo-700
-                   bg-white/20 border border-white/30 rounded-lg p-2 backdrop-blur-sm"
-      />
+      Réinitialiser
+    </button>
 
-      <button
-        type="submit"
-        disabled={!file}
-        className={`px-6 py-2 rounded-lg font-semibold shadow transition ${
-          file
-            ? "bg-orange-600 hover:bg-indigo-700 text-white"
-            : "bg-gray-300 text-gray-500 cursor-not-allowed"
-        }`}
-      >
-        Ajouter
-      </button>
-    </form>
+    <button
+      onClick={handleUpload}
+      disabled={!file}
+      className={`px-6 py-2 rounded-lg font-semibold shadow transition ${
+        file
+          ? "bg-gradient-to-r from-indigo-600 to-blue-500 text-white hover:opacity-90"
+          : "bg-gray-300 text-gray-500 cursor-not-allowed"
+      }`}
+    >
+      Ajouter
+    </button>
+
   </div>
 
 </div>
+</div>
             {currentUser && (
   <div className="max-w-5xl mx-auto mt-6">
-    <div className="rounded-2xl border border-white/30 bg-white/10 backdrop-blur-md shadow-xl p-5">
+    <div className="rounded-2xl border border-white/30 bg-white/30 backdrop-blur-md shadow-xl p-5">
       <ReclamationChat
         reclamationId={id}
         currentUser={currentUser}
