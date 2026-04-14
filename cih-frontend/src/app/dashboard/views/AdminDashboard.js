@@ -364,7 +364,7 @@ bg-gradient-to-r from-blue-600 via-orange-300 to-orange-500 shadow-lg">
   {/* 🔥 TITRE CENTRÉ */}
   <div className="w-full text-center">
     <h1 className="text-2xl md:text-3xl font-bold text-white tracking-wide">
-      Dashboard Administrateur
+      Tableau de bord Administrateur
     </h1>
   </div>
 
@@ -513,8 +513,8 @@ bg-gradient-to-r from-blue-600 via-orange-300 to-orange-500 shadow-lg">
 
   {/* HEADER */}
   <div className="px-6 py-5 border-b bg-white/40 border-white/20 flex justify-between items-center">
-    <h2 className="font-semibold text-gray-900 text-lg flex ml-130">
-      Gestion rôles & pérmissions
+    <h2 className="font-semibold text-gray-900 text-lg flex ml-135">
+      Gestion pérmissions
     </h2>
   </div>
 
@@ -1073,7 +1073,7 @@ bg-gradient-to-r from-blue-600 via-orange-300 to-orange-500 shadow-lg">
     <div className="w-full max-w-xl rounded-xl bg-white shadow-xl border border-gray-200">
       <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
         <h3 className="text-lg font-semibold text-gray-800">
-          Créer une Team
+          Créer une équipe
         </h3>
         <button
           onClick={() => setShowTeamForm(false)}

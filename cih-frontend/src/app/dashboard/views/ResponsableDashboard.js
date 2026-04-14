@@ -309,7 +309,7 @@ export default function ResponsableDashboard({ user }) {
 
                 {manualSuggestionId === suggestion.idRouting && (
 
-                    <div className="bg-white/20 backdrop-blur-md border border-white/20">
+                    <div className="bg-white/20 backdrop-blur-md border border-white/20 m-5">
 
                         <h2 className="font-semibold text-slate-700 mb-4 text-center">
                             Assignation manuelle

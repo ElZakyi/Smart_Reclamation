@@ -224,7 +224,7 @@ export default function ClientDashboard({ user }) {
     {/* 🔥 TITRE CENTRÉ */}
     <div className="text-center">
       <h1 className="text-2xl md:text-3xl font-extrabold text-white">
-        Client Dashboard
+        Tableau de bord Client
       </h1>
       <p className="text-sm text-white/80">
         Crée et suis tes réclamations en temps réel.

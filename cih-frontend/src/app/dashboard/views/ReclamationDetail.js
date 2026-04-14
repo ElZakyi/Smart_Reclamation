@@ -20,6 +20,7 @@ export default function ReclamationDetail({id}) {
         loadRoutingSuggestion(id);
         const user = JSON.parse(localStorage.getItem("user"));
         setCurrentUser(user);
+        
     },[]);
 
     const loadReclamation = async (id) => {
@@ -73,7 +74,6 @@ export default function ReclamationDetail({id}) {
             setMessage(error.response?.data?.error || "Error /DELETE delete attachment : " + error);
         }
     }
-
     if (!reclamation) 
         return <div className="p-6 text-center text-gray-500 text-lg">Chargement...</div>;
 
@@ -183,6 +183,63 @@ export default function ReclamationDetail({id}) {
     </div>
 
   </div>
+  {/* CARD ATTACHMENTS */}
+<div className="rounded-2xl border border-white/30 bg-white/30 backdrop-blur-md shadow-xl p-6 space-y-6">
+
+  <h3 className="text-lg font-bold text-indigo-700 text-center">
+    Pièces jointes
+  </h3>
+
+  {attachments.length === 0 ? (
+    <p className="text-center text-gray-500">
+      Aucune pièce jointe
+    </p>
+  ) : (
+    <div className="space-y-3">
+      {attachments.map((att) => (
+        
+        
+        <div
+          key={att.idAttachment}
+          className="flex items-center justify-between p-4 rounded-xl bg-white/20 border border-white/20"
+        >
+          {/* INFO FICHIER */}
+          <div className="flex flex-col">
+            <span className="font-semibold text-slate-800">
+              {att.fileName}
+              
+            </span>
+            <span className="text-sm text-gray-500">
+              {att.fileType} • {Math.round(att.fileSize / 1024)} KB
+            </span>
+          </div>
+
+          {/* ACTIONS */}
+          <div className="flex gap-2">
+
+            {/* DOWNLOAD */}
+            <a
+              href={`http://localhost:8081/${att.storageUrl.replace(/\\/g, "/")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3 py-1 rounded-lg bg-blue-500 text-white text-sm hover:bg-blue-600 transition"
+            >
+              Télécharger
+            </a>
+            {/* DELETE */}
+            <button
+              onClick={() => deleteAttachment(att.idAttachment)}
+              className="px-3 py-1 rounded-lg bg-red-500 text-white text-sm hover:bg-red-600 transition"
+            >
+              Supprimer
+            </button>
+
+          </div>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
 
 
 
