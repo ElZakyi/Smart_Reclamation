@@ -1,5 +1,5 @@
-# 🚀 Setup Instructions
-# ✅ Prérequis
+#  Setup Instructions
+#  Prérequis
 
 Avant de lancer l’application, installer les outils suivants :
 
@@ -11,8 +11,7 @@ Avant de lancer l’application, installer les outils suivants :
 - Python 3.10+
 - PostgreSQL
 - pip
-
-## Vérification des installations
+Vérification des installations
 
 ```bash
 git --version
