@@ -11,9 +11,11 @@ Avant de lancer l’application, installer les outils suivants :
 - Python 3.10+
 - PostgreSQL
 - pip
+
+'''
 ##Vérification des installations
 
-```bash
+bash
 git --version
 java -version
 mvn -version
