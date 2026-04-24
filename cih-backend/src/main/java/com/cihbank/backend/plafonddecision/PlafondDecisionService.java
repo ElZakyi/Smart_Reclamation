@@ -4,6 +4,7 @@ import com.cihbank.backend.audit.AuditAction;
 import com.cihbank.backend.audit.AuditLogService;
 import com.cihbank.backend.card.Card;
 import com.cihbank.backend.card.CardRepository;
+import com.cihbank.backend.plafonddecision.strategy.PlafondDecisionStrategy;
 import com.cihbank.backend.plafondproposal.PlafondProposal;
 import com.cihbank.backend.plafondproposal.PlafondProposalRepository;
 import com.cihbank.backend.plafondrequest.*;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class PlafondDecisionService {
@@ -23,6 +25,7 @@ public class PlafondDecisionService {
     private final CardRepository cardRepository;
     private final AuditLogService auditLogService;
     private final PlafondProposalRepository plafondProposalRepository;
+    private final Map<String, PlafondDecisionStrategy> strategies;
 
     public PlafondDecisionService(
             PlafondDecisionRepository decisionRepository,
@@ -30,7 +33,8 @@ public class PlafondDecisionService {
             UserRepository userRepository,
             CardRepository cardRepository,
             AuditLogService auditLogService,
-            PlafondProposalRepository plafondProposalRepository
+            PlafondProposalRepository plafondProposalRepository,
+            Map<String, PlafondDecisionStrategy> strategies
     ) {
         this.decisionRepository = decisionRepository;
         this.requestRepository = requestRepository;
@@ -38,6 +42,7 @@ public class PlafondDecisionService {
         this.cardRepository = cardRepository;
         this.auditLogService = auditLogService;
         this.plafondProposalRepository = plafondProposalRepository;
+        this.strategies = strategies;
     }
 
     public void decide(Integer proposalId, Integer userId, String outcome, String motif) {
@@ -57,33 +62,13 @@ public class PlafondDecisionService {
         decision.setMotif(motif);
         decision.setDecidedAt(LocalDateTime.now());
 
-        // 🔥 LOGIQUE MÉTIER
-        if (outcome.equals("VALIDE")) {
+        PlafondDecisionStrategy strategy = strategies.get(outcome);
 
-            request.setStatus(PlafondRequestStatus.VALIDEE);
-            request.setClosedAt(LocalDateTime.now());
-            decision.setOutcome(DecisionOutcome.VALIDEE);
-            Card card = request.getCard();
-            card.setCurrentLimit(proposal.getProposedLimit());
-            cardRepository.save(card);
-
-            auditLogService.log(AuditAction.VALIDATE_PLAFOND_CHANGE,
-                    "Décision_plafond",
-                    proposalId,
-                    userId,
-                    null);
-
-        } else {
-
-            request.setStatus(PlafondRequestStatus.REFUSEE);
-            request.setClosedAt(LocalDateTime.now());
-            decision.setOutcome(DecisionOutcome.REFUSEE);
-            auditLogService.log(AuditAction.REFUSE_PLAFOND_CHANGE,
-                    "Décision_plafond",
-                    proposalId,
-                    userId,
-                    null);
+        if (strategy == null) {
+            throw new RuntimeException("Strategy inconnue : " + outcome);
         }
+
+        strategy.execute(proposal, request, decision, proposalId, userId);
         decisionRepository.save(decision);
         requestRepository.save(request);
     }

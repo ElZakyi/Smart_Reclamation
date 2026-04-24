@@ -15,6 +15,7 @@ import com.cihbank.backend.user.UserRepository;
 import com.cihbank.backend.workflowtransition.WorkflowTransition;
 import com.cihbank.backend.workflowtransition.WorkflowTransitionService;
 import jakarta.transaction.Transactional;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -30,7 +31,8 @@ public class DecisionService {
     private final NotificationService notificationService;
     private final WorkflowTransitionService workflowTransitionService;
     private final AuditLogService auditLogService;
-    public DecisionService(DecisionRepository decisionRepository, AuditLogService auditLogService, ReclamationRepository reclamationRepository, UserRepository userRepository, DecisionProposalRepository decisionProposalRepository, NotificationService notificationService, WorkflowTransitionService workflowTransitionService){
+    private final ApplicationEventPublisher publisher;
+    public DecisionService(DecisionRepository decisionRepository, AuditLogService auditLogService,ApplicationEventPublisher publisher, ReclamationRepository reclamationRepository, UserRepository userRepository, DecisionProposalRepository decisionProposalRepository, NotificationService notificationService, WorkflowTransitionService workflowTransitionService){
         this.decisionRepository=decisionRepository;
         this.reclamationRepository = reclamationRepository;
         this.userRepository = userRepository;
@@ -38,6 +40,7 @@ public class DecisionService {
         this.notificationService = notificationService;
         this.workflowTransitionService = workflowTransitionService;
         this.auditLogService = auditLogService;
+        this.publisher = publisher;
     }
     @Transactional
     public void acceptDecision(Integer idReclamation, Integer idDecisionProposal, Integer idUser, String motif){
@@ -61,11 +64,11 @@ public class DecisionService {
         auditLogService.log(AuditAction.DECIDE_CLOTURE,"Decision",saved.getIdDecision(),idUser,null);
         User client = reclamation.getUser();
         // notifier client
-        notificationService.notifyUser(
-                client,
-                "Réclamation traitée",
-                "Votre réclamation " + reclamation.getReference() + " a été traitée avec succès.",
-                NotificationChannel.EMAIL
+        publisher.publishEvent(
+                new NotificationEvent(
+                        idReclamation,
+                        "Votre réclamation " + reclamation.getReference() + " a été traitée avec succès."
+                )
         );
     }
     @Transactional
